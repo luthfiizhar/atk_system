@@ -95,6 +95,7 @@ class _NavigationBarWebState extends State<NavigationBarWeb> {
             children: [
               NavigationItem(
                 title: 'Home',
+                routeName: '/home',
                 selected: index == 0,
                 onHighlight: onHighlight,
               ),

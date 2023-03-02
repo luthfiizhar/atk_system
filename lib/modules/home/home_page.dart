@@ -116,13 +116,25 @@ class _HomePageState extends State<HomePage> {
           disabled: false,
           assets: 'assets/icons/list_view.png',
           text: 'Transaction List',
-          onTap: () {},
+          onTap: () {
+            context.goNamed(
+              'transaction_list',
+              // params: {"type": "Request"},
+              extra: "Request",
+            );
+          },
         ),
         MenuButton(
           disabled: false,
           assets: 'assets/icons/list_view.png',
           text: 'Settlement',
-          onTap: () {},
+          onTap: () {
+            context.goNamed(
+              'transaction_list',
+              // params: {"type": "Settlement"},
+              extra: "Settlement",
+            );
+          },
         ),
       ],
     );

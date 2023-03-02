@@ -1,3 +1,5 @@
+import 'package:atk_system_ga/models/item_class.dart';
+
 class SuppliesRequest {
   SuppliesRequest({
     this.id = "",
@@ -5,13 +7,15 @@ class SuppliesRequest {
     this.empName = "",
     this.empNip = "",
     this.status = "",
-  });
+    List<Item>? items,
+  }) : items = items ?? [];
 
   String? id;
   String? createdDate;
   String? empNip;
   String? empName;
   String? status;
+  List<Item>? items;
 
   SuppliesRequest.fromJson(Map<String, String> json)
       : id = json['TransactionID'],

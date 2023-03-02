@@ -4,29 +4,28 @@ import 'package:atk_system_ga/constant/text_style.dart';
 import 'package:atk_system_ga/layout/layout_page.dart';
 import 'package:atk_system_ga/models/item_class.dart';
 import 'package:atk_system_ga/models/search_term.dart';
-import 'package:atk_system_ga/models/supplies_request_class.dart';
-import 'package:atk_system_ga/modules/supplies_request/confirm_dialog_supplies_req.dart';
-import 'package:atk_system_ga/modules/supplies_request/supplies_item_list_container.dart';
+import 'package:atk_system_ga/models/transaction_class.dart';
+import 'package:atk_system_ga/modules/supplies_request/approval_supplies_item_container.dart';
+import 'package:atk_system_ga/modules/transaction_list/transaction_list_container.dart';
 import 'package:atk_system_ga/widgets/buttons.dart';
 import 'package:atk_system_ga/widgets/search_input_field.dart';
+import 'package:atk_system_ga/widgets/transaction_activity_list.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
-class SuppliesRequestPage extends StatefulWidget {
-  SuppliesRequestPage({
+class ApprovalSuppliesReqPage extends StatefulWidget {
+  ApprovalSuppliesReqPage({
     super.key,
-    SuppliesRequest? suppliesRequest,
-    this.isAdditional = false,
-  }) : suppliesRequest = suppliesRequest ?? SuppliesRequest();
+    this.formId = "",
+  });
 
-  SuppliesRequest suppliesRequest;
-  bool isAdditional;
+  String formId;
 
   @override
-  State<SuppliesRequestPage> createState() => _SuppliesRequestPageState();
+  State<ApprovalSuppliesReqPage> createState() =>
+      _ApprovalSuppliesReqPageState();
 }
 
-class _SuppliesRequestPageState extends State<SuppliesRequestPage> {
+class _ApprovalSuppliesReqPageState extends State<ApprovalSuppliesReqPage> {
   TextEditingController _search = TextEditingController();
   SearchTerm searchTerm = SearchTerm();
 
@@ -65,81 +64,80 @@ class _SuppliesRequestPageState extends State<SuppliesRequestPage> {
           alignment: Alignment.topCenter,
           child: SizedBox(
             width: 1100,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              // crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const SizedBox(
-                  height: 50,
-                ),
-                infoAndSearch(),
-                const SizedBox(
-                  height: 55,
-                ),
-                headerTable(),
-                const SizedBox(
-                  height: 20,
-                ),
-                ListView.builder(
-                  itemCount: 5,
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemBuilder: (context, index) {
-                    return SuppliesItemListContainer(
-                      index: index,
-                      item: Item(
-                        itemName: 'REFILL SPIDOL WHITEBOARD WARNA HITAM',
-                        unit: 'EA',
-                        basePrice: 100000,
-                        totalPrice: 100000,
-                      ),
-                    );
-                  },
-                ),
-                const SizedBox(
-                  height: 50,
-                ),
-                totalSection(),
-                const Padding(
-                  padding: EdgeInsets.only(
-                    top: 38,
-                    bottom: 18,
+            child: Column(mainAxisAlignment: MainAxisAlignment.start,
+                // crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const SizedBox(
+                    height: 50,
                   ),
-                  child: Divider(
-                    color: grayx11,
-                    thickness: 1,
+                  infoAndSearch(),
+                  const SizedBox(
+                    height: 55,
                   ),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    TransparentButtonBlack(
-                      text: 'Cancel',
-                      disabled: false,
-                      padding: ButtonSize().mediumSize(),
-                      onTap: () {},
+                  headerTable(),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  ListView.builder(
+                    itemCount: 5,
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemBuilder: (context, index) {
+                      return ApprovalSuppliesItemListContainer(
+                        index: index,
+                        item: Item(
+                          itemName: 'REFILL SPIDOL WHITEBOARD WARNA HITAM',
+                          unit: 'EA',
+                          basePrice: 100000,
+                          totalPrice: 100000,
+                        ),
+                      );
+                    },
+                  ),
+                  const SizedBox(
+                    height: 50,
+                  ),
+                  totalSection(),
+                  const Padding(
+                    padding: EdgeInsets.only(
+                      top: 38,
+                      bottom: 18,
                     ),
-                    const SizedBox(
-                      width: 20,
+                    child: Divider(
+                      color: grayx11,
+                      thickness: 1,
                     ),
-                    RegularButton(
-                      text: 'Submit Request',
-                      disabled: false,
-                      padding: ButtonSize().mediumSize(),
-                      onTap: () {
-                        showDialog(
-                          context: context,
-                          builder: (context) => ConfirmDialogSuppliesRequest(),
-                        );
-                      },
-                    ),
-                  ],
-                ),
-                const SizedBox(
-                  height: 100,
-                )
-              ],
-            ),
+                  ),
+                  // Row(
+                  //   mainAxisAlignment: MainAxisAlignment.end,
+                  //   children: [
+                  //     TransparentButtonBlack(
+                  //       text: 'Cancel',
+                  //       disabled: false,
+                  //       padding: ButtonSize().mediumSize(),
+                  //       onTap: () {},
+                  //     ),
+                  //     const SizedBox(
+                  //       width: 20,
+                  //     ),
+                  //     RegularButton(
+                  //       text: 'Submit Request',
+                  //       disabled: false,
+                  //       padding: ButtonSize().mediumSize(),
+                  //       onTap: () {
+                  //         showDialog(
+                  //           context: context,
+                  //           builder: (context) => ConfirmDialogSuppliesRequest(),
+                  //         );
+                  //       },
+                  //     ),
+                  //   ],
+                  // ),
+                  commentSection(),
+                  const SizedBox(
+                    height: 100,
+                  ),
+                ]),
           ),
         ),
       ),
@@ -156,7 +154,7 @@ class _SuppliesRequestPageState extends State<SuppliesRequestPage> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Text(
-              'Order Supplies - October - H001REGM102201',
+              'Order Supplies Approval - October - H001REGM102201',
               style: helveticaText.copyWith(
                 fontSize: 24,
                 fontWeight: FontWeight.w700,
@@ -403,7 +401,7 @@ class _SuppliesRequestPageState extends State<SuppliesRequestPage> {
               style: helveticaText.copyWith(
                 fontSize: 20,
                 fontWeight: FontWeight.w700,
-                color: davysGray,
+                color: orangeAccent,
               ),
             ),
           ],
@@ -456,6 +454,43 @@ class _SuppliesRequestPageState extends State<SuppliesRequestPage> {
                     size: 16,
                   ),
                 ),
+    );
+  }
+
+  Widget commentSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        Text(
+          'Transaction Activity',
+          style: helveticaText.copyWith(
+            fontSize: 22,
+            fontWeight: FontWeight.w700,
+            color: davysGray,
+          ),
+        ),
+        const SizedBox(
+          height: 20,
+        ),
+        ListView.builder(
+          itemCount: 5,
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemBuilder: (context, index) {
+            return TransactionActivityListContainer(
+              index: index,
+              transactionActivity: TransactionActivity(
+                empName: "Luthfi Izhariman",
+                status: "Draft Created",
+                date: "00:00 - 31 Sept 2023",
+                comment:
+                    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut accumsan enim est, sit amet tincidunt odio placerat ut. Donec vel sem non sapien congue venenatis in eu elit. Ut metus felis, ullamcorper id purus et, sollicitudin semper dolor.",
+              ),
+            );
+          },
+        ),
+      ],
     );
   }
 }
