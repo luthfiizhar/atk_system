@@ -1,11 +1,14 @@
 import 'package:atk_system_ga/constant/colors.dart';
 import 'package:atk_system_ga/constant/constraints.dart';
 import 'package:atk_system_ga/constant/text_style.dart';
+import 'package:atk_system_ga/functions/api_request.dart';
 import 'package:atk_system_ga/layout/layout_page.dart';
 import 'package:atk_system_ga/widgets/buttons.dart';
+import 'package:atk_system_ga/widgets/dialogs.dart';
 import 'package:atk_system_ga/widgets/menu_buttons.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -15,6 +18,59 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  ApiService apiService = ApiService();
+  String date = "";
+  String formId = "";
+
+  @override
+  void initState() {
+    super.initState();
+    apiService.getDateTime().then((value) {
+      date = value["Data"]["Date"];
+      date = DateFormat("EEEE, dd MMM yyyy").format(DateTime.parse(date));
+      setState(() {});
+    });
+  }
+
+  Future createOrderMonthly() async {
+    apiService.createTransaction("Monthly").then((value) {
+      print(value);
+      if (value["Status"].toString() == "200") {
+        formId = value["Data"]["FormID"];
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialogBlack(
+            title: value['Title'],
+            contentText: value['Message'],
+          ),
+        ).then((value) {
+          context.goNamed(
+            'supplies_request',
+            params: {"formId": formId},
+          );
+        });
+      } else {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialogBlack(
+            title: value['Title'],
+            contentText: value['Message'],
+            isSuccess: false,
+          ),
+        );
+      }
+    }).onError((error, stackTrace) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialogBlack(
+          title: "Error createTransaction",
+          contentText: error.toString(),
+          isSuccess: false,
+        ),
+      );
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return LayoutPageWeb(
@@ -83,7 +139,7 @@ class _HomePageState extends State<HomePage> {
           ],
         ),
         Text(
-          'Thursday, 15 Sept 2022',
+          date,
           style: helveticaText.copyWith(
             fontSize: 16,
             fontWeight: FontWeight.w300,
@@ -103,7 +159,8 @@ class _HomePageState extends State<HomePage> {
           assets: 'assets/icons/shopping_cart.png',
           text: 'Order Supplies',
           onTap: () {
-            context.goNamed('supplies_request');
+            // context.goNamed('supplies_request');
+            createOrderMonthly().then((value) {});
           },
         ),
         MenuButton(

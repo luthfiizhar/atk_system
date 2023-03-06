@@ -1,37 +1,121 @@
 import 'package:atk_system_ga/constant/colors.dart';
 import 'package:atk_system_ga/constant/constraints.dart';
 import 'package:atk_system_ga/constant/text_style.dart';
+import 'package:atk_system_ga/functions/api_request.dart';
 import 'package:atk_system_ga/layout/layout_page.dart';
 import 'package:atk_system_ga/models/item_class.dart';
 import 'package:atk_system_ga/models/search_term.dart';
 import 'package:atk_system_ga/models/supplies_request_class.dart';
+import 'package:atk_system_ga/models/transaction_class.dart';
 import 'package:atk_system_ga/modules/supplies_request/confirm_dialog_supplies_req.dart';
 import 'package:atk_system_ga/modules/supplies_request/supplies_item_list_container.dart';
 import 'package:atk_system_ga/widgets/buttons.dart';
 import 'package:atk_system_ga/widgets/search_input_field.dart';
+import 'package:atk_system_ga/widgets/total.dart';
+import 'package:atk_system_ga/widgets/transaction_activity_section.dart';
+import 'package:atk_system_ga/widgets/transaction_info_section.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class SuppliesRequestPage extends StatefulWidget {
   SuppliesRequestPage({
     super.key,
-    SuppliesRequest? suppliesRequest,
-    this.isAdditional = false,
-  }) : suppliesRequest = suppliesRequest ?? SuppliesRequest();
+    this.formId = "",
+  });
 
-  SuppliesRequest suppliesRequest;
-  bool isAdditional;
+  String formId;
 
   @override
   State<SuppliesRequestPage> createState() => _SuppliesRequestPageState();
 }
 
 class _SuppliesRequestPageState extends State<SuppliesRequestPage> {
+  ApiService apiService = ApiService();
   TextEditingController _search = TextEditingController();
   SearchTerm searchTerm = SearchTerm();
+  Transaction transaction = Transaction();
 
-  int totalBudget = 800000000000;
-  int totalCost = 8000000000;
+  GlobalKey totalCostKey = GlobalKey();
+
+  List<Item> items = [];
+
+  bool isLoadingGetDetail = true;
+
+  bool isLoadingItems = true;
+
+  List<TransactionActivity> transactionActivity = [];
+
+  int totalBudget = 0;
+  int totalCost = 0;
+
+  initFormDetail() {
+    apiService.getFormDetail(widget.formId).then((value) {
+      // print(value);
+
+      setState(() {
+        isLoadingGetDetail = false;
+        isLoadingItems = false;
+      });
+      if (value['Status'].toString() == "200") {
+        List resultItems = value["Data"]["Items"];
+        List resultActivity = value["Data"]["Comments"];
+
+        transaction.formId = value["Data"]["FormID"];
+        transaction.siteName = value["Data"]["SiteName"];
+        transaction.siteArea = value["Data"]["SiteArea"];
+        transaction.budget = value["Data"]["Budget"];
+        transaction.orderPeriod = value["Data"]["OrderPeriod"];
+        transaction.month = value["Data"]["Month"];
+        transaction.status = value["Data"]["Status"];
+        totalBudget = value['Data']["Budget"];
+
+        for (var element in resultItems) {
+          items.add(
+            Item(
+              itemId: element['ItemID'].toString(),
+              itemName: element['ItemName'],
+              basePrice: element['Price'],
+              qty: element['Quantity'],
+              totalPrice: element['TotalPrice'],
+            ),
+          );
+        }
+
+        for (var element in resultActivity) {
+          transactionActivity.add(
+            TransactionActivity(
+              empName: element["EmpName"],
+              comment: element["CommentText"],
+              date: element["CommentDate"],
+              status: element["CommentDescription"],
+              photo: element["Photo"],
+            ),
+          );
+        }
+        setState(() {});
+      } else {
+        print("not success");
+      }
+    }).onError((error, stackTrace) {
+      print(error);
+    });
+  }
+
+  countTotal() {
+    totalCost = 0;
+    for (var element in items) {
+      totalCost = totalCost + element.totalPrice;
+    }
+    totalCostKey.currentState!.setState(() {});
+    // setState(() {});
+  }
+
+  calculateItems() {
+    transaction.items.clear();
+    items.where((element) => element.qty > 0).forEach((element) {
+      transaction.items.add(element);
+    });
+  }
 
   onTapHeader(String orderBy) {
     setState(() {
@@ -53,6 +137,7 @@ class _SuppliesRequestPageState extends State<SuppliesRequestPage> {
   @override
   void initState() {
     super.initState();
+    initFormDetail();
   }
 
   @override
@@ -80,22 +165,22 @@ class _SuppliesRequestPageState extends State<SuppliesRequestPage> {
                 const SizedBox(
                   height: 20,
                 ),
-                ListView.builder(
-                  itemCount: 5,
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemBuilder: (context, index) {
-                    return SuppliesItemListContainer(
-                      index: index,
-                      item: Item(
-                        itemName: 'REFILL SPIDOL WHITEBOARD WARNA HITAM',
-                        unit: 'EA',
-                        basePrice: 100000,
-                        totalPrice: 100000,
+                isLoadingItems
+                    ? const CircularProgressIndicator(
+                        color: eerieBlack,
+                      )
+                    : ListView.builder(
+                        itemCount: items.length,
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemBuilder: (context, index) {
+                          return SuppliesItemListContainer(
+                            index: index,
+                            item: items[index],
+                            countTotal: countTotal,
+                          );
+                        },
                       ),
-                    );
-                  },
-                ),
                 const SizedBox(
                   height: 50,
                 ),
@@ -103,7 +188,20 @@ class _SuppliesRequestPageState extends State<SuppliesRequestPage> {
                 const Padding(
                   padding: EdgeInsets.only(
                     top: 38,
-                    bottom: 18,
+                    bottom: 23,
+                  ),
+                  child: Divider(
+                    color: grayx11,
+                    thickness: 1,
+                  ),
+                ),
+                TransactionActivitySection(
+                  transactionActivity: transactionActivity,
+                ),
+                const Padding(
+                  padding: EdgeInsets.only(
+                    top: 23,
+                    bottom: 28,
                   ),
                   child: Divider(
                     color: grayx11,
@@ -126,10 +224,13 @@ class _SuppliesRequestPageState extends State<SuppliesRequestPage> {
                       text: 'Submit Request',
                       disabled: false,
                       padding: ButtonSize().mediumSize(),
-                      onTap: () {
+                      onTap: () async {
+                        await calculateItems();
                         showDialog(
                           context: context,
-                          builder: (context) => ConfirmDialogSuppliesRequest(),
+                          builder: (context) => ConfirmDialogSuppliesRequest(
+                            transaction: transaction,
+                          ),
                         );
                       },
                     ),
@@ -151,65 +252,14 @@ class _SuppliesRequestPageState extends State<SuppliesRequestPage> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Text(
-              'Order Supplies - October - H001REGM102201',
-              style: helveticaText.copyWith(
-                fontSize: 24,
-                fontWeight: FontWeight.w700,
+        isLoadingGetDetail
+            ? const CircularProgressIndicator(
                 color: eerieBlack,
+              )
+            : TransactionInfoSection(
+                title: "Order Supplies",
+                transaction: transaction,
               ),
-            ),
-            const SizedBox(
-              height: 20,
-            ),
-            RichText(
-              text: TextSpan(
-                text: 'Site: ',
-                style: infoTextLight,
-                children: [
-                  TextSpan(
-                    text: 'H001 - Chatime HO',
-                    style: infoTextBold,
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(
-              height: 15,
-            ),
-            RichText(
-              text: TextSpan(
-                text: 'Site Area: ',
-                style: infoTextLight,
-                children: [
-                  TextSpan(
-                    text: '500.000 m2',
-                    style: infoTextBold,
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(
-              height: 15,
-            ),
-            RichText(
-              text: TextSpan(
-                text: 'Status: ',
-                style: infoTextLight,
-                children: [
-                  TextSpan(
-                    text: 'Create New',
-                    style: infoTextBold,
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
         SizedBox(
           width: 220,
           child: SearchInputField(
@@ -357,57 +407,21 @@ class _SuppliesRequestPageState extends State<SuppliesRequestPage> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Total Budget',
-              style: helveticaText.copyWith(
-                fontSize: 18,
-                fontWeight: FontWeight.w300,
-                color: davysGray,
-              ),
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            Text(
-              formatCurrency.format(totalBudget),
-              style: helveticaText.copyWith(
-                fontSize: 20,
-                fontWeight: FontWeight.w700,
-                color: davysGray,
-              ),
-            ),
-          ],
+        TotalInfo(
+          title: 'Total Budget',
+          number: totalBudget,
         ),
         const SizedBox(
           width: 60,
         ),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Total Cost',
-              style: helveticaText.copyWith(
-                fontSize: 18,
-                fontWeight: FontWeight.w300,
-                color: davysGray,
-              ),
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            Text(
-              formatCurrency.format(totalCost),
-              style: helveticaText.copyWith(
-                fontSize: 20,
-                fontWeight: FontWeight.w700,
-                color: davysGray,
-              ),
-            ),
-          ],
-        ),
+        StatefulBuilder(
+            key: totalCostKey,
+            builder: (context, setState) {
+              return TotalInfo(
+                title: 'Total Cost',
+                number: totalCost,
+              );
+            }),
       ],
     );
   }

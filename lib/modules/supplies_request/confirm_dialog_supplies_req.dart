@@ -3,8 +3,10 @@ import 'package:atk_system_ga/constant/text_style.dart';
 import 'package:atk_system_ga/models/item_class.dart';
 import 'package:atk_system_ga/models/search_term.dart';
 import 'package:atk_system_ga/models/transaction_class.dart';
+import 'package:atk_system_ga/widgets/attachment_files.dart';
 import 'package:atk_system_ga/widgets/buttons.dart';
 import 'package:atk_system_ga/widgets/input_field.dart';
+import 'package:atk_system_ga/widgets/total.dart';
 import 'package:flutter/material.dart';
 
 class ConfirmDialogSuppliesRequest extends StatefulWidget {
@@ -26,65 +28,28 @@ class _ConfirmDialogSuppliesRequestState
 
   TextEditingController _comment = TextEditingController();
 
-  int totalBudget = 800000000000;
-  int totalCost = 8000000000000;
+  int totalBudget = 0;
+  int totalCost = 0;
 
-  List<Item> itemList = [
-    Item(
-      itemName: 'REFILL SPIDOL WHITEBOARD WARNA HITAM',
-      unit: 'EA',
-      basePrice: 100000,
-      totalPrice: 100000,
-    ),
-    Item(
-      itemName: 'REFILL SPIDOL WHITEBOARD WARNA HITAM',
-      unit: 'EA',
-      basePrice: 100000,
-      totalPrice: 100000,
-    ),
-    Item(
-      itemName: 'REFILL SPIDOL WHITEBOARD WARNA HITAM',
-      unit: 'EA',
-      basePrice: 100000,
-      totalPrice: 100000,
-    ),
-    Item(
-      itemName: 'REFILL SPIDOL WHITEBOARD WARNA HITAM',
-      unit: 'EA',
-      basePrice: 100000,
-      totalPrice: 100000,
-    ),
-    Item(
-      itemName: 'REFILL SPIDOL WHITEBOARD WARNA HITAM',
-      unit: 'EA',
-      basePrice: 100000,
-      totalPrice: 100000,
-    ),
-    Item(
-      itemName: 'REFILL SPIDOL WHITEBOARD WARNA HITAM',
-      unit: 'EA',
-      basePrice: 100000,
-      totalPrice: 100000,
-    ),
-    Item(
-      itemName: 'REFILL SPIDOL WHITEBOARD WARNA HITAM',
-      unit: 'EA',
-      basePrice: 100000,
-      totalPrice: 100000,
-    ),
-    Item(
-      itemName: 'REFILL SPIDOL WHITEBOARD WARNA HITAM',
-      unit: 'EA',
-      basePrice: 100000,
-      totalPrice: 100000,
-    ),
-  ];
+  List<Item> itemList = [];
+
+  initDetail() {
+    totalBudget = widget.transaction.budget;
+
+    for (var element in widget.transaction.items) {
+      totalCost = totalCost + element.totalPrice;
+    }
+
+    itemList = widget.transaction.items;
+    setState(() {});
+  }
 
   onTapHeader(String orderBy) {}
 
   @override
   void initState() {
     super.initState();
+    initDetail();
   }
 
   @override
@@ -170,56 +135,7 @@ class _ConfirmDialogSuppliesRequestState
                       width: 30,
                     ),
                     Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Text(
-                            "Attachment",
-                            style: helveticaText.copyWith(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w700,
-                              color: eerieBlack,
-                            ),
-                          ),
-                          const SizedBox(
-                            height: 16,
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              InkWell(
-                                onTap: () {},
-                                child: const Icon(
-                                  Icons.close_sharp,
-                                  size: 16,
-                                ),
-                              ),
-                              const SizedBox(
-                                width: 10,
-                              ),
-                              Expanded(
-                                  child: Text(
-                                'No file',
-                                style: helveticaText.copyWith(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w300,
-                                  color: sonicSilver,
-                                ),
-                              ))
-                            ],
-                          ),
-                          const SizedBox(
-                            height: 16,
-                          ),
-                          RegularButton(
-                            text: 'Attach Picture',
-                            disabled: false,
-                            padding: ButtonSize().mediumSize(),
-                            onTap: () {},
-                          ),
-                        ],
-                      ),
+                      child: AttachmentFiles(),
                     ),
                   ],
                 ),
@@ -264,7 +180,7 @@ class _ConfirmDialogSuppliesRequestState
           style: dialogTitleText,
         ),
         Text(
-          'October - H001REGM102201',
+          '${widget.transaction.month} - ${widget.transaction.formId}',
           style: dialogFormNumberText,
         )
       ],
@@ -289,7 +205,7 @@ class _ConfirmDialogSuppliesRequestState
                 height: 10,
               ),
               Text(
-                'H724 - ST SELMA KINGS BDG',
+                widget.transaction.siteName,
                 style: dialogSummaryContentText,
               ),
               const SizedBox(
@@ -301,7 +217,7 @@ class _ConfirmDialogSuppliesRequestState
                   style: dialogSummaryContentLightText,
                   children: [
                     TextSpan(
-                      text: '500.000 m2',
+                      text: "${widget.transaction.siteArea} m2",
                       style: dialogSummaryContentText,
                     ),
                   ],
@@ -310,43 +226,15 @@ class _ConfirmDialogSuppliesRequestState
             ],
           ),
         ),
-        Expanded(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Total Budget',
-                style: dialogSummaryTitleText,
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              Text(
-                formatCurrency.format(totalBudget),
-                style: dialogSummaryContentText,
-              ),
-            ],
-          ),
+        TotalInfo(
+          title: 'Total Budget',
+          number: totalBudget,
+          titleColor: orangeAccent,
         ),
-        Expanded(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Total Cost',
-                style: dialogSummaryTitleText,
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              Text(
-                formatCurrency.format(totalCost),
-                style: dialogSummaryContentText,
-              ),
-            ],
-          ),
+        TotalInfo(
+          title: 'Total Cost',
+          number: totalCost,
+          titleColor: orangeAccent,
         )
       ],
     );

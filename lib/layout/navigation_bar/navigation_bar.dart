@@ -1,7 +1,9 @@
 import 'package:atk_system_ga/constant/colors.dart';
 import 'package:atk_system_ga/constant/text_style.dart';
 import 'package:atk_system_ga/layout/navigation_bar/navigation_bar_item.dart';
+import 'package:atk_system_ga/main.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class NavigationBarWeb extends StatefulWidget {
   NavigationBarWeb({
@@ -99,9 +101,25 @@ class _NavigationBarWebState extends State<NavigationBarWeb> {
                 selected: index == 0,
                 onHighlight: onHighlight,
               ),
-              NavigationItem(
-                title: 'Logout',
-                selected: false,
+              // NavigationItem(
+              //   title: 'Logout',
+              //   selected: false,
+              // ),
+              InkWell(
+                onTap: () {
+                  jwtToken = "";
+                  isTokenValid = false;
+                  context.go('/login');
+                  setState(() {});
+                },
+                child: Text(
+                  'Logout',
+                  style: navBarText.copyWith(
+                    fontSize: 18,
+                    color: sonicSilver,
+                    fontWeight: FontWeight.w300,
+                  ),
+                ),
               ),
             ],
           )

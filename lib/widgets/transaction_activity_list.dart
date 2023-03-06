@@ -1,6 +1,7 @@
 import 'package:atk_system_ga/constant/colors.dart';
 import 'package:atk_system_ga/constant/text_style.dart';
 import 'package:atk_system_ga/models/transaction_class.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 class TransactionActivityListContainer extends StatelessWidget {
@@ -26,25 +27,43 @@ class TransactionActivityListContainer extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              width: 50,
-              height: 50,
-              decoration: const BoxDecoration(
-                shape: BoxShape.circle,
-                color: sonicSilver,
-              ),
-              child: Center(
-                child: Text(
-                  transactionActivity.empName.characters.first,
-                  style: helveticaText.copyWith(
-                    fontSize: 24,
-                    fontWeight: FontWeight.w700,
-                    color: white,
-                    height: 1.15,
+            transactionActivity.photo == ""
+                ? Container(
+                    width: 50,
+                    height: 50,
+                    decoration: const BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: sonicSilver,
+                    ),
+                    child: Center(
+                      child: Text(
+                        transactionActivity.empName.characters.first,
+                        style: helveticaText.copyWith(
+                          fontSize: 24,
+                          fontWeight: FontWeight.w700,
+                          color: white,
+                          height: 1.15,
+                        ),
+                      ),
+                    ),
+                  )
+                : CachedNetworkImage(
+                    imageUrl: transactionActivity.photo,
+                    imageBuilder: (context, imageProvider) {
+                      return Container(
+                        width: 50,
+                        height: 50,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: sonicSilver,
+                          image: DecorationImage(
+                            image: imageProvider,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      );
+                    },
                   ),
-                ),
-              ),
-            ),
             const SizedBox(
               width: 20,
             ),
@@ -97,6 +116,21 @@ class TransactionActivityListContainer extends StatelessWidget {
                       ],
                     ),
                   ),
+                  transactionActivity.attachment.isNotEmpty
+                      ? Container(
+                          padding: const EdgeInsets.only(top: 10),
+                          child: Wrap(
+                            alignment: WrapAlignment.start,
+                            spacing: 10,
+                            runSpacing: 10,
+                            children: transactionActivity.attachment.map((e) {
+                              return AttachmentTransactionItem(
+                                attachment: e,
+                              );
+                            }).toList(),
+                          ),
+                        )
+                      : const SizedBox(),
                 ],
               ),
             )
@@ -123,6 +157,26 @@ class AttachmentTransactionItem extends StatefulWidget {
 class _AttachmentTransactionItemState extends State<AttachmentTransactionItem> {
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return widget.attachment.type == "image"
+        ? Container(
+            width: 300,
+            height: 200,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              color: platinum,
+            ),
+          )
+        : Container(
+            width: 200,
+            height: 125,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(
+                color: spanishGray,
+                width: 0.5,
+              ),
+              color: white,
+            ),
+          );
   }
 }

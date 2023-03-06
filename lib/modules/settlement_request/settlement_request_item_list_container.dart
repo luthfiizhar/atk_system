@@ -3,50 +3,26 @@ import 'package:atk_system_ga/constant/text_style.dart';
 import 'package:atk_system_ga/models/item_class.dart';
 import 'package:atk_system_ga/widgets/input_field.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
-class SuppliesItemListContainer extends StatefulWidget {
-  SuppliesItemListContainer({
+class SettlementRequestItemListContainer extends StatefulWidget {
+  SettlementRequestItemListContainer({
     super.key,
     this.index = 0,
     Item? item,
-    this.countTotal,
   }) : item = item ?? Item();
 
   int index;
   Item item;
   final TextEditingController _qty = TextEditingController();
-  final FocusNode qtyNode = FocusNode();
-  Function? countTotal;
+  final TextEditingController _actualPrice = TextEditingController();
 
   @override
-  State<SuppliesItemListContainer> createState() =>
-      _SuppliesItemListContainerState();
+  State<SettlementRequestItemListContainer> createState() =>
+      _SettlementRequestItemListContainerState();
 }
 
-class _SuppliesItemListContainerState extends State<SuppliesItemListContainer> {
-  onChangeQty(String value) {
-    widget.item.qty = int.parse(value);
-    widget.item.totalPrice = widget.item.basePrice * int.parse(value);
-    setState(() {});
-  }
-
-  @override
-  void initState() {
-    super.initState();
-
-    widget._qty.text = "0";
-    widget._qty.addListener(() {
-      if (widget._qty.text == "") {
-        widget._qty.text = "0";
-        widget._qty.selection = TextSelection.fromPosition(
-            TextPosition(offset: widget._qty.text.length));
-      }
-      setState(() {});
-    });
-    setState(() {});
-  }
-
+class _SettlementRequestItemListContainerState
+    extends State<SettlementRequestItemListContainer> {
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -77,22 +53,22 @@ class _SuppliesItemListContainerState extends State<SuppliesItemListContainer> {
               ),
             ),
             SizedBox(
-              width: 100,
+              width: 135,
               child: Text(
-                widget.item.unit,
+                widget.item.reqQty.toString(),
                 style: bodyTableLightText,
                 textAlign: TextAlign.left,
               ),
             ),
             Expanded(
               child: Text(
-                formatCurrency.format(widget.item.basePrice),
+                formatCurrency.format(widget.item.reqPrice),
                 style: bodyTableLightText,
                 textAlign: TextAlign.left,
               ),
             ),
             SizedBox(
-              width: 125,
+              width: 150,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
@@ -100,17 +76,6 @@ class _SuppliesItemListContainerState extends State<SuppliesItemListContainer> {
                     width: 75,
                     child: BlackInputField(
                       controller: widget._qty,
-                      focusNode: widget.qtyNode,
-                      inputFormatters: [
-                        FilteringTextInputFormatter.digitsOnly,
-                        FilteringTextInputFormatter.deny(
-                          RegExp(r'^0+'), //users can't type 0 at 1st position
-                        )
-                      ],
-                      onChanged: (value) async {
-                        await onChangeQty(value);
-                        widget.countTotal!();
-                      },
                       enabled: true,
                     ),
                   ),
@@ -118,10 +83,17 @@ class _SuppliesItemListContainerState extends State<SuppliesItemListContainer> {
               ),
             ),
             Expanded(
-              child: Text(
-                formatCurrency.format(widget.item.totalPrice),
-                style: bodyTableLightText,
-                textAlign: TextAlign.left,
+              // child: Text(
+              //   formatCurrency.format(widget.item.totalPrice),
+              //   style: bodyTableLightText,
+              //   textAlign: TextAlign.left,
+              // ),
+              child: SizedBox(
+                width: 150,
+                child: BlackInputField(
+                  controller: widget._actualPrice,
+                  enabled: true,
+                ),
               ),
             ),
           ],

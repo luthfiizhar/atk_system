@@ -1,3 +1,4 @@
+import 'package:atk_system_ga/functions/api_request.dart';
 import 'package:atk_system_ga/models/main_model.dart';
 import 'package:atk_system_ga/modules/home/home_page.dart';
 import 'package:atk_system_ga/modules/login/login_page.dart';
@@ -13,8 +14,8 @@ import 'package:responsive_framework/responsive_framework.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hive/hive.dart';
 
-String jwtToken = "";
-bool isValid = false;
+String? jwtToken = "";
+bool isTokenValid = false;
 
 loginCheck() async {
   var box = await Hive.openBox('userLogin');
@@ -25,8 +26,17 @@ loginCheck() async {
 
 void main() async {
   await Hive.initFlutter();
-  // await loginCheck();
-  runApp(MyApp());
+  await loginCheck();
+  ApiService apiService = ApiService();
+
+  apiService.tokenCheck().then((value) {
+    if (value["Status"] == "200") {
+      isTokenValid = true;
+    } else {
+      isTokenValid = false;
+    }
+    runApp(MyApp());
+  });
 }
 
 class MyApp extends StatelessWidget {
@@ -54,11 +64,13 @@ class MyApp extends StatelessWidget {
       ),
       GoRoute(
         name: 'supplies_request',
-        path: '/supplies_request',
+        path: '/supplies_request/:formId',
         pageBuilder: (context, state) {
           return NoTransitionPage<void>(
             key: state.pageKey,
-            child: SuppliesRequestPage(),
+            child: SuppliesRequestPage(
+              formId: state.params["formId"].toString(),
+            ),
           );
         },
       ),
@@ -86,6 +98,16 @@ class MyApp extends StatelessWidget {
               );
             },
           ),
+          GoRoute(
+            name: 'setllement_request',
+            path: 'settlement_request/:formId',
+            pageBuilder: (context, state) {
+              return NoTransitionPage<void>(
+                key: state.pageKey,
+                child: SettlementRequestPage(),
+              );
+            },
+          ),
         ],
       ),
       GoRoute(
@@ -99,6 +121,14 @@ class MyApp extends StatelessWidget {
       )
     ],
     initialLocation: '/home',
+    redirect: (context, state) {
+      final login = state.subloc == '/login';
+
+      if (jwtToken == null || jwtToken == "" || !isTokenValid) {
+        return login ? null : '/login';
+      }
+      return null;
+    },
   );
   // This widget is the root of your application.
   @override

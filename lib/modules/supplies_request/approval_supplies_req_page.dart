@@ -6,10 +6,15 @@ import 'package:atk_system_ga/models/item_class.dart';
 import 'package:atk_system_ga/models/search_term.dart';
 import 'package:atk_system_ga/models/transaction_class.dart';
 import 'package:atk_system_ga/modules/supplies_request/approval_supplies_item_container.dart';
+import 'package:atk_system_ga/modules/supplies_request/approve_dialog_supplies_req.dart';
+import 'package:atk_system_ga/modules/supplies_request/confirm_dialog_supplies_req.dart';
 import 'package:atk_system_ga/modules/transaction_list/transaction_list_container.dart';
 import 'package:atk_system_ga/widgets/buttons.dart';
 import 'package:atk_system_ga/widgets/search_input_field.dart';
+import 'package:atk_system_ga/widgets/total.dart';
 import 'package:atk_system_ga/widgets/transaction_activity_list.dart';
+import 'package:atk_system_ga/widgets/transaction_activity_section.dart';
+import 'package:atk_system_ga/widgets/transaction_info_section.dart';
 import 'package:flutter/material.dart';
 
 class ApprovalSuppliesReqPage extends StatefulWidget {
@@ -133,7 +138,54 @@ class _ApprovalSuppliesReqPageState extends State<ApprovalSuppliesReqPage> {
                   //     ),
                   //   ],
                   // ),
-                  commentSection(),
+                  // commentSection(),
+                  TransactionActivitySection(transactionActivity: [
+                    TransactionActivity(
+                        empName: "Luthfi Izhariman",
+                        status: "Draft Created",
+                        date: "00:00 - 31 Sept 2023",
+                        comment:
+                            "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut accumsan enim est, sit amet tincidunt odio placerat ut. Donec vel sem non sapien congue venenatis in eu elit. Ut metus felis, ullamcorper id purus et, sollicitudin semper dolor.",
+                        attachment: [
+                          Attachment(file: "test", type: "image"),
+                          Attachment(file: "test", type: "pdf")
+                        ])
+                  ]),
+                  const Padding(
+                    padding: EdgeInsets.only(
+                      top: 23,
+                      bottom: 28,
+                    ),
+                    child: Divider(
+                      color: grayx11,
+                      thickness: 1,
+                    ),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      TransparentButtonBlack(
+                        text: 'Send Back',
+                        disabled: false,
+                        padding: ButtonSize().mediumSize(),
+                        onTap: () {},
+                      ),
+                      const SizedBox(
+                        width: 20,
+                      ),
+                      RegularButton(
+                        text: 'Approve',
+                        disabled: false,
+                        padding: ButtonSize().mediumSize(),
+                        onTap: () {
+                          showDialog(
+                            context: context,
+                            builder: (context) => ApproveDialogSuppliesReq(),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
                   const SizedBox(
                     height: 100,
                   ),
@@ -149,64 +201,8 @@ class _ApprovalSuppliesReqPageState extends State<ApprovalSuppliesReqPage> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Text(
-              'Order Supplies Approval - October - H001REGM102201',
-              style: helveticaText.copyWith(
-                fontSize: 24,
-                fontWeight: FontWeight.w700,
-                color: eerieBlack,
-              ),
-            ),
-            const SizedBox(
-              height: 20,
-            ),
-            RichText(
-              text: TextSpan(
-                text: 'Site: ',
-                style: infoTextLight,
-                children: [
-                  TextSpan(
-                    text: 'H001 - Chatime HO',
-                    style: infoTextBold,
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(
-              height: 15,
-            ),
-            RichText(
-              text: TextSpan(
-                text: 'Site Area: ',
-                style: infoTextLight,
-                children: [
-                  TextSpan(
-                    text: '500.000 m2',
-                    style: infoTextBold,
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(
-              height: 15,
-            ),
-            RichText(
-              text: TextSpan(
-                text: 'Status: ',
-                style: infoTextLight,
-                children: [
-                  TextSpan(
-                    text: 'Create New',
-                    style: infoTextBold,
-                  ),
-                ],
-              ),
-            ),
-          ],
+        TransactionInfoSection(
+          title: "Order Supplies Approval",
         ),
         SizedBox(
           width: 220,
@@ -355,56 +351,17 @@ class _ApprovalSuppliesReqPageState extends State<ApprovalSuppliesReqPage> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Total Budget',
-              style: helveticaText.copyWith(
-                fontSize: 18,
-                fontWeight: FontWeight.w300,
-                color: davysGray,
-              ),
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            Text(
-              formatCurrency.format(totalBudget),
-              style: helveticaText.copyWith(
-                fontSize: 20,
-                fontWeight: FontWeight.w700,
-                color: davysGray,
-              ),
-            ),
-          ],
+        TotalInfo(
+          title: 'Total Budget',
+          number: totalBudget,
         ),
         const SizedBox(
           width: 60,
         ),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Total Cost',
-              style: helveticaText.copyWith(
-                fontSize: 18,
-                fontWeight: FontWeight.w300,
-                color: davysGray,
-              ),
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            Text(
-              formatCurrency.format(totalCost),
-              style: helveticaText.copyWith(
-                fontSize: 20,
-                fontWeight: FontWeight.w700,
-                color: orangeAccent,
-              ),
-            ),
-          ],
+        TotalInfo(
+          title: 'Total Cost',
+          number: totalCost,
+          numberColor: orangeAccent,
         ),
       ],
     );
@@ -481,12 +438,15 @@ class _ApprovalSuppliesReqPageState extends State<ApprovalSuppliesReqPage> {
             return TransactionActivityListContainer(
               index: index,
               transactionActivity: TransactionActivity(
-                empName: "Luthfi Izhariman",
-                status: "Draft Created",
-                date: "00:00 - 31 Sept 2023",
-                comment:
-                    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut accumsan enim est, sit amet tincidunt odio placerat ut. Donec vel sem non sapien congue venenatis in eu elit. Ut metus felis, ullamcorper id purus et, sollicitudin semper dolor.",
-              ),
+                  empName: "Luthfi Izhariman",
+                  status: "Draft Created",
+                  date: "00:00 - 31 Sept 2023",
+                  comment:
+                      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut accumsan enim est, sit amet tincidunt odio placerat ut. Donec vel sem non sapien congue venenatis in eu elit. Ut metus felis, ullamcorper id purus et, sollicitudin semper dolor.",
+                  attachment: [
+                    Attachment(file: "test", type: "image"),
+                    Attachment(file: "test", type: "pdf")
+                  ]),
             );
           },
         ),

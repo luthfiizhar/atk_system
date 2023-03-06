@@ -79,3 +79,17 @@ TextStyle dialogSummaryContentLightText = helveticaText.copyWith(
   fontWeight: FontWeight.w300,
   color: eerieBlack,
 );
+
+const TextStyle titlePageAlertDialog = TextStyle(
+  fontFamily: 'Helvetica',
+  fontSize: 24,
+  fontWeight: FontWeight.w700,
+  height: 1.15,
+);
+
+const TextStyle bodyTextAlertDialog = TextStyle(
+  fontFamily: 'Helvetica',
+  fontSize: 18,
+  fontWeight: FontWeight.w300,
+  height: 1.15,
+);

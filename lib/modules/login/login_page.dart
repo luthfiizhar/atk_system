@@ -1,5 +1,6 @@
 import 'package:atk_system_ga/constant/colors.dart';
 import 'package:atk_system_ga/constant/text_style.dart';
+import 'package:atk_system_ga/functions/api_request.dart';
 import 'package:atk_system_ga/widgets/buttons.dart';
 import 'package:atk_system_ga/widgets/input_field.dart';
 import 'package:go_router/go_router.dart';
@@ -17,7 +18,25 @@ class _LoginPageState extends State<LoginPage> {
   TextEditingController _username = TextEditingController();
   TextEditingController _password = TextEditingController();
 
+  ApiService apiService = ApiService();
+
+  String username = "";
+  String password = "";
+
   final formKey = GlobalKey<FormState>();
+
+  submitLogin() {
+    if (formKey.currentState!.validate()) {
+      formKey.currentState!.save();
+
+      apiService.login(username, password).then((value) {
+        print(value);
+        if (value['Status'].toString() == "200") {
+          context.go('/home');
+        } else {}
+      }).onError((error, stackTrace) {});
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -90,7 +109,12 @@ class _LoginPageState extends State<LoginPage> {
                             maxLines: 1,
                             validator: (value) =>
                                 value == "" ? "This field is required." : null,
-                            onSaved: (newValue) {},
+                            onSaved: (newValue) {
+                              username = newValue.toString();
+                            },
+                            onFieldSubmitted: (value) {
+                              submitLogin();
+                            },
                           ),
                           const SizedBox(
                             height: 30,
@@ -116,7 +140,12 @@ class _LoginPageState extends State<LoginPage> {
                             maxLines: 1,
                             validator: (value) =>
                                 value == "" ? "This field is required." : null,
-                            onSaved: (newValue) {},
+                            onSaved: (newValue) {
+                              password = newValue.toString();
+                            },
+                            onFieldSubmitted: (value) {
+                              submitLogin();
+                            },
                           ),
                         ],
                       ),
@@ -130,9 +159,7 @@ class _LoginPageState extends State<LoginPage> {
                     disabled: false,
                     padding: ButtonSize().longSize(),
                     onTap: () {
-                      if (formKey.currentState!.validate()) {
-                        formKey.currentState!.save();
-                      }
+                      submitLogin();
                     },
                   )
                 ],

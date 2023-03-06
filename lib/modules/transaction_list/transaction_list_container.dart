@@ -74,8 +74,11 @@ class _TransactionListContainerState extends State<TransactionListContainer> {
                     Expanded(
                       flex: 2,
                       child: Text(
-                        widget.transaction.location,
+                        widget.transaction.siteName,
                         style: bodyTableLightText,
+                        overflow: TextOverflow.clip,
+                        maxLines: 1,
+                        softWrap: true,
                       ),
                     ),
                     SizedBox(
@@ -130,6 +133,22 @@ class _TransactionListContainerState extends State<TransactionListContainer> {
                                 onTap: () {
                                   context.goNamed(
                                     'approval_request',
+                                    params: {
+                                      "formId": widget.transaction.formId,
+                                    },
+                                  );
+                                },
+                              ),
+                              const SizedBox(
+                                width: 10,
+                              ),
+                              RegularButton(
+                                text: 'Settle',
+                                disabled: false,
+                                padding: ButtonSize().mediumSize(),
+                                onTap: () {
+                                  context.goNamed(
+                                    'setllement_request',
                                     params: {
                                       "formId": widget.transaction.formId,
                                     },

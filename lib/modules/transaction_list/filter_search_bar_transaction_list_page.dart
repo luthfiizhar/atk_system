@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 class FilterSearchBarTransactionList extends StatefulWidget {
   FilterSearchBarTransactionList({
     super.key,
-    this.type = "Request",
+    this.type = "Supplies Request",
     this.typeList,
     this.updateList,
     this.search,
@@ -39,8 +39,8 @@ class _FilterSearchBarTransactionListState
 
   void onHighlight(String type) {
     switch (type) {
-      case "Request":
-        changeHighlight("Request");
+      case "Supply Request":
+        changeHighlight("Supply Request");
         // widget.updateList!(type);
         break;
       case "Settlement":

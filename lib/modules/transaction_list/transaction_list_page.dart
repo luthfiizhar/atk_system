@@ -1,6 +1,7 @@
 import 'package:atk_system_ga/constant/colors.dart';
 import 'package:atk_system_ga/constant/constraints.dart';
 import 'package:atk_system_ga/constant/text_style.dart';
+import 'package:atk_system_ga/functions/api_request.dart';
 import 'package:atk_system_ga/layout/layout_page.dart';
 import 'package:atk_system_ga/models/search_term.dart';
 import 'package:atk_system_ga/models/transaction_class.dart';
@@ -23,17 +24,19 @@ class TransactionListPage extends StatefulWidget {
 
 class _TransactionListPageState extends State<TransactionListPage> {
   SearchTerm searchTerm = SearchTerm();
+  ApiService apiService = ApiService();
   TextEditingController _search = TextEditingController();
   FocusNode showPerRowsNode = FocusNode();
 
+  String formType = "Supply Request";
   List typeList = [
     {
       "Name": "Request",
-      "Value": "Request",
+      "Value": "Supply Request",
       "BookingCount": "10",
     },
     {
-      "Name": "Settlement",
+      "Name": "Settlement Request",
       "Value": "Settlement",
       "BookingCount": "10",
     }
@@ -47,74 +50,9 @@ class _TransactionListPageState extends State<TransactionListPage> {
   List showPerPageList = ["5", "10", "20", "50", "100"];
   int resultRows = 0;
 
-  List<Transaction> transactionList = [
-    Transaction(
-      formId: 'H302SUPM102201',
-      category: 'Monthly',
-      location: 'ST HCIR HOME GALERIA GALAXY 1 SBY',
-      created: '00 Sept 2023',
-      status: 'Waiting OPS Approval',
-    ),
-    Transaction(
-      formId: 'H302SUPM102201',
-      category: 'Monthly',
-      location: 'ST HCIR HOME GALERIA GALAXY 1 SBY',
-      created: '00 Sept 2023',
-      status: 'Waiting OPS Approval',
-    ),
-    Transaction(
-      formId: 'H302SUPM102201',
-      category: 'Monthly',
-      location: 'ST HCIR HOME GALERIA GALAXY 1 SBY',
-      created: '00 Sept 2023',
-      status: 'Waiting OPS Approval',
-    ),
-    Transaction(
-      formId: 'H302SUPM102201',
-      category: 'Monthly',
-      location: 'ST HCIR HOME GALERIA GALAXY 1 SBY',
-      created: '00 Sept 2023',
-      status: 'Waiting OPS Approval',
-    ),
-    Transaction(
-      formId: 'H302SUPM102201',
-      category: 'Monthly',
-      location: 'ST HCIR HOME GALERIA GALAXY 1 SBY',
-      created: '00 Sept 2023',
-      status: 'Waiting OPS Approval',
-    ),
-    Transaction(
-      formId: 'H302SUPM102201',
-      category: 'Monthly',
-      location: 'ST HCIR HOME GALERIA GALAXY 1 SBY',
-      created: '00 Sept 2023',
-      status: 'Waiting OPS Approval',
-    ),
-    Transaction(
-      formId: 'H302SUPM102201',
-      category: 'Monthly',
-      location: 'ST HCIR HOME GALERIA GALAXY 1 SBY',
-      created: '00 Sept 2023',
-      status: 'Waiting OPS Approval',
-    ),
-    Transaction(
-      formId: 'H302SUPM102201',
-      category: 'Monthly',
-      location: 'ST HCIR HOME GALERIA GALAXY 1 SBY',
-      created: '00 Sept 2023',
-      status: 'Waiting OPS Approval',
-    ),
-    Transaction(
-      formId: 'H302SUPM102201',
-      category: 'Monthly',
-      location: 'ST HCIR HOME GALERIA GALAXY 1 SBY',
-      created: '00 Sept 2023',
-      status: 'Waiting OPS Approval',
-    ),
-  ];
+  List<Transaction> transactionList = [];
 
   countPagination(int totalRow) {
-    // print('total row -> $totalRow');
     setState(() {
       availablePage.clear();
       if (totalRow == 0) {
@@ -126,12 +64,34 @@ class _TransactionListPageState extends State<TransactionListPage> {
       for (var i = 0; i < totalPage.ceil(); i++) {
         availablePage.add(i + 1);
       }
-      // print(availablePage);
-      // print(showedPage);
+      showedPage = availablePage.take(5).toList();
     });
   }
 
-  Future updateList() async {}
+  Future updateList() async {
+    return apiService.getTransactionList(searchTerm).then((value) {
+      print(value);
+      if (value['Status'].toString() == "200") {
+        List listResult = value['Data']['List'];
+        resultRows = value['Data']['TotalRows'];
+        for (var element in listResult) {
+          transactionList.add(
+            Transaction(
+              formId: element["FormID"],
+              category: element["FormCategory"],
+              formType: element["FormType"],
+              siteName: element["SiteName"],
+              created: element["Created_At"],
+              status: element["Status"],
+            ),
+          );
+        }
+        setState(() {});
+      } else {}
+    }).onError((error, stackTrace) {
+      print(error);
+    });
+  }
 
   onTapHeader(String orderBy) {
     setState(() {
@@ -170,9 +130,22 @@ class _TransactionListPageState extends State<TransactionListPage> {
     setState(() {});
   }
 
+  Future initType() async {
+    if (widget.formType != "null") {
+      formType = widget.formType;
+    }
+    searchTerm.formType = formType;
+  }
+
   @override
   void initState() {
     super.initState();
+    initType().then((value) {
+      updateList().then((value) {
+        countPagination(resultRows);
+        setState(() {});
+      });
+    });
   }
 
   @override
@@ -212,7 +185,7 @@ class _TransactionListPageState extends State<TransactionListPage> {
                   typeList: typeList,
                   updateList: () {},
                   searchController: _search,
-                  type: widget.formType,
+                  type: formType,
                 ),
                 const SizedBox(
                   height: 30,
