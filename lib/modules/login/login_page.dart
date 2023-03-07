@@ -2,6 +2,7 @@ import 'package:atk_system_ga/constant/colors.dart';
 import 'package:atk_system_ga/constant/text_style.dart';
 import 'package:atk_system_ga/functions/api_request.dart';
 import 'package:atk_system_ga/widgets/buttons.dart';
+import 'package:atk_system_ga/widgets/dialogs.dart';
 import 'package:atk_system_ga/widgets/input_field.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hive/hive.dart';
@@ -33,7 +34,16 @@ class _LoginPageState extends State<LoginPage> {
         print(value);
         if (value['Status'].toString() == "200") {
           context.go('/home');
-        } else {}
+        } else {
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialogBlack(
+              title: value['Title'],
+              contentText: value['Message'],
+              isSuccess: false,
+            ),
+          );
+        }
       }).onError((error, stackTrace) {});
     }
   }

@@ -9,12 +9,14 @@ class TotalInfo extends StatelessWidget {
     this.number = 0,
     this.numberColor = davysGray,
     this.titleColor = davysGray,
-  });
+    Widget? icon,
+  }) : icon = icon ?? const SizedBox();
 
   String title;
   int number;
   Color numberColor;
   Color titleColor;
+  Widget? icon;
 
   @override
   Widget build(BuildContext context) {
@@ -32,13 +34,19 @@ class TotalInfo extends StatelessWidget {
         const SizedBox(
           height: 10,
         ),
-        Text(
-          formatCurrency.format(number),
-          style: helveticaText.copyWith(
-            fontSize: 20,
-            fontWeight: FontWeight.w700,
-            color: numberColor,
-          ),
+        Wrap(
+          spacing: 5,
+          children: [
+            Text(
+              formatCurrency.format(number),
+              style: helveticaText.copyWith(
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
+                color: numberColor,
+              ),
+            ),
+            icon!,
+          ],
         ),
       ],
     );

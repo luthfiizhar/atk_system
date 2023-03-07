@@ -9,6 +9,7 @@ class Item {
     this.reqQty = 0,
     this.reqPrice = 0,
     this.actualPrice = 0,
+    this.actualQty = 0,
   });
 
   String itemId;
@@ -20,15 +21,23 @@ class Item {
   int reqQty;
   int reqPrice;
   int actualPrice;
+  int actualQty;
 
   Map<String, dynamic> toJson() => {
         '"ItemID"': '"$itemId"',
         '"ItemName"': '"$itemName"',
-        '"Unit"': unit,
-        '"BasePrice"': basePrice,
-        '"Qty"': qty,
-        '"TotalPrice"': totalPrice
+        '"Price"': basePrice,
+        '"Quantity"': qty,
+        '"TotalPrice"': totalPrice,
+        '"ActualQuantity"': actualQty,
+        '"ActualPrice"': actualPrice
       };
+
+  // Map<String, dynamic> jsonSubmitSettlement() => {
+  //       '"ItemID"': '"$itemId"',
+  //       '"ActualQuantity"': actualQty,
+  //       '"ActualPrice"': actualPrice
+  //     };
 
   @override
   String toString() {

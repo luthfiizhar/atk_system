@@ -11,8 +11,8 @@ import 'package:atk_system_ga/widgets/input_field.dart';
 import 'package:atk_system_ga/widgets/total.dart';
 import 'package:flutter/material.dart';
 
-class ConfirmDialogSuppliesRequest extends StatefulWidget {
-  ConfirmDialogSuppliesRequest({
+class ConfirmDialogSettlementRequest extends StatefulWidget {
+  ConfirmDialogSettlementRequest({
     super.key,
     Transaction? transaction,
   }) : transaction = transaction ?? Transaction();
@@ -20,12 +20,12 @@ class ConfirmDialogSuppliesRequest extends StatefulWidget {
   Transaction transaction;
 
   @override
-  State<ConfirmDialogSuppliesRequest> createState() =>
-      _ConfirmDialogSuppliesRequestState();
+  State<ConfirmDialogSettlementRequest> createState() =>
+      _ConfirmDialogSettlementRequestState();
 }
 
-class _ConfirmDialogSuppliesRequestState
-    extends State<ConfirmDialogSuppliesRequest> {
+class _ConfirmDialogSettlementRequestState
+    extends State<ConfirmDialogSettlementRequest> {
   SearchTerm searchTerm = SearchTerm();
   ApiService apiService = ApiService();
 
@@ -35,6 +35,7 @@ class _ConfirmDialogSuppliesRequestState
 
   int totalBudget = 0;
   int totalCost = 0;
+  int totalActualCost = 0;
 
   List<Item> itemList = [];
   List<Attachment> attachment = [];
@@ -45,6 +46,8 @@ class _ConfirmDialogSuppliesRequestState
 
     for (var element in widget.transaction.items) {
       totalCost = totalCost + element.totalPrice;
+      totalActualCost =
+          totalActualCost + (element.actualPrice * element.actualQty);
     }
 
     itemList = widget.transaction.items;
@@ -74,8 +77,8 @@ class _ConfirmDialogSuppliesRequestState
       ),
       child: ConstrainedBox(
         constraints: const BoxConstraints(
-          minWidth: 915,
-          maxWidth: 915,
+          minWidth: 1150,
+          maxWidth: 1150,
         ),
         child: SingleChildScrollView(
           child: Container(
@@ -101,7 +104,7 @@ class _ConfirmDialogSuppliesRequestState
                     physics: const NeverScrollableScrollPhysics(),
                     itemCount: itemList.length,
                     itemBuilder: (context, index) =>
-                        DialogConfirmItemListContainer(
+                        DialogConfirmItemListContainerSettlementRequest(
                       index: index,
                       item: itemList[index],
                     ),
@@ -190,7 +193,7 @@ class _ConfirmDialogSuppliesRequestState
 
                           print(widget.transaction);
                           apiService
-                              .submitSuppliesRequest(widget.transaction)
+                              .submitSettlementRequest(widget.transaction)
                               .then((value) {
                             if (value["Status"].toString() == "200") {
                               showDialog(
@@ -307,10 +310,25 @@ class _ConfirmDialogSuppliesRequestState
           titleColor: orangeAccent,
         ),
         TotalInfo(
-          title: 'Total Cost',
+          title: 'Total Requested Cost',
           number: totalCost,
           titleColor: orangeAccent,
-        )
+        ),
+        TotalInfo(
+          title: 'Total Actual Cost',
+          number: totalActualCost,
+          titleColor: orangeAccent,
+          numberColor: totalActualCost > totalCost ? orangeAccent : greenAcent,
+          icon: totalActualCost > totalCost
+              ? const Icon(
+                  Icons.arrow_drop_up_sharp,
+                  color: orangeAccent,
+                )
+              : const Icon(
+                  Icons.arrow_drop_down_sharp,
+                  color: greenAcent,
+                ),
+        ),
       ],
     );
   }
@@ -320,8 +338,8 @@ class _ConfirmDialogSuppliesRequestState
       children: [
         Row(
           children: [
-            SizedBox(
-              width: 250,
+            Expanded(
+              flex: 2,
               child: InkWell(
                 onTap: () {
                   onTapHeader("ItemName");
@@ -342,20 +360,42 @@ class _ConfirmDialogSuppliesRequestState
                 ),
               ),
             ),
-            Expanded(
+            SizedBox(
+              width: 135,
               child: InkWell(
                 onTap: () {
-                  onTapHeader("BasePrice");
+                  onTapHeader("ReqQuantity");
                 },
                 child: Row(
                   children: [
                     Expanded(
                       child: Text(
-                        'Base Price',
+                        'Req. Qty',
                         style: headerTableTextStyle,
                       ),
                     ),
-                    iconSort("BasePrice"),
+                    iconSort("ReqQuantity"),
+                    const SizedBox(
+                      width: 20,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Expanded(
+              child: InkWell(
+                onTap: () {
+                  onTapHeader("ReqPrice");
+                },
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        'Req. Price',
+                        style: headerTableTextStyle,
+                      ),
+                    ),
+                    iconSort("ReqPrice"),
                     const SizedBox(
                       width: 20,
                     ),
@@ -364,20 +404,20 @@ class _ConfirmDialogSuppliesRequestState
               ),
             ),
             SizedBox(
-              width: 125,
+              width: 150,
               child: InkWell(
                 onTap: () {
-                  onTapHeader("Qty");
+                  onTapHeader("ActualQuantity");
                 },
                 child: Row(
                   children: [
                     Expanded(
                       child: Text(
-                        'QTY',
+                        'Actual Qty',
                         style: headerTableTextStyle,
                       ),
                     ),
-                    iconSort("Qty"),
+                    iconSort("ActualQuantity"),
                     const SizedBox(
                       width: 20,
                     ),
@@ -388,17 +428,17 @@ class _ConfirmDialogSuppliesRequestState
             Expanded(
               child: InkWell(
                 onTap: () {
-                  onTapHeader("TotalPrice");
+                  onTapHeader("ActualPrice");
                 },
                 child: Row(
                   children: [
                     Expanded(
                       child: Text(
-                        'Total Price',
+                        'Actual Price',
                         style: headerTableTextStyle,
                       ),
                     ),
-                    iconSort("TotalPrice"),
+                    iconSort("ActualPrice"),
                     const SizedBox(
                       width: 20,
                     ),
@@ -467,8 +507,8 @@ class _ConfirmDialogSuppliesRequestState
   }
 }
 
-class DialogConfirmItemListContainer extends StatelessWidget {
-  DialogConfirmItemListContainer({
+class DialogConfirmItemListContainerSettlementRequest extends StatelessWidget {
+  DialogConfirmItemListContainerSettlementRequest({
     super.key,
     Item? item,
     this.index = 0,
@@ -493,21 +533,15 @@ class DialogConfirmItemListContainer extends StatelessWidget {
               ),
         Row(
           children: [
-            SizedBox(
-              width: 250,
+            Expanded(
+              flex: 2,
               child: Text(
                 item.itemName,
                 style: bodyTableNormalText,
               ),
             ),
-            Expanded(
-              child: Text(
-                formatCurrency.format(item.basePrice),
-                style: bodyTableLightText,
-              ),
-            ),
             SizedBox(
-              width: 125,
+              width: 135,
               child: Text(
                 item.qty.toString(),
                 style: bodyTableLightText,
@@ -515,7 +549,20 @@ class DialogConfirmItemListContainer extends StatelessWidget {
             ),
             Expanded(
               child: Text(
-                formatCurrency.format(item.totalPrice),
+                formatCurrency.format(item.basePrice),
+                style: bodyTableNormalText,
+              ),
+            ),
+            SizedBox(
+              width: 150,
+              child: Text(
+                item.actualQty.toString(),
+                style: bodyTableLightText,
+              ),
+            ),
+            Expanded(
+              child: Text(
+                formatCurrency.format(item.actualPrice),
                 style: bodyTableLightText,
               ),
             ),

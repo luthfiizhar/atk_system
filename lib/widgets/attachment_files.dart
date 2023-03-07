@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:atk_system_ga/constant/colors.dart';
 import 'package:atk_system_ga/constant/text_style.dart';
+import 'package:atk_system_ga/models/transaction_class.dart';
 import 'package:atk_system_ga/widgets/buttons.dart';
 import 'package:atk_system_ga/widgets/dialogs.dart';
 import 'package:file_picker/file_picker.dart';
@@ -12,12 +13,18 @@ import 'package:flutter/material.dart';
 class AttachmentFiles extends StatefulWidget {
   AttachmentFiles({
     super.key,
-    List? files,
+    List<Attachment>? files,
     this.addFiles,
-  }) : files = files ?? [];
+    Transaction? transaction,
+    List<TransactionActivity>? activity,
+  })  : transaction = transaction ?? Transaction(),
+        files = files ?? [],
+        activity = activity ?? [];
 
-  List files;
+  List<Attachment> files;
   Function? addFiles;
+  Transaction transaction;
+  List<TransactionActivity> activity;
 
   @override
   State<AttachmentFiles> createState() => _AttachmentFilesState();
@@ -26,7 +33,7 @@ class AttachmentFiles extends StatefulWidget {
 class _AttachmentFilesState extends State<AttachmentFiles> {
   String base64 = "";
   String fileName = "";
-  List files = [];
+  List<Attachment> files = [];
 
   Future getFiles() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
@@ -35,10 +42,10 @@ class _AttachmentFilesState extends State<AttachmentFiles> {
       allowedExtensions: ['pdf', 'jpg', 'png'],
     );
     if (result != null) {
-      // print(result);
+      print(result.files.first.size);
 
       for (var element in result.files) {
-        if (element.size > 2000) {
+        if (element.size > 200000) {
           showDialog(
             context: context,
             builder: (context) => const AlertDialogBlack(
@@ -52,12 +59,24 @@ class _AttachmentFilesState extends State<AttachmentFiles> {
           String ext = element.extension!;
           String fileType = "image";
           if (ext == "pdf") {
-            fileType = "file";
+            fileType = "application";
           }
           String base64 =
-              "data:$fileType/$ext;base64,${Base64Encoder().convert(element.bytes!).toString()}";
-          widget.files.add(base64);
-          print(widget.files);
+              "data:$fileType/$ext;base64,${const Base64Encoder().convert(element.bytes!).toString()}";
+          widget.files.add(Attachment(
+            file: base64,
+            fileName: element.name,
+            type: ext,
+          ));
+          files.add(Attachment(
+            file: base64,
+            fileName: element.name,
+            type: ext,
+          ));
+          // widget.activity.first.submitAttachment.add(base64);
+          // widget.transaction.activity.first.submitAttachment.add(base64);
+          // print(widget.files);
+          setState(() {});
         }
       }
 
@@ -66,6 +85,16 @@ class _AttachmentFilesState extends State<AttachmentFiles> {
     } else {
       // User canceled the picker
     }
+  }
+
+  removeFile(int index) {
+    files.removeAt(index);
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    super.initState();
   }
 
   @override
@@ -98,32 +127,23 @@ class _AttachmentFilesState extends State<AttachmentFiles> {
           height: 16,
         ),
         Wrap(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                InkWell(
-                  onTap: () {},
-                  child: const Icon(
-                    Icons.close_sharp,
-                    size: 16,
+          spacing: 16,
+          runSpacing: 16,
+          // direction: Axis.vertical,
+          children: files
+              .asMap()
+              .map(
+                (index, element) => MapEntry(
+                  index,
+                  AttachmentItemText(
+                    index: index,
+                    fileName: element.fileName,
+                    remove: removeFile,
                   ),
                 ),
-                const SizedBox(
-                  width: 10,
-                ),
-                Expanded(
-                    child: Text(
-                  'No file',
-                  style: helveticaText.copyWith(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w300,
-                    color: sonicSilver,
-                  ),
-                ))
-              ],
-            ),
-          ],
+              )
+              .values
+              .toList(),
         ),
         const SizedBox(
           height: 16,
@@ -132,10 +152,53 @@ class _AttachmentFilesState extends State<AttachmentFiles> {
           text: 'Attach Picture',
           disabled: false,
           padding: ButtonSize().mediumSize(),
-          onTap: () async {
+          onTap: () {
             getFiles();
           },
         ),
+      ],
+    );
+  }
+}
+
+class AttachmentItemText extends StatelessWidget {
+  AttachmentItemText({
+    super.key,
+    this.index = 0,
+    this.fileName = "",
+    this.remove,
+  });
+
+  String fileName;
+  Function? remove;
+  int index;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        InkWell(
+          onTap: () {
+            remove!(index);
+          },
+          child: const Icon(
+            Icons.close_sharp,
+            size: 16,
+          ),
+        ),
+        const SizedBox(
+          width: 10,
+        ),
+        Expanded(
+            child: Text(
+          fileName,
+          style: helveticaText.copyWith(
+            fontSize: 16,
+            fontWeight: FontWeight.w300,
+            color: sonicSilver,
+          ),
+        ))
       ],
     );
   }

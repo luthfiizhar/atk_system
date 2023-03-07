@@ -8,8 +8,8 @@ import 'package:atk_system_ga/widgets/dialogs.dart';
 import 'package:atk_system_ga/widgets/input_field.dart';
 import 'package:flutter/material.dart';
 
-class ApproveDialogSuppliesReq extends StatefulWidget {
-  ApproveDialogSuppliesReq({
+class SendBackDialog extends StatefulWidget {
+  SendBackDialog({
     super.key,
     Transaction? transaction,
   }) : transaction = transaction ?? Transaction();
@@ -17,11 +17,10 @@ class ApproveDialogSuppliesReq extends StatefulWidget {
   Transaction transaction;
 
   @override
-  State<ApproveDialogSuppliesReq> createState() =>
-      _ApproveDialogSuppliesReqState();
+  State<SendBackDialog> createState() => _SendBackDialogState();
 }
 
-class _ApproveDialogSuppliesReqState extends State<ApproveDialogSuppliesReq> {
+class _SendBackDialogState extends State<SendBackDialog> {
   TextEditingController _comment = TextEditingController();
 
   ApiService apiService = ApiService();
@@ -70,7 +69,7 @@ class _ApproveDialogSuppliesReqState extends State<ApproveDialogSuppliesReq> {
                     height: 15,
                   ),
                   Text(
-                    'Do you want to confirm this request?',
+                    'Do you want to send back this request?',
                     style: helveticaText.copyWith(
                       fontSize: 20,
                       fontWeight: FontWeight.w300,
@@ -154,9 +153,7 @@ class _ApproveDialogSuppliesReqState extends State<ApproveDialogSuppliesReq> {
                           }
 
                           print(widget.transaction);
-                          apiService
-                              .approveSuppliesRequest(widget.transaction)
-                              .then((value) {
+                          apiService.sendBack(widget.transaction).then((value) {
                             if (value["Status"].toString() == "200") {
                               showDialog(
                                 context: context,
@@ -216,7 +213,7 @@ class _ApproveDialogSuppliesReqState extends State<ApproveDialogSuppliesReq> {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Text(
-          'Approval Confirmation',
+          'Send Back Confirmation',
           style: dialogTitleText,
         ),
         Text(

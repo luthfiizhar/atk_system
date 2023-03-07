@@ -177,7 +177,7 @@ class _HomePageState extends State<HomePage> {
             context.goNamed(
               'transaction_list',
               // params: {"type": "Request"},
-              extra: "Request",
+              extra: "Supply Request",
             );
           },
         ),

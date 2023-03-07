@@ -1,10 +1,12 @@
 import 'package:atk_system_ga/constant/colors.dart';
 import 'package:atk_system_ga/constant/constraints.dart';
 import 'package:atk_system_ga/constant/text_style.dart';
+import 'package:atk_system_ga/functions/api_request.dart';
 import 'package:atk_system_ga/layout/layout_page.dart';
 import 'package:atk_system_ga/models/item_class.dart';
 import 'package:atk_system_ga/models/search_term.dart';
 import 'package:atk_system_ga/models/transaction_class.dart';
+import 'package:atk_system_ga/modules/settlement_request/dialog_confirm_settlement_request.dart';
 import 'package:atk_system_ga/modules/settlement_request/settlement_request_item_list_container.dart';
 import 'package:atk_system_ga/modules/supplies_request/supplies_item_list_container.dart';
 import 'package:atk_system_ga/widgets/buttons.dart';
@@ -13,9 +15,15 @@ import 'package:atk_system_ga/widgets/total.dart';
 import 'package:atk_system_ga/widgets/transaction_activity_section.dart';
 import 'package:atk_system_ga/widgets/transaction_info_section.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class SettlementRequestPage extends StatefulWidget {
-  SettlementRequestPage({super.key});
+  SettlementRequestPage({
+    super.key,
+    this.formId = "",
+  });
+
+  String formId;
 
   @override
   State<SettlementRequestPage> createState() => _SettlementRequestPageState();
@@ -25,32 +33,34 @@ class _SettlementRequestPageState extends State<SettlementRequestPage> {
   TextEditingController _search = TextEditingController();
   SearchTerm searchTerm = SearchTerm();
 
-  List<TransactionActivity> transactionActivity = [
-    TransactionActivity(
-        empName: "Luthfi Izhariman",
-        status: "Draft Created",
-        date: "00:00 - 31 Sept 2023",
-        comment:
-            "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut accumsan enim est, sit amet tincidunt odio placerat ut. Donec vel sem non sapien congue venenatis in eu elit. Ut metus felis, ullamcorper id purus et, sollicitudin semper dolor.",
-        attachment: [
-          Attachment(file: "test", type: "image"),
-          Attachment(file: "test", type: "pdf")
-        ]),
-    TransactionActivity(
-        empName: "Luthfi Izhariman",
-        status: "Draft Created",
-        date: "00:00 - 31 Sept 2023",
-        comment:
-            "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut accumsan enim est, sit amet tincidunt odio placerat ut. Donec vel sem non sapien congue venenatis in eu elit. Ut metus felis, ullamcorper id purus et, sollicitudin semper dolor.",
-        attachment: [
-          Attachment(file: "test", type: "image"),
-          Attachment(file: "test", type: "pdf")
-        ])
-  ];
+  ApiService apiService = ApiService();
+  Transaction transaction = Transaction();
 
-  int totalBudget = 800000000000;
-  int totalReqCost = 90000000000;
-  int totalActualCost = 800000000000;
+  List<TransactionActivity> transactionActivity = [];
+  List<Item> items = [];
+
+  GlobalKey actualCostKey = GlobalKey();
+
+  int totalBudget = 0;
+  int totalReqCost = 0;
+  int totalActualCost = 0;
+
+  onChangeQtyAndPrice(int index, String qtyValue, String priceValue) {
+    if (priceValue.contains(".")) {
+      transaction.items[index].actualPrice =
+          int.parse(priceValue.replaceAll(".", ""));
+    }
+    transaction.items[index].actualQty = int.parse(qtyValue);
+
+    totalActualCost = 0;
+    for (var element in transaction.items) {
+      totalActualCost =
+          totalActualCost + (element.actualQty * element.actualPrice);
+    }
+    // setState(() {});
+    transaction.actualTotalCost = totalActualCost;
+    actualCostKey.currentState!.setState(() {});
+  }
 
   onTapHeader(String orderBy) {
     setState(() {
@@ -69,9 +79,61 @@ class _SettlementRequestPageState extends State<SettlementRequestPage> {
     });
   }
 
+  Future initDetailSettlement() {
+    return apiService.getSettlementDetail(widget.formId).then((value) {
+      if (value['Status'].toString() == "200") {
+        List resultItems = value["Data"]["Items"];
+        List resultActivity = value["Data"]["Comments"];
+
+        transaction.formId = value["Data"]["FormID"];
+        transaction.siteName = value["Data"]["SiteName"];
+        transaction.siteArea = value["Data"]["SiteArea"];
+        transaction.budget = value["Data"]["Budget"];
+        transaction.orderPeriod = value["Data"]["OrderPeriod"];
+        transaction.month = value["Data"]["Month"];
+        transaction.status = value["Data"]["Status"];
+        totalBudget = value['Data']["Budget"];
+        totalReqCost = value['Data']['TotalCost'];
+
+        for (var element in resultItems) {
+          items.add(
+            Item(
+              itemId: element['ItemID'].toString(),
+              itemName: element['ItemName'],
+              basePrice: element['ItemPrice'],
+              qty: element['Quantity'],
+              totalPrice: element['TotalPrice'],
+              actualPrice: element['ActualPrice'],
+              actualQty: element['ActualQuantity'],
+            ),
+          );
+        }
+
+        for (var element in resultActivity) {
+          transactionActivity.add(
+            TransactionActivity(
+              empName: element["EmpName"],
+              comment: element["CommentText"],
+              date: element["CommentDate"],
+              status: element["CommentDescription"],
+              photo: element["Photo"],
+            ),
+          );
+        }
+        transaction.items = items;
+        setState(() {});
+      } else {
+        print("not success");
+      }
+    }).onError((error, stackTrace) {
+      print(error);
+    });
+  }
+
   @override
   void initState() {
     super.initState();
+    initDetailSettlement();
   }
 
   @override
@@ -100,20 +162,14 @@ class _SettlementRequestPageState extends State<SettlementRequestPage> {
                   height: 20,
                 ),
                 ListView.builder(
-                  itemCount: 5,
+                  itemCount: transaction.items.length,
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
                   itemBuilder: (context, index) {
                     return SettlementRequestItemListContainer(
                       index: index,
-                      item: Item(
-                        itemName: 'REFILL SPIDOL WHITEBOARD WARNA HITAM',
-                        // unit: 'EA',
-                        // basePrice: 100000,
-                        // totalPrice: 100000,
-                        reqQty: 200,
-                        reqPrice: 800000,
-                      ),
+                      item: transaction.items[index],
+                      onChangedValue: onChangeQtyAndPrice,
                     );
                   },
                 ),
@@ -161,10 +217,16 @@ class _SettlementRequestPageState extends State<SettlementRequestPage> {
                       disabled: false,
                       padding: ButtonSize().mediumSize(),
                       onTap: () {
-                        // showDialog(
-                        //   context: context,
-                        //   builder: (context) => ConfirmDialogSuppliesRequest(),
-                        // );
+                        showDialog(
+                          context: context,
+                          builder: (context) => ConfirmDialogSettlementRequest(
+                            transaction: transaction,
+                          ),
+                        ).then((value) {
+                          if (value) {
+                            context.goNamed('home');
+                          }
+                        });
                       },
                     ),
                   ],
@@ -187,6 +249,7 @@ class _SettlementRequestPageState extends State<SettlementRequestPage> {
       children: [
         TransactionInfoSection(
           title: "Order Settlement",
+          transaction: transaction,
         ),
         SizedBox(
           width: 220,
@@ -220,7 +283,7 @@ class _SettlementRequestPageState extends State<SettlementRequestPage> {
                   children: [
                     Expanded(
                       child: Text(
-                        'ItemName',
+                        'Item Name',
                         style: headerTableTextStyle,
                       ),
                     ),
@@ -349,11 +412,16 @@ class _SettlementRequestPageState extends State<SettlementRequestPage> {
         const SizedBox(
           width: 60,
         ),
-        TotalInfo(
-          title: 'Total Actual Cost',
-          number: totalActualCost,
-          numberColor: greenAcent,
-        ),
+        StatefulBuilder(
+            key: actualCostKey,
+            builder: (context, setstate) {
+              return TotalInfo(
+                title: 'Total Actual Cost',
+                number: totalActualCost,
+                numberColor:
+                    totalActualCost > totalReqCost ? orangeAccent : greenAcent,
+              );
+            }),
       ],
     );
   }

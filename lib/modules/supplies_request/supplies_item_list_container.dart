@@ -35,7 +35,7 @@ class _SuppliesItemListContainerState extends State<SuppliesItemListContainer> {
   void initState() {
     super.initState();
 
-    widget._qty.text = "0";
+    widget._qty.text = widget.item.qty.toString();
     widget._qty.addListener(() {
       if (widget._qty.text == "") {
         widget._qty.text = "0";

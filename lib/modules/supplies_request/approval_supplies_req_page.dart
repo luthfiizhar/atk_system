@@ -1,6 +1,7 @@
 import 'package:atk_system_ga/constant/colors.dart';
 import 'package:atk_system_ga/constant/constraints.dart';
 import 'package:atk_system_ga/constant/text_style.dart';
+import 'package:atk_system_ga/functions/api_request.dart';
 import 'package:atk_system_ga/layout/layout_page.dart';
 import 'package:atk_system_ga/models/item_class.dart';
 import 'package:atk_system_ga/models/search_term.dart';
@@ -10,12 +11,15 @@ import 'package:atk_system_ga/modules/supplies_request/approve_dialog_supplies_r
 import 'package:atk_system_ga/modules/supplies_request/confirm_dialog_supplies_req.dart';
 import 'package:atk_system_ga/modules/transaction_list/transaction_list_container.dart';
 import 'package:atk_system_ga/widgets/buttons.dart';
+import 'package:atk_system_ga/widgets/dialogs.dart';
 import 'package:atk_system_ga/widgets/search_input_field.dart';
+import 'package:atk_system_ga/widgets/send_back_dialog.dart';
 import 'package:atk_system_ga/widgets/total.dart';
 import 'package:atk_system_ga/widgets/transaction_activity_list.dart';
 import 'package:atk_system_ga/widgets/transaction_activity_section.dart';
 import 'package:atk_system_ga/widgets/transaction_info_section.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class ApprovalSuppliesReqPage extends StatefulWidget {
   ApprovalSuppliesReqPage({
@@ -33,9 +37,17 @@ class ApprovalSuppliesReqPage extends StatefulWidget {
 class _ApprovalSuppliesReqPageState extends State<ApprovalSuppliesReqPage> {
   TextEditingController _search = TextEditingController();
   SearchTerm searchTerm = SearchTerm();
+  ApiService apiService = ApiService();
 
-  int totalBudget = 800000000000;
-  int totalCost = 8000000000;
+  Transaction transaction = Transaction();
+  List<TransactionActivity> transactionActivity = [];
+
+  List<Item> items = [];
+
+  bool isLoadingDetail = true;
+
+  int totalBudget = 0;
+  int totalCost = 0;
 
   onTapHeader(String orderBy) {
     setState(() {
@@ -54,9 +66,64 @@ class _ApprovalSuppliesReqPageState extends State<ApprovalSuppliesReqPage> {
     });
   }
 
+  Future initDetailFilled() {
+    return apiService.getFormDetailFilled(widget.formId).then((value) {
+      print(value);
+      if (value['Status'].toString() == "200") {
+        List resultItems = value["Data"]["Items"];
+        List resultActivity = value["Data"]["Comments"];
+
+        transaction.formId = value["Data"]["FormID"];
+        transaction.siteName = value["Data"]["SiteName"];
+        transaction.siteArea = value["Data"]["SiteArea"];
+        transaction.budget = value["Data"]["Budget"];
+        transaction.orderPeriod = value["Data"]["OrderPeriod"];
+        transaction.month = value["Data"]["Month"];
+        transaction.status = value["Data"]["Status"];
+        totalBudget = value['Data']["Budget"];
+        totalCost = value['Data']['TotalCost'];
+
+        for (var element in resultItems) {
+          items.add(
+            Item(
+              itemId: element['ItemID'].toString(),
+              itemName: element['ItemName'],
+              unit: element['Unit'],
+              basePrice: element['BasePrice'],
+              qty: element['Quantity'],
+              totalPrice: element['TotalPrice'],
+            ),
+          );
+        }
+
+        for (var element in resultActivity) {
+          transactionActivity.add(
+            TransactionActivity(
+              empName: element["EmpName"],
+              comment: element["CommentText"] ?? "-",
+              date: element["CommentDate"],
+              status: element["CommentDescription"],
+              photo: element["Photo"],
+            ),
+          );
+        }
+        setState(() {});
+      } else {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialogBlack(
+            title: value['Title'],
+            contentText: value['Message'],
+          ),
+        );
+      }
+    });
+  }
+
   @override
   void initState() {
     super.initState();
+    initDetailFilled();
   }
 
   @override
@@ -84,18 +151,13 @@ class _ApprovalSuppliesReqPageState extends State<ApprovalSuppliesReqPage> {
                     height: 20,
                   ),
                   ListView.builder(
-                    itemCount: 5,
+                    itemCount: items.length,
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
                     itemBuilder: (context, index) {
                       return ApprovalSuppliesItemListContainer(
                         index: index,
-                        item: Item(
-                          itemName: 'REFILL SPIDOL WHITEBOARD WARNA HITAM',
-                          unit: 'EA',
-                          basePrice: 100000,
-                          totalPrice: 100000,
-                        ),
+                        item: items[index],
                       );
                     },
                   ),
@@ -139,18 +201,9 @@ class _ApprovalSuppliesReqPageState extends State<ApprovalSuppliesReqPage> {
                   //   ],
                   // ),
                   // commentSection(),
-                  TransactionActivitySection(transactionActivity: [
-                    TransactionActivity(
-                        empName: "Luthfi Izhariman",
-                        status: "Draft Created",
-                        date: "00:00 - 31 Sept 2023",
-                        comment:
-                            "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut accumsan enim est, sit amet tincidunt odio placerat ut. Donec vel sem non sapien congue venenatis in eu elit. Ut metus felis, ullamcorper id purus et, sollicitudin semper dolor.",
-                        attachment: [
-                          Attachment(file: "test", type: "image"),
-                          Attachment(file: "test", type: "pdf")
-                        ])
-                  ]),
+                  TransactionActivitySection(
+                    transactionActivity: transactionActivity,
+                  ),
                   const Padding(
                     padding: EdgeInsets.only(
                       top: 23,
@@ -168,7 +221,18 @@ class _ApprovalSuppliesReqPageState extends State<ApprovalSuppliesReqPage> {
                         text: 'Send Back',
                         disabled: false,
                         padding: ButtonSize().mediumSize(),
-                        onTap: () {},
+                        onTap: () {
+                          showDialog(
+                            context: context,
+                            builder: (context) => SendBackDialog(
+                              transaction: transaction,
+                            ),
+                          ).then((value) {
+                            if (value) {
+                              context.goNamed('home');
+                            }
+                          });
+                        },
                       ),
                       const SizedBox(
                         width: 20,
@@ -180,8 +244,14 @@ class _ApprovalSuppliesReqPageState extends State<ApprovalSuppliesReqPage> {
                         onTap: () {
                           showDialog(
                             context: context,
-                            builder: (context) => ApproveDialogSuppliesReq(),
-                          );
+                            builder: (context) => ApproveDialogSuppliesReq(
+                              transaction: transaction,
+                            ),
+                          ).then((value) {
+                            if (value) {
+                              context.goNamed('home');
+                            }
+                          });
                         },
                       ),
                     ],
@@ -203,6 +273,7 @@ class _ApprovalSuppliesReqPageState extends State<ApprovalSuppliesReqPage> {
       children: [
         TransactionInfoSection(
           title: "Order Supplies Approval",
+          transaction: transaction,
         ),
         SizedBox(
           width: 220,
@@ -431,22 +502,13 @@ class _ApprovalSuppliesReqPageState extends State<ApprovalSuppliesReqPage> {
           height: 20,
         ),
         ListView.builder(
-          itemCount: 5,
+          itemCount: transactionActivity.length,
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           itemBuilder: (context, index) {
             return TransactionActivityListContainer(
               index: index,
-              transactionActivity: TransactionActivity(
-                  empName: "Luthfi Izhariman",
-                  status: "Draft Created",
-                  date: "00:00 - 31 Sept 2023",
-                  comment:
-                      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut accumsan enim est, sit amet tincidunt odio placerat ut. Donec vel sem non sapien congue venenatis in eu elit. Ut metus felis, ullamcorper id purus et, sollicitudin semper dolor.",
-                  attachment: [
-                    Attachment(file: "test", type: "image"),
-                    Attachment(file: "test", type: "pdf")
-                  ]),
+              transactionActivity: transactionActivity[index],
             );
           },
         ),

@@ -8,8 +8,8 @@ import 'package:atk_system_ga/widgets/dialogs.dart';
 import 'package:atk_system_ga/widgets/input_field.dart';
 import 'package:flutter/material.dart';
 
-class ApproveDialogSuppliesReq extends StatefulWidget {
-  ApproveDialogSuppliesReq({
+class ApproveSettlementDialog extends StatefulWidget {
+  ApproveSettlementDialog({
     super.key,
     Transaction? transaction,
   }) : transaction = transaction ?? Transaction();
@@ -17,11 +17,11 @@ class ApproveDialogSuppliesReq extends StatefulWidget {
   Transaction transaction;
 
   @override
-  State<ApproveDialogSuppliesReq> createState() =>
-      _ApproveDialogSuppliesReqState();
+  State<ApproveSettlementDialog> createState() =>
+      _ApproveSettlementDialogState();
 }
 
-class _ApproveDialogSuppliesReqState extends State<ApproveDialogSuppliesReq> {
+class _ApproveSettlementDialogState extends State<ApproveSettlementDialog> {
   TextEditingController _comment = TextEditingController();
 
   ApiService apiService = ApiService();
@@ -155,7 +155,7 @@ class _ApproveDialogSuppliesReqState extends State<ApproveDialogSuppliesReq> {
 
                           print(widget.transaction);
                           apiService
-                              .approveSuppliesRequest(widget.transaction)
+                              .approveSettlementRequest(widget.transaction)
                               .then((value) {
                             if (value["Status"].toString() == "200") {
                               showDialog(

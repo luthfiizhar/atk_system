@@ -41,11 +41,11 @@ class _FilterSearchBarTransactionListState
     switch (type) {
       case "Supply Request":
         changeHighlight("Supply Request");
-        // widget.updateList!(type);
+        widget.updateList!(type);
         break;
       case "Settlement":
         changeHighlight("Settlement");
-        // widget.updateList!(type);
+        widget.updateList!(type);
         break;
     }
   }

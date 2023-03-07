@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:atk_system_ga/functions/api_link.dart';
 import 'package:atk_system_ga/main.dart';
 import 'package:atk_system_ga/models/search_term.dart';
+import 'package:atk_system_ga/models/supplies_request_class.dart';
+import 'package:atk_system_ga/models/transaction_class.dart';
 import 'package:hive/hive.dart';
 import 'package:http/http.dart' as http;
 
@@ -15,8 +17,6 @@ class ApiService {
     var url =
         Uri.https(urlConstant.apiUrl, '/GSS_Backend/public/api/user/login');
     Map<String, String> requestHeader = {
-      // 'Authorization': 'Bearer $tokenDummy',
-      // 'AppToken': 'mDMgDh4Eq9B0KRJLSOFI',
       'Content-Type': 'application/json',
     };
 
@@ -104,7 +104,6 @@ class ApiService {
         Uri.https(urlConstant.apiUrl, '/GSS_Backend/public/api/form/list');
     Map<String, String> requestHeader = {
       'Authorization': 'Bearer $jwt',
-      // 'AppToken': 'mDMgDh4Eq9B0KRJLSOFI',
       'Content-Type': 'application/json',
     };
 
@@ -142,7 +141,6 @@ class ApiService {
         urlConstant.apiUrl, '/GSS_Backend/public/api/form/supply/transaction');
     Map<String, String> requestHeader = {
       'Authorization': 'Bearer $jwt',
-      // 'AppToken': 'mDMgDh4Eq9B0KRJLSOFI',
       'Content-Type': 'application/json',
     };
 
@@ -180,6 +178,230 @@ class ApiService {
 
     try {
       var response = await http.get(url, headers: requestHeader);
+
+      var data = json.decode(response.body);
+
+      return data;
+    } on Error catch (e) {
+      return e;
+    }
+  }
+
+  Future getFormDetailFilled(String formId) async {
+    // print(bookingId);
+    var box = await Hive.openBox('userLogin');
+    var jwt = box.get('jwTtoken') != "" ? box.get('jwtToken') : "";
+
+    // jwt = jwtToken;
+
+    var url = Uri.https(urlConstant.apiUrl,
+        '/GSS_Backend/public/api/form/supply/filled/$formId');
+    Map<String, String> requestHeader = {
+      'Authorization': 'Bearer $jwt',
+      'Content-Type': 'application/json',
+    };
+
+    try {
+      var response = await http.get(url, headers: requestHeader);
+
+      var data = json.decode(response.body);
+
+      return data;
+    } on Error catch (e) {
+      return e;
+    }
+  }
+
+  Future submitSuppliesRequest(Transaction transaction) async {
+    // print(bookingId);
+    var box = await Hive.openBox('userLogin');
+    var jwt = box.get('jwTtoken') != "" ? box.get('jwtToken') : "";
+
+    // jwt = jwtToken;
+
+    var url = Uri.https(
+        urlConstant.apiUrl, '/GSS_Backend/public/api/form/supply/submit');
+    Map<String, String> requestHeader = {
+      'Authorization': 'Bearer $jwt',
+      'Content-Type': 'application/json',
+    };
+
+    var bodySend = """
+    {
+        "FormID": "${transaction.formId}",
+        "TotalCost": ${transaction.totalCost},
+        "Items": ${transaction.items},
+        "Comment" : "${transaction.activity.first.comment}",
+        "Attachments" : ${transaction.activity.first.attachment}
+    }
+    """;
+    // print(bodySend);
+    try {
+      var response =
+          await http.post(url, headers: requestHeader, body: bodySend);
+
+      var data = json.decode(response.body);
+
+      return data;
+    } on Error catch (e) {
+      return e;
+    }
+  }
+
+  Future approveSuppliesRequest(Transaction transaction) async {
+    // print(bookingId);
+    var box = await Hive.openBox('userLogin');
+    var jwt = box.get('jwTtoken') != "" ? box.get('jwtToken') : "";
+
+    // jwt = jwtToken;
+
+    var url = Uri.https(
+        urlConstant.apiUrl, '/GSS_Backend/public/api/form/supply/confirm');
+    Map<String, String> requestHeader = {
+      'Authorization': 'Bearer $jwt',
+      'Content-Type': 'application/json',
+    };
+
+    var bodySend = """
+    {
+        "FormID": "${transaction.formId}",
+        "Comment" : "${transaction.activity.first.comment}",
+        "Attachments" : ${transaction.activity.first.attachment}
+    }
+    """;
+    // print(bodySend);
+    try {
+      var response =
+          await http.post(url, headers: requestHeader, body: bodySend);
+
+      var data = json.decode(response.body);
+
+      return data;
+    } on Error catch (e) {
+      return e;
+    }
+  }
+
+  Future getSettlementDetail(String formId) async {
+    // print(bookingId);
+    var box = await Hive.openBox('userLogin');
+    var jwt = box.get('jwTtoken') != "" ? box.get('jwtToken') : "";
+
+    // jwt = jwtToken;
+
+    var url = Uri.https(
+        urlConstant.apiUrl, '/GSS_Backend/public/api/form/settlement/$formId');
+    Map<String, String> requestHeader = {
+      'Authorization': 'Bearer $jwt',
+      'Content-Type': 'application/json',
+    };
+
+    try {
+      var response = await http.get(url, headers: requestHeader);
+
+      var data = json.decode(response.body);
+
+      return data;
+    } on Error catch (e) {
+      return e;
+    }
+  }
+
+  Future submitSettlementRequest(Transaction transaction) async {
+    // print(bookingId);
+    var box = await Hive.openBox('userLogin');
+    var jwt = box.get('jwTtoken') != "" ? box.get('jwtToken') : "";
+
+    // jwt = jwtToken;
+
+    var url = Uri.https(
+        urlConstant.apiUrl, '/GSS_Backend/public/api/form/settlement/submit');
+    Map<String, String> requestHeader = {
+      'Authorization': 'Bearer $jwt',
+      'Content-Type': 'application/json',
+    };
+
+    var bodySend = """
+    {
+        "FormID": "${transaction.formId}",
+        "TotalActualCost": ${transaction.actualTotalCost},
+        "Items": ${transaction.items},
+        "Comment" : "${transaction.activity.first.comment}",
+        "Attachments" : ${transaction.activity.first.attachment}
+    }
+    """;
+    print(bodySend);
+    try {
+      var response =
+          await http.post(url, headers: requestHeader, body: bodySend);
+
+      var data = json.decode(response.body);
+
+      return data;
+    } on Error catch (e) {
+      return e;
+    }
+  }
+
+  Future approveSettlementRequest(Transaction transaction) async {
+    // print(bookingId);
+    var box = await Hive.openBox('userLogin');
+    var jwt = box.get('jwTtoken') != "" ? box.get('jwtToken') : "";
+
+    // jwt = jwtToken;
+
+    var url = Uri.https(
+        urlConstant.apiUrl, '/GSS_Backend/public/api/form/supply/confirm');
+    Map<String, String> requestHeader = {
+      'Authorization': 'Bearer $jwt',
+      'Content-Type': 'application/json',
+    };
+
+    var bodySend = """
+    {
+        "FormID": "${transaction.formId}",
+        "Comment" : "${transaction.activity.first.comment}",
+        "Attachments" : ${transaction.activity.first.attachment}
+    }
+    """;
+    // print(bodySend);
+    try {
+      var response =
+          await http.post(url, headers: requestHeader, body: bodySend);
+
+      var data = json.decode(response.body);
+
+      return data;
+    } on Error catch (e) {
+      return e;
+    }
+  }
+
+  Future sendBack(Transaction transaction) async {
+    // print(bookingId);
+    var box = await Hive.openBox('userLogin');
+    var jwt = box.get('jwTtoken') != "" ? box.get('jwtToken') : "";
+
+    // jwt = jwtToken;
+
+    var url = Uri.https(
+        urlConstant.apiUrl, '/GSS_Backend/public/api/form/supply/sendback');
+    Map<String, String> requestHeader = {
+      'Authorization': 'Bearer $jwt',
+      'Content-Type': 'application/json',
+    };
+
+    var bodySend = """
+    {
+        "FormID": "${transaction.formId}",
+        "Comment" : "${transaction.activity.first.comment}",
+        "Attachments" : ${transaction.activity.first.attachment}
+    }
+    """;
+    // print(bodySend);
+    try {
+      var response =
+          await http.post(url, headers: requestHeader, body: bodySend);
 
       var data = json.decode(response.body);
 

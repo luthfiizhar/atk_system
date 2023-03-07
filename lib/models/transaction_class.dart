@@ -13,6 +13,8 @@ class Transaction {
     this.isExpanded = false,
     this.orderPeriod = "",
     this.month = "",
+    this.totalCost = 0,
+    this.actualTotalCost = 0,
     List<Item>? items,
     List<TransactionActivity>? activity,
   })  : items = items ?? [],
@@ -28,6 +30,8 @@ class Transaction {
 
   int siteArea;
   int budget;
+  int totalCost;
+  int actualTotalCost;
 
   List<Item> items;
   List<TransactionActivity> activity;
@@ -40,7 +44,9 @@ class Transaction {
         '"Location"': '"$siteName"',
         '"Created"': '"$created"',
         '"Status"': '"$status"',
-        '"isExpanded"': isExpanded.toString(),
+        '"Items"': '$items',
+        '"Activity"': '$activity',
+        '"isExpanded"': isExpanded.toString()
       };
 
   @override
@@ -57,7 +63,9 @@ class TransactionActivity {
     this.comment = "",
     this.photo = "",
     List<Attachment>? attachment,
-  }) : attachment = attachment ?? [];
+    List? submitAttachment,
+  })  : attachment = attachment ?? [],
+        submitAttachment = submitAttachment ?? [];
 
   String empName;
   String status;
@@ -65,13 +73,26 @@ class TransactionActivity {
   String comment;
   String photo;
   List<Attachment> attachment;
+  List submitAttachment;
+
+  @override
+  String toString() {
+    return "empName: $empName, status: $status, date: $date, comment: $comment, photo:$photo, attachment: $attachment";
+  }
 }
 
 class Attachment {
   Attachment({
     this.file = "",
     this.type = "",
+    this.fileName = "",
   });
   String file;
+  String fileName;
   String type;
+
+  @override
+  String toString() {
+    return "{fileName: $fileName, type: $type, base64 : $file}";
+  }
 }

@@ -2,6 +2,7 @@ import 'package:atk_system_ga/functions/api_request.dart';
 import 'package:atk_system_ga/models/main_model.dart';
 import 'package:atk_system_ga/modules/home/home_page.dart';
 import 'package:atk_system_ga/modules/login/login_page.dart';
+import 'package:atk_system_ga/modules/settlement_request/approval_settlement_request_page.dart';
 import 'package:atk_system_ga/modules/settlement_request/settlement_request_page.dart';
 import 'package:atk_system_ga/models/supplies_request_class.dart';
 import 'package:atk_system_ga/modules/supplies_request/approval_supplies_req_page.dart';
@@ -93,18 +94,33 @@ class MyApp extends StatelessWidget {
               return NoTransitionPage<void>(
                 key: state.pageKey,
                 child: ApprovalSuppliesReqPage(
-                  formId: state.params.toString(),
+                  formId: state.params["formId"].toString(),
                 ),
               );
             },
           ),
           GoRoute(
-            name: 'setllement_request',
+            name: 'setlement_request',
             path: 'settlement_request/:formId',
             pageBuilder: (context, state) {
               return NoTransitionPage<void>(
                 key: state.pageKey,
-                child: SettlementRequestPage(),
+                child: SettlementRequestPage(
+                  formId: state.params["formId"].toString(),
+                ),
+              );
+            },
+          ),
+          GoRoute(
+            name: 'approval_settlement',
+            path: 'approval_settlement/:formId',
+            pageBuilder: (context, state) {
+              print(state.params.toString());
+              return NoTransitionPage<void>(
+                key: state.pageKey,
+                child: ApprovalSettlementRequestPage(
+                  formId: state.params["formId"].toString(),
+                ),
               );
             },
           ),
@@ -153,9 +169,11 @@ class MyApp extends StatelessWidget {
         routeInformationProvider: _router.routeInformationProvider,
         builder: (context, child) => ResponsiveWrapper.builder(
           child,
-          // maxWidth: 1366,
-          defaultScale: MediaQuery.of(context).size.width < 1100 ? true : false,
-          minWidth: MediaQuery.of(context).size.width < 1100 ? 360 : 1100,
+          maxWidth: 1366,
+          // defaultScale: MediaQuery.of(context).size.width < 1100 ? true : false,
+          minWidth: 1366,
+          defaultScale: true,
+          // minWidth: MediaQuery.of(context).size.width < 1100 ? 360 : 1100,
           breakpoints: [
             // ResponsiveBreakpoint.resize(360, name: MOBILE),
             // ResponsiveBreakpoint.resize(480, name: MOBILE),

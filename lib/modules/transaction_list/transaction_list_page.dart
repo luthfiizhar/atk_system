@@ -52,6 +52,15 @@ class _TransactionListPageState extends State<TransactionListPage> {
 
   List<Transaction> transactionList = [];
 
+  onChangedTab(String value) {
+    searchTerm.formType = value;
+    formType = value;
+    updateList().then((value) {
+      countPagination(resultRows);
+      setState(() {});
+    });
+  }
+
   countPagination(int totalRow) {
     setState(() {
       availablePage.clear();
@@ -69,6 +78,8 @@ class _TransactionListPageState extends State<TransactionListPage> {
   }
 
   Future updateList() async {
+    transactionList.clear();
+    // setState(() {});
     return apiService.getTransactionList(searchTerm).then((value) {
       print(value);
       if (value['Status'].toString() == "200") {
@@ -183,7 +194,7 @@ class _TransactionListPageState extends State<TransactionListPage> {
                 FilterSearchBarTransactionList(
                   search: () {},
                   typeList: typeList,
-                  updateList: () {},
+                  updateList: onChangedTab,
                   searchController: _search,
                   type: formType,
                 ),
@@ -196,12 +207,19 @@ class _TransactionListPageState extends State<TransactionListPage> {
                   itemCount: transactionList.length,
                   physics: const NeverScrollableScrollPhysics(),
                   itemBuilder: (context, index) {
-                    return TransactionListContainer(
-                      index: index,
-                      transaction: transactionList[index],
-                      onClick: onClickList,
-                      close: closeDetail,
-                    );
+                    return formType == "Settlement"
+                        ? TransactionListContainerSettlement(
+                            index: index,
+                            transaction: transactionList[index],
+                            onClick: onClickList,
+                            close: closeDetail,
+                          )
+                        : TransactionListContainer(
+                            index: index,
+                            transaction: transactionList[index],
+                            onClick: onClickList,
+                            close: closeDetail,
+                          );
                   },
                 ),
                 const SizedBox(
