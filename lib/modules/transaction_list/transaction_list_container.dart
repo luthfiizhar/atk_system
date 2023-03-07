@@ -123,7 +123,14 @@ class _TransactionListContainerState extends State<TransactionListContainer> {
                                 disabled: false,
                                 fontWeight: FontWeight.w700,
                                 padding: ButtonSize().mediumSize(),
-                                onTap: () {},
+                                onTap: () {
+                                  context.goNamed(
+                                    'request_order_detai',
+                                    params: {
+                                      "formId": widget.transaction.formId,
+                                    },
+                                  );
+                                },
                               ),
                               const SizedBox(
                                 width: 10,

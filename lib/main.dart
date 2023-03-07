@@ -1,3 +1,4 @@
+import 'package:atk_system_ga/constant/colors.dart';
 import 'package:atk_system_ga/functions/api_request.dart';
 import 'package:atk_system_ga/models/main_model.dart';
 import 'package:atk_system_ga/modules/home/home_page.dart';
@@ -6,6 +7,7 @@ import 'package:atk_system_ga/modules/settlement_request/approval_settlement_req
 import 'package:atk_system_ga/modules/settlement_request/settlement_request_page.dart';
 import 'package:atk_system_ga/models/supplies_request_class.dart';
 import 'package:atk_system_ga/modules/supplies_request/approval_supplies_req_page.dart';
+import 'package:atk_system_ga/modules/supplies_request/supplies_req_detail_page.dart';
 import 'package:atk_system_ga/modules/supplies_request/supplies_request_page.dart';
 import 'package:atk_system_ga/modules/transaction_list/transaction_list_page.dart';
 import 'package:flutter/material.dart';
@@ -88,6 +90,18 @@ class MyApp extends StatelessWidget {
         },
         routes: [
           GoRoute(
+            name: 'request_order_detai;',
+            path: 'request_detail/:formId',
+            pageBuilder: (context, state) {
+              return NoTransitionPage<void>(
+                key: state.pageKey,
+                child: SuppliesReqDetailPage(
+                  formId: state.params["formId"].toString(),
+                ),
+              );
+            },
+          ),
+          GoRoute(
             name: 'approval_request',
             path: 'request_approval/:formId',
             pageBuilder: (context, state) {
@@ -160,6 +174,7 @@ class MyApp extends StatelessWidget {
         title: 'ATK Decentralize',
         theme: ThemeData(
           fontFamily: 'Helvetica',
+          scaffoldBackgroundColor: white,
         ),
         debugShowCheckedModeBanner: false,
         //routeInformationParser: BeamerParser(),
@@ -169,10 +184,10 @@ class MyApp extends StatelessWidget {
         routeInformationProvider: _router.routeInformationProvider,
         builder: (context, child) => ResponsiveWrapper.builder(
           child,
-          maxWidth: 1366,
+          // maxWidth: 1366,
           // defaultScale: MediaQuery.of(context).size.width < 1100 ? true : false,
           minWidth: 1366,
-          defaultScale: true,
+          defaultScale: false,
           // minWidth: MediaQuery.of(context).size.width < 1100 ? 360 : 1100,
           breakpoints: [
             // ResponsiveBreakpoint.resize(360, name: MOBILE),

@@ -217,28 +217,17 @@ class _SuppliesReqDetailPageState extends State<SuppliesReqDetailPage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    TransparentButtonBlack(
-                      text: 'Send Back',
+                    RegularButton(
+                      text: 'Create Settlement',
                       disabled: false,
                       padding: ButtonSize().mediumSize(),
-                      onTap: () {
-                        showDialog(
-                          context: context,
-                          builder: (context) => SendBackDialog(
-                            transaction: transaction,
-                          ),
-                        ).then((value) {
-                          if (value) {
-                            context.goNamed('home');
-                          }
-                        });
-                      },
+                      onTap: () {},
                     ),
                     const SizedBox(
                       width: 20,
                     ),
                     RegularButton(
-                      text: 'Print',
+                      text: 'Print Transaction',
                       disabled: false,
                       padding: ButtonSize().mediumSize(),
                       onTap: () {},
