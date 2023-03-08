@@ -3,6 +3,10 @@ import 'package:atk_system_ga/constant/text_style.dart';
 import 'package:flutter/material.dart';
 
 class ButtonSize {
+  EdgeInsetsGeometry tableButton() {
+    return const EdgeInsets.symmetric(horizontal: 45, vertical: 18);
+  }
+
   EdgeInsetsGeometry longSize() {
     return const EdgeInsets.symmetric(horizontal: 100, vertical: 20);
   }

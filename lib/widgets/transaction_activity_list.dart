@@ -157,14 +157,24 @@ class AttachmentTransactionItem extends StatefulWidget {
 class _AttachmentTransactionItemState extends State<AttachmentTransactionItem> {
   @override
   Widget build(BuildContext context) {
+    print("File-> ${widget.attachment.file}");
     return widget.attachment.type == "image"
-        ? Container(
-            width: 300,
-            height: 200,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              color: platinum,
-            ),
+        ? CachedNetworkImage(
+            imageUrl: widget.attachment.file,
+            imageBuilder: (context, imageProvider) {
+              return Container(
+                width: 300,
+                height: 200,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  color: platinum,
+                  image: DecorationImage(
+                    image: imageProvider,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              );
+            },
           )
         : Container(
             width: 200,

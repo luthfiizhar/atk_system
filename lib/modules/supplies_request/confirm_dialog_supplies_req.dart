@@ -7,6 +7,7 @@ import 'package:atk_system_ga/models/transaction_class.dart';
 import 'package:atk_system_ga/widgets/attachment_files.dart';
 import 'package:atk_system_ga/widgets/buttons.dart';
 import 'package:atk_system_ga/widgets/dialogs.dart';
+import 'package:atk_system_ga/widgets/empty_table.dart';
 import 'package:atk_system_ga/widgets/input_field.dart';
 import 'package:atk_system_ga/widgets/total.dart';
 import 'package:flutter/material.dart';
@@ -96,16 +97,20 @@ class _ConfirmDialogSuppliesRequestState
                     height: 40,
                   ),
                   headerTable(),
-                  ListView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: itemList.length,
-                    itemBuilder: (context, index) =>
-                        DialogConfirmItemListContainer(
-                      index: index,
-                      item: itemList[index],
-                    ),
-                  ),
+                  itemList.isEmpty
+                      ? EmptyTable(
+                          text: 'No item chosen by user',
+                        )
+                      : ListView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: itemList.length,
+                          itemBuilder: (context, index) =>
+                              DialogConfirmItemListContainer(
+                            index: index,
+                            item: itemList[index],
+                          ),
+                        ),
                   const Padding(
                     padding: EdgeInsets.symmetric(vertical: 23),
                     child: Divider(
@@ -185,7 +190,7 @@ class _ConfirmDialogSuppliesRequestState
 
                           for (var element in attachment) {
                             widget.transaction.activity.first.submitAttachment
-                                .add(element.file);
+                                .add('"${element.file}"');
                           }
 
                           print(widget.transaction);

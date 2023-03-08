@@ -12,6 +12,7 @@ import 'package:atk_system_ga/modules/supplies_request/confirm_dialog_supplies_r
 import 'package:atk_system_ga/modules/transaction_list/transaction_list_container.dart';
 import 'package:atk_system_ga/widgets/buttons.dart';
 import 'package:atk_system_ga/widgets/dialogs.dart';
+import 'package:atk_system_ga/widgets/empty_table.dart';
 import 'package:atk_system_ga/widgets/search_input_field.dart';
 import 'package:atk_system_ga/widgets/send_back_dialog.dart';
 import 'package:atk_system_ga/widgets/total.dart';
@@ -71,6 +72,7 @@ class _SuppliesReqDetailPageState extends State<SuppliesReqDetailPage> {
       if (value['Status'].toString() == "200") {
         List resultItems = value["Data"]["Items"];
         List resultActivity = value["Data"]["Comments"];
+        List attachmentResult = [];
 
         transaction.formId = value["Data"]["FormID"];
         transaction.siteName = value["Data"]["SiteName"];
@@ -98,13 +100,30 @@ class _SuppliesReqDetailPageState extends State<SuppliesReqDetailPage> {
         for (var element in resultActivity) {
           transactionActivity.add(
             TransactionActivity(
+              id: element['CommentID'],
               empName: element["EmpName"],
               comment: element["CommentText"] ?? "-",
               date: element["CommentDate"],
               status: element["CommentDescription"],
               photo: element["Photo"],
+              // attachment: element['Attachments'],
             ),
           );
+          if (element['Attachments'] != []) {
+            attachmentResult = element['Attachments'];
+          }
+        }
+        for (var t in transactionActivity) {
+          for (var element in attachmentResult) {
+            if (t.id == element['CommentID']) {
+              t.attachment.add(
+                Attachment(
+                  file: element['ImageURL'],
+                  type: element['FileType'],
+                ),
+              );
+            }
+          }
         }
         setState(() {});
       } else {
@@ -480,17 +499,21 @@ class _SuppliesReqDetailPageState extends State<SuppliesReqDetailPage> {
         const SizedBox(
           height: 20,
         ),
-        ListView.builder(
-          itemCount: transactionActivity.length,
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemBuilder: (context, index) {
-            return TransactionActivityListContainer(
-              index: index,
-              transactionActivity: transactionActivity[index],
-            );
-          },
-        ),
+        transactionActivity.isEmpty
+            ? EmptyTable(
+                text: 'No activity.',
+              )
+            : ListView.builder(
+                itemCount: transactionActivity.length,
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemBuilder: (context, index) {
+                  return TransactionActivityListContainer(
+                    index: index,
+                    transactionActivity: transactionActivity[index],
+                  );
+                },
+              ),
       ],
     );
   }

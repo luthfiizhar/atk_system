@@ -93,6 +93,27 @@ class ApiService {
     }
   }
 
+  Future getUserData() async {
+    var box = await Hive.openBox('userLogin');
+    var jwt = box.get('jwTtoken') != "" ? box.get('jwtToken') : "";
+
+    var url =
+        Uri.https(urlConstant.apiUrl, '/GSS_Backend/public/api/user/detail');
+    Map<String, String> requestHeader = {
+      'Authorization': 'Bearer $jwt',
+      'Content-Type': 'application/json',
+    };
+    try {
+      var response = await http.get(url, headers: requestHeader);
+
+      var data = json.decode(response.body);
+
+      return data;
+    } on Error catch (e) {
+      return e;
+    }
+  }
+
   Future getTransactionList(SearchTerm body) async {
     // print(bookingId);
     var box = await Hive.openBox('userLogin');
@@ -232,7 +253,7 @@ class ApiService {
         "TotalCost": ${transaction.totalCost},
         "Items": ${transaction.items},
         "Comment" : "${transaction.activity.first.comment}",
-        "Attachments" : ${transaction.activity.first.attachment}
+        "Attachments" : ${transaction.activity.first.submitAttachment}
     }
     """;
     // print(bodySend);
@@ -266,7 +287,7 @@ class ApiService {
     {
         "FormID": "${transaction.formId}",
         "Comment" : "${transaction.activity.first.comment}",
-        "Attachments" : ${transaction.activity.first.attachment}
+        "Attachments" : ${transaction.activity.first.submitAttachment}
     }
     """;
     // print(bodySend);
@@ -327,7 +348,7 @@ class ApiService {
         "TotalActualCost": ${transaction.actualTotalCost},
         "Items": ${transaction.items},
         "Comment" : "${transaction.activity.first.comment}",
-        "Attachments" : ${transaction.activity.first.attachment}
+        "Attachments" : ${transaction.activity.first.submitAttachment}
     }
     """;
     print(bodySend);
@@ -361,7 +382,7 @@ class ApiService {
     {
         "FormID": "${transaction.formId}",
         "Comment" : "${transaction.activity.first.comment}",
-        "Attachments" : ${transaction.activity.first.attachment}
+        "Attachments" : ${transaction.activity.first.submitAttachment}
     }
     """;
     // print(bodySend);
@@ -395,7 +416,7 @@ class ApiService {
     {
         "FormID": "${transaction.formId}",
         "Comment" : "${transaction.activity.first.comment}",
-        "Attachments" : ${transaction.activity.first.attachment}
+        "Attachments" : ${transaction.activity.first.submitAttachment}
     }
     """;
     // print(bodySend);

@@ -90,8 +90,20 @@ class MyApp extends StatelessWidget {
         },
         routes: [
           GoRoute(
-            name: 'request_order_detai;',
+            name: 'request_order_detail',
             path: 'request_detail/:formId',
+            pageBuilder: (context, state) {
+              return NoTransitionPage<void>(
+                key: state.pageKey,
+                child: SuppliesReqDetailPage(
+                  formId: state.params["formId"].toString(),
+                ),
+              );
+            },
+          ),
+          GoRoute(
+            name: 'settlement_detail',
+            path: 'settlement_detail/:formId',
             pageBuilder: (context, state) {
               return NoTransitionPage<void>(
                 key: state.pageKey,

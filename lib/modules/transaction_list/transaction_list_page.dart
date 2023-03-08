@@ -7,7 +7,9 @@ import 'package:atk_system_ga/models/search_term.dart';
 import 'package:atk_system_ga/models/transaction_class.dart';
 import 'package:atk_system_ga/modules/transaction_list/filter_search_bar_transaction_list_page.dart';
 import 'package:atk_system_ga/modules/transaction_list/transaction_list_container.dart';
+import 'package:atk_system_ga/widgets/dialogs.dart';
 import 'package:atk_system_ga/widgets/dropdown.dart';
+import 'package:atk_system_ga/widgets/empty_table.dart';
 import 'package:flutter/material.dart';
 
 class TransactionListPage extends StatefulWidget {
@@ -27,6 +29,8 @@ class _TransactionListPageState extends State<TransactionListPage> {
   ApiService apiService = ApiService();
   TextEditingController _search = TextEditingController();
   FocusNode showPerRowsNode = FocusNode();
+
+  bool isLoading = true;
 
   String formType = "Supply Request";
   List typeList = [
@@ -79,9 +83,12 @@ class _TransactionListPageState extends State<TransactionListPage> {
 
   Future updateList() async {
     transactionList.clear();
-    // setState(() {});
+    isLoading = true;
+    setState(() {});
     return apiService.getTransactionList(searchTerm).then((value) {
-      print(value);
+      // print(value);
+      isLoading = false;
+      setState(() {});
       if (value['Status'].toString() == "200") {
         List listResult = value['Data']['List'];
         resultRows = value['Data']['TotalRows'];
@@ -98,9 +105,28 @@ class _TransactionListPageState extends State<TransactionListPage> {
           );
         }
         setState(() {});
-      } else {}
+      } else {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialogBlack(
+            title: value['Title'],
+            contentText: value['Message'],
+            isSuccess: false,
+          ),
+        );
+      }
     }).onError((error, stackTrace) {
       print(error);
+      isLoading = false;
+      setState(() {});
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialogBlack(
+          title: 'Error getTransaction',
+          contentText: error.toString(),
+          isSuccess: false,
+        ),
+      );
     });
   }
 
@@ -146,6 +172,16 @@ class _TransactionListPageState extends State<TransactionListPage> {
       formType = widget.formType;
     }
     searchTerm.formType = formType;
+    searchTerm.orderBy = "FormID";
+    searchTerm.orderDir = "ASC";
+  }
+
+  searchTransaction() {
+    searchTerm.keywords = _search.text;
+
+    updateList().then((value) {
+      countPagination(resultRows);
+    });
   }
 
   @override
@@ -192,7 +228,7 @@ class _TransactionListPageState extends State<TransactionListPage> {
                   height: 45,
                 ),
                 FilterSearchBarTransactionList(
-                  search: () {},
+                  search: searchTransaction,
                   typeList: typeList,
                   updateList: onChangedTab,
                   searchController: _search,
@@ -202,30 +238,44 @@ class _TransactionListPageState extends State<TransactionListPage> {
                   height: 30,
                 ),
                 headerTable(),
-                ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: transactionList.length,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemBuilder: (context, index) {
-                    return formType == "Settlement"
-                        ? TransactionListContainerSettlement(
-                            index: index,
-                            transaction: transactionList[index],
-                            onClick: onClickList,
-                            close: closeDetail,
+                isLoading
+                    ? const SizedBox(
+                        height: 150,
+                        width: double.infinity,
+                        child: Center(
+                          child: CircularProgressIndicator(
+                            color: eerieBlack,
+                          ),
+                        ),
+                      )
+                    : transactionList.isEmpty
+                        ? EmptyTable(
+                            text: "You don't have any transaction",
                           )
-                        : TransactionListContainer(
-                            index: index,
-                            transaction: transactionList[index],
-                            onClick: onClickList,
-                            close: closeDetail,
-                          );
-                  },
-                ),
+                        : ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: transactionList.length,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemBuilder: (context, index) {
+                              return formType == "Settlement"
+                                  ? TransactionListContainerSettlement(
+                                      index: index,
+                                      transaction: transactionList[index],
+                                      onClick: onClickList,
+                                      close: closeDetail,
+                                    )
+                                  : TransactionListContainer(
+                                      index: index,
+                                      transaction: transactionList[index],
+                                      onClick: onClickList,
+                                      close: closeDetail,
+                                    );
+                            },
+                          ),
                 const SizedBox(
                   height: 50,
                 ),
-                pagination(),
+                transactionList.isEmpty ? const SizedBox() : pagination(),
                 const SizedBox(
                   height: 100,
                 ),
@@ -267,7 +317,7 @@ class _TransactionListPageState extends State<TransactionListPage> {
               width: 165,
               child: InkWell(
                 onTap: () {
-                  onTapHeader("Category");
+                  onTapHeader("FormCategory");
                 },
                 child: Row(
                   children: [
@@ -277,7 +327,7 @@ class _TransactionListPageState extends State<TransactionListPage> {
                         style: headerTableTextStyle,
                       ),
                     ),
-                    iconSort("Category"),
+                    iconSort("FormCategory"),
                     const SizedBox(
                       width: 20,
                     ),
@@ -289,7 +339,7 @@ class _TransactionListPageState extends State<TransactionListPage> {
               flex: 2,
               child: InkWell(
                 onTap: () {
-                  onTapHeader("Location");
+                  onTapHeader("SiteName");
                 },
                 child: Row(
                   children: [
@@ -299,7 +349,7 @@ class _TransactionListPageState extends State<TransactionListPage> {
                         style: headerTableTextStyle,
                       ),
                     ),
-                    iconSort("Location"),
+                    iconSort("SiteName"),
                     const SizedBox(
                       width: 20,
                     ),
@@ -311,7 +361,7 @@ class _TransactionListPageState extends State<TransactionListPage> {
               width: 165,
               child: InkWell(
                 onTap: () {
-                  onTapHeader("Created");
+                  onTapHeader("Created_At");
                 },
                 child: Row(
                   children: [
@@ -321,7 +371,7 @@ class _TransactionListPageState extends State<TransactionListPage> {
                         style: headerTableTextStyle,
                       ),
                     ),
-                    iconSort("Qty"),
+                    iconSort("Created_At"),
                     const SizedBox(
                       width: 20,
                     ),

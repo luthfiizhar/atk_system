@@ -119,6 +119,7 @@ class _LoginPageState extends State<LoginPage> {
                             maxLines: 1,
                             validator: (value) =>
                                 value == "" ? "This field is required." : null,
+                            hintText: "Username here ...",
                             onSaved: (newValue) {
                               username = newValue.toString();
                             },
@@ -150,6 +151,7 @@ class _LoginPageState extends State<LoginPage> {
                             maxLines: 1,
                             validator: (value) =>
                                 value == "" ? "This field is required." : null,
+                            hintText: "Password here ...",
                             onSaved: (newValue) {
                               password = newValue.toString();
                             },

@@ -9,68 +9,113 @@ class MenuButton extends StatelessWidget {
     this.onTap,
     this.disabled = false,
     this.text = "",
+    this.description = "",
   });
 
   VoidCallback? onTap;
   bool? disabled;
   String? assets;
   String text;
+  String description;
 
   Color getColor(Set<MaterialState> states) {
     const Set<MaterialState> interactiveStates = <MaterialState>{
       MaterialState.pressed
     };
     if (states.any(interactiveStates.contains)) {
-      return eerieBlack;
+      return white;
     }
-    return culturedWhite;
+    return eerieBlack;
   }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        ElevatedButton(
-          style: ButtonStyle(
-            splashFactory: NoSplash.splashFactory,
-            foregroundColor: MaterialStateProperty.resolveWith(getColor),
-            backgroundColor: MaterialStateProperty.resolveWith<Color>((states) {
-              return disabled! ? grayx11 : eerieBlack;
-            }),
-            shape: MaterialStateProperty.resolveWith<OutlinedBorder>((states) {
-              return const CircleBorder();
-            }),
-            overlayColor: MaterialStateProperty.resolveWith<Color?>(
-              (Set<MaterialState> states) {
-                if (states.contains(MaterialState.pressed)) return white;
-                if (states.contains(MaterialState.hovered)) return davysGray;
-                return null;
-              },
+    return SizedBox(
+      width: 500,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            height: 75,
+            width: 75,
+            child: ElevatedButton(
+              style: ButtonStyle(
+                splashFactory: NoSplash.splashFactory,
+                foregroundColor: MaterialStateProperty.resolveWith(getColor),
+                backgroundColor:
+                    MaterialStateProperty.resolveWith<Color>((states) {
+                  return disabled! ? grayx11 : white;
+                }),
+                shape:
+                    MaterialStateProperty.resolveWith<OutlinedBorder>((states) {
+                  if (states.contains(MaterialState.pressed)) {
+                    return RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      side: BorderSide(color: eerieBlack, width: 1),
+                    );
+                  }
+                  return RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      side: const BorderSide(
+                        color: lightGray,
+                        width: 1,
+                      ));
+                }),
+                overlayColor: MaterialStateProperty.resolveWith<Color?>(
+                  (Set<MaterialState> states) {
+                    if (states.contains(MaterialState.pressed))
+                      return eerieBlack;
+                    // if (states.contains(MaterialState.hovered)) return davysGray;
+                    return null;
+                  },
+                ),
+                padding:
+                    MaterialStateProperty.resolveWith<EdgeInsets>((states) {
+                  return EdgeInsets.zero;
+                }),
+              ),
+              onPressed: disabled! ? null : onTap,
+              child: Center(
+                child: ImageIcon(
+                  Image.asset(assets!).image,
+                  size: 35,
+                ),
+              ),
             ),
-            padding: MaterialStateProperty.resolveWith<EdgeInsets>((states) {
-              return const EdgeInsets.all(37.5);
-            }),
           ),
-          onPressed: disabled! ? null : onTap,
-          child: ImageIcon(
-            Image.asset(assets!).image,
-            size: 75,
+          const SizedBox(
+            width: 25,
           ),
-        ),
-        const SizedBox(
-          height: 25,
-        ),
-        Text(
-          text,
-          style: helveticaText.copyWith(
-            fontSize: 16,
-            fontWeight: FontWeight.w300,
-            color: eerieBlack,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  text,
+                  style: helveticaText.copyWith(
+                    fontSize: 22,
+                    fontWeight: FontWeight.w700,
+                    color: eerieBlack,
+                  ),
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                Text(
+                  description,
+                  style: helveticaText.copyWith(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w300,
+                    color: sonicSilver,
+                    height: 1.38,
+                  ),
+                ),
+              ],
+            ),
           ),
-        )
-      ],
+        ],
+      ),
     );
   }
 }

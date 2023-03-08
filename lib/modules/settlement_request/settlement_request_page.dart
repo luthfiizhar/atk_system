@@ -10,6 +10,7 @@ import 'package:atk_system_ga/modules/settlement_request/dialog_confirm_settleme
 import 'package:atk_system_ga/modules/settlement_request/settlement_request_item_list_container.dart';
 import 'package:atk_system_ga/modules/supplies_request/supplies_item_list_container.dart';
 import 'package:atk_system_ga/widgets/buttons.dart';
+import 'package:atk_system_ga/widgets/empty_table.dart';
 import 'package:atk_system_ga/widgets/search_input_field.dart';
 import 'package:atk_system_ga/widgets/total.dart';
 import 'package:atk_system_ga/widgets/transaction_activity_section.dart';
@@ -44,6 +45,8 @@ class _SettlementRequestPageState extends State<SettlementRequestPage> {
   int totalBudget = 0;
   int totalReqCost = 0;
   int totalActualCost = 0;
+
+  bool isLoadingDetail = true;
 
   onChangeQtyAndPrice(int index, String qtyValue, String priceValue) {
     if (priceValue.contains(".")) {
@@ -81,6 +84,8 @@ class _SettlementRequestPageState extends State<SettlementRequestPage> {
 
   Future initDetailSettlement() {
     return apiService.getSettlementDetail(widget.formId).then((value) {
+      isLoadingDetail = false;
+      setState(() {});
       if (value['Status'].toString() == "200") {
         List resultItems = value["Data"]["Items"];
         List resultActivity = value["Data"]["Comments"];
@@ -127,6 +132,8 @@ class _SettlementRequestPageState extends State<SettlementRequestPage> {
       }
     }).onError((error, stackTrace) {
       print(error);
+      isLoadingDetail = false;
+      setState(() {});
     });
   }
 
@@ -153,7 +160,11 @@ class _SettlementRequestPageState extends State<SettlementRequestPage> {
                 const SizedBox(
                   height: 50,
                 ),
-                infoAndSearch(),
+                isLoadingDetail
+                    ? const CircularProgressIndicator(
+                        color: eerieBlack,
+                      )
+                    : infoAndSearch(),
                 const SizedBox(
                   height: 55,
                 ),
@@ -161,18 +172,30 @@ class _SettlementRequestPageState extends State<SettlementRequestPage> {
                 const SizedBox(
                   height: 20,
                 ),
-                ListView.builder(
-                  itemCount: transaction.items.length,
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemBuilder: (context, index) {
-                    return SettlementRequestItemListContainer(
-                      index: index,
-                      item: transaction.items[index],
-                      onChangedValue: onChangeQtyAndPrice,
-                    );
-                  },
-                ),
+                isLoadingDetail
+                    ? const SizedBox(
+                        height: 150,
+                        width: double.infinity,
+                        child: CircularProgressIndicator(
+                          color: eerieBlack,
+                        ),
+                      )
+                    : transaction.items.isEmpty
+                        ? EmptyTable(
+                            text: 'No item in database',
+                          )
+                        : ListView.builder(
+                            itemCount: transaction.items.length,
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemBuilder: (context, index) {
+                              return SettlementRequestItemListContainer(
+                                index: index,
+                                item: transaction.items[index],
+                                onChangedValue: onChangeQtyAndPrice,
+                              );
+                            },
+                          ),
                 const SizedBox(
                   height: 50,
                 ),

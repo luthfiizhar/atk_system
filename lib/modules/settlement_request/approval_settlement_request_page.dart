@@ -12,6 +12,7 @@ import 'package:atk_system_ga/modules/settlement_request/dialog_confirm_settleme
 import 'package:atk_system_ga/modules/settlement_request/settlement_request_item_list_container.dart';
 import 'package:atk_system_ga/modules/supplies_request/approve_dialog_supplies_req.dart';
 import 'package:atk_system_ga/widgets/buttons.dart';
+import 'package:atk_system_ga/widgets/empty_table.dart';
 import 'package:atk_system_ga/widgets/search_input_field.dart';
 import 'package:atk_system_ga/widgets/total.dart';
 import 'package:atk_system_ga/widgets/transaction_activity_section.dart';
@@ -165,17 +166,21 @@ class _ApprovalSettlementRequestPageState
                 const SizedBox(
                   height: 20,
                 ),
-                ListView.builder(
-                  itemCount: transaction.items.length,
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemBuilder: (context, index) {
-                    return ApprovalSettlementRequestItemListContainer(
-                      index: index,
-                      item: transaction.items[index],
-                    );
-                  },
-                ),
+                transaction.items.isEmpty
+                    ? EmptyTable(
+                        text: 'No item in database',
+                      )
+                    : ListView.builder(
+                        itemCount: transaction.items.length,
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemBuilder: (context, index) {
+                          return ApprovalSettlementRequestItemListContainer(
+                            index: index,
+                            item: transaction.items[index],
+                          );
+                        },
+                      ),
                 const SizedBox(
                   height: 50,
                 ),

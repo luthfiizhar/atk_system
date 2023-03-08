@@ -12,6 +12,7 @@ import 'package:atk_system_ga/modules/supplies_request/confirm_dialog_supplies_r
 import 'package:atk_system_ga/modules/transaction_list/transaction_list_container.dart';
 import 'package:atk_system_ga/widgets/buttons.dart';
 import 'package:atk_system_ga/widgets/dialogs.dart';
+import 'package:atk_system_ga/widgets/empty_table.dart';
 import 'package:atk_system_ga/widgets/search_input_field.dart';
 import 'package:atk_system_ga/widgets/send_back_dialog.dart';
 import 'package:atk_system_ga/widgets/total.dart';
@@ -46,6 +47,10 @@ class _ApprovalSuppliesReqPageState extends State<ApprovalSuppliesReqPage> {
 
   bool isLoadingDetail = true;
 
+  // bool isLoadingGetDetail = true;
+
+  bool isLoadingItems = true;
+
   int totalBudget = 0;
   int totalCost = 0;
 
@@ -68,6 +73,8 @@ class _ApprovalSuppliesReqPageState extends State<ApprovalSuppliesReqPage> {
 
   Future initDetailFilled() {
     return apiService.getFormDetailFilled(widget.formId).then((value) {
+      isLoadingDetail = false;
+      setState(() {});
       print(value);
       if (value['Status'].toString() == "200") {
         List resultItems = value["Data"]["Items"];
@@ -142,7 +149,11 @@ class _ApprovalSuppliesReqPageState extends State<ApprovalSuppliesReqPage> {
                   const SizedBox(
                     height: 50,
                   ),
-                  infoAndSearch(),
+                  isLoadingDetail
+                      ? const CircularProgressIndicator(
+                          color: eerieBlack,
+                        )
+                      : infoAndSearch(),
                   const SizedBox(
                     height: 55,
                   ),
@@ -150,17 +161,29 @@ class _ApprovalSuppliesReqPageState extends State<ApprovalSuppliesReqPage> {
                   const SizedBox(
                     height: 20,
                   ),
-                  ListView.builder(
-                    itemCount: items.length,
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemBuilder: (context, index) {
-                      return ApprovalSuppliesItemListContainer(
-                        index: index,
-                        item: items[index],
-                      );
-                    },
-                  ),
+                  isLoadingDetail
+                      ? const SizedBox(
+                          height: 150,
+                          width: double.infinity,
+                          child: CircularProgressIndicator(
+                            color: eerieBlack,
+                          ),
+                        )
+                      : items.isEmpty
+                          ? EmptyTable(
+                              text: 'No item in database',
+                            )
+                          : ListView.builder(
+                              itemCount: items.length,
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemBuilder: (context, index) {
+                                return ApprovalSuppliesItemListContainer(
+                                  index: index,
+                                  item: items[index],
+                                );
+                              },
+                            ),
                   const SizedBox(
                     height: 50,
                   ),
@@ -307,7 +330,7 @@ class _ApprovalSuppliesReqPageState extends State<ApprovalSuppliesReqPage> {
                   children: [
                     Expanded(
                       child: Text(
-                        'ItemName',
+                        'Item Name',
                         style: headerTableTextStyle,
                       ),
                     ),
@@ -372,7 +395,7 @@ class _ApprovalSuppliesReqPageState extends State<ApprovalSuppliesReqPage> {
                   children: [
                     Expanded(
                       child: Text(
-                        'QTY',
+                        'Qty',
                         style: headerTableTextStyle,
                       ),
                     ),
@@ -432,7 +455,7 @@ class _ApprovalSuppliesReqPageState extends State<ApprovalSuppliesReqPage> {
         TotalInfo(
           title: 'Total Cost',
           number: totalCost,
-          numberColor: orangeAccent,
+          numberColor: totalCost > totalBudget ? orangeAccent : greenAcent,
         ),
       ],
     );

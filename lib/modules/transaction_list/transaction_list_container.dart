@@ -122,10 +122,10 @@ class _TransactionListContainerState extends State<TransactionListContainer> {
                                 text: 'Detail',
                                 disabled: false,
                                 fontWeight: FontWeight.w700,
-                                padding: ButtonSize().mediumSize(),
+                                padding: ButtonSize().tableButton(),
                                 onTap: () {
                                   context.goNamed(
-                                    'request_order_detai',
+                                    'request_order_detail',
                                     params: {
                                       "formId": widget.transaction.formId,
                                     },
@@ -143,7 +143,7 @@ class _TransactionListContainerState extends State<TransactionListContainer> {
                                   ? RegularButton(
                                       text: 'Approve',
                                       disabled: false,
-                                      padding: ButtonSize().mediumSize(),
+                                      padding: ButtonSize().tableButton(),
                                       onTap: () {
                                         context.goNamed(
                                           'approval_request',
@@ -161,7 +161,7 @@ class _TransactionListContainerState extends State<TransactionListContainer> {
                                   ? RegularButton(
                                       text: 'Settle',
                                       disabled: false,
-                                      padding: ButtonSize().mediumSize(),
+                                      padding: ButtonSize().tableButton(),
                                       onTap: () {
                                         context.goNamed(
                                           'setllement_request',
@@ -303,10 +303,16 @@ class _TransactionListContainerStateSettlement
                                 text: 'Detail',
                                 disabled: false,
                                 fontWeight: FontWeight.w700,
-                                padding: ButtonSize().mediumSize(),
+                                padding: ButtonSize().tableButton(),
                                 onTap: () {
+                                  // context.goNamed(
+                                  //   'setlement_request',
+                                  //   params: {
+                                  //     "formId": widget.transaction.formId,
+                                  //   },
+                                  // );
                                   context.goNamed(
-                                    'setlement_request',
+                                    'settlement_detail',
                                     params: {
                                       "formId": widget.transaction.formId,
                                     },
@@ -324,7 +330,7 @@ class _TransactionListContainerStateSettlement
                                   ? RegularButton(
                                       text: 'Approve',
                                       disabled: false,
-                                      padding: ButtonSize().mediumSize(),
+                                      padding: ButtonSize().tableButton(),
                                       onTap: () {
                                         context.goNamed(
                                           'approval_settlement',
@@ -342,7 +348,7 @@ class _TransactionListContainerStateSettlement
                               //     ? RegularButton(
                               //         text: 'Settle',
                               //         disabled: false,
-                              //         padding: ButtonSize().mediumSize(),
+                              //         padding: ButtonSize().tableButton(),
                               //         onTap: () {
                               //           context.goNamed(
                               //             'setllement_request',

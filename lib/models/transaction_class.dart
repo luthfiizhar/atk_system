@@ -57,6 +57,7 @@ class Transaction {
 
 class TransactionActivity {
   TransactionActivity({
+    this.id = "",
     this.empName = "",
     this.status = "",
     this.date = "",
@@ -67,6 +68,7 @@ class TransactionActivity {
   })  : attachment = attachment ?? [],
         submitAttachment = submitAttachment ?? [];
 
+  String id;
   String empName;
   String status;
   String date;
@@ -83,10 +85,12 @@ class TransactionActivity {
 
 class Attachment {
   Attachment({
+    this.id = "",
     this.file = "",
     this.type = "",
     this.fileName = "",
   });
+  String id;
   String file;
   String fileName;
   String type;
