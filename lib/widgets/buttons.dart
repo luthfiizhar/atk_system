@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 
 class ButtonSize {
   EdgeInsetsGeometry tableButton() {
-    return const EdgeInsets.symmetric(horizontal: 45, vertical: 18);
+    return const EdgeInsets.symmetric(horizontal: 30, vertical: 18);
   }
 
   EdgeInsetsGeometry longSize() {
@@ -92,6 +92,8 @@ class RegularButton extends StatelessWidget {
             return helveticaText.copyWith(
               fontSize: fontSize,
               fontWeight: fontWeight,
+              // backgroundColor: greenAcent,
+              // height: 1.3,
             );
           },
         ),
@@ -101,7 +103,12 @@ class RegularButton extends StatelessWidget {
           },
         ),
       ),
-      child: Text(text!),
+      child: SizedBox(
+        height: 16,
+        child: Text(
+          text!,
+        ),
+      ),
     );
   }
 }
@@ -329,6 +336,8 @@ class TransparentBorderedBlackButton extends StatelessWidget {
             return helveticaText.copyWith(
               fontSize: fontSize,
               fontWeight: fontWeight,
+              // backgroundColor: greenAcent,
+              // height: 1.3,
             );
           },
         ),
@@ -344,7 +353,9 @@ class TransparentBorderedBlackButton extends StatelessWidget {
           return 0;
         }),
       ),
-      child: Text(text!),
+      child: Text(
+        text!,
+      ),
     );
   }
 }

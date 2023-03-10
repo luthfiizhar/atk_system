@@ -1,6 +1,7 @@
 import 'package:atk_system_ga/constant/colors.dart';
 import 'package:atk_system_ga/constant/text_style.dart';
 import 'package:atk_system_ga/models/item_class.dart';
+import 'package:atk_system_ga/widgets/divider_table.dart';
 import 'package:atk_system_ga/widgets/input_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -64,17 +65,7 @@ class _ApprovalSettlementRequestItemListContainerState
   Widget build(BuildContext context) {
     return Column(
       children: [
-        widget.index == 0
-            ? const SizedBox()
-            : const Padding(
-                padding: EdgeInsets.symmetric(
-                  vertical: 28,
-                ),
-                child: Divider(
-                  color: grayx11,
-                  thickness: 0.5,
-                ),
-              ),
+        widget.index == 0 ? const SizedBox() : const DividerTable(),
         Row(
           children: [
             Expanded(
@@ -108,7 +99,8 @@ class _ApprovalSettlementRequestItemListContainerState
                   SizedBox(
                     width: 75,
                     child: Wrap(
-                      alignment: WrapAlignment.center,
+                      alignment: WrapAlignment.start,
+                      crossAxisAlignment: WrapCrossAlignment.center,
                       spacing: 10,
                       children: [
                         Text(
@@ -122,12 +114,12 @@ class _ApprovalSettlementRequestItemListContainerState
                                 ? const Icon(
                                     Icons.arrow_drop_down_rounded,
                                     color: greenAcent,
-                                    size: 24,
+                                    size: 32,
                                   )
                                 : const Icon(
                                     Icons.arrow_drop_up_rounded,
                                     color: orangeAccent,
-                                    size: 24,
+                                    size: 32,
                                   )
                       ],
                     ),
@@ -156,15 +148,13 @@ class _ApprovalSettlementRequestItemListContainerState
                     widget.item.actualPrice == widget.item.basePrice
                         ? const SizedBox()
                         : widget.item.actualPrice < widget.item.basePrice
-                            ? const Icon(
-                                Icons.arrow_drop_down_rounded,
+                            ? const ImageIcon(
+                                AssetImage('assets/icons/budget_down.png'),
                                 color: greenAcent,
-                                size: 24,
                               )
-                            : const Icon(
-                                Icons.arrow_drop_up_rounded,
+                            : const ImageIcon(
+                                AssetImage('assets/icon/budget_up.png'),
                                 color: orangeAccent,
-                                size: 24,
                               )
                   ],
                 ),

@@ -104,12 +104,12 @@ class _FilterSearchBarTransactionListState
                             right: 50,
                           ),
                           child: FilterSearchBarTransactionListItem(
-                            title: e['Name'],
-                            type: e['Value'],
-                            bookingCount: e['BookingCount'].toString(),
+                            title: e['FormType'],
+                            type: e['FormType'],
+                            bookingCount: e['Total'].toString(),
                             onHighlight: onHighlight,
                             color: selectedColor,
-                            selected: documentType == e['Value'],
+                            selected: documentType == e['FormType'],
                           ),
                         );
                       }).toList(),

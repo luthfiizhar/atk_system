@@ -33,18 +33,7 @@ class _TransactionListPageState extends State<TransactionListPage> {
   bool isLoading = true;
 
   String formType = "Supply Request";
-  List typeList = [
-    {
-      "Name": "Request",
-      "Value": "Supply Request",
-      "BookingCount": "10",
-    },
-    {
-      "Name": "Settlement Request",
-      "Value": "Settlement",
-      "BookingCount": "10",
-    }
-  ];
+  List typeList = [];
 
   double rowPerPage = 10;
   double firstPaginated = 0;
@@ -58,6 +47,7 @@ class _TransactionListPageState extends State<TransactionListPage> {
 
   onChangedTab(String value) {
     searchTerm.formType = value;
+    searchTerm.orderBy = "FormID";
     formType = value;
     updateList().then((value) {
       countPagination(resultRows);
@@ -86,7 +76,7 @@ class _TransactionListPageState extends State<TransactionListPage> {
     isLoading = true;
     setState(() {});
     return apiService.getTransactionList(searchTerm).then((value) {
-      // print(value);
+      print(value);
       isLoading = false;
       setState(() {});
       if (value['Status'].toString() == "200") {
@@ -96,6 +86,7 @@ class _TransactionListPageState extends State<TransactionListPage> {
           transactionList.add(
             Transaction(
               formId: element["FormID"],
+              reqId: element["RequestID"],
               category: element["FormCategory"],
               formType: element["FormType"],
               siteName: element["SiteName"],
@@ -116,6 +107,7 @@ class _TransactionListPageState extends State<TransactionListPage> {
         );
       }
     }).onError((error, stackTrace) {
+      print("error get transaction");
       print(error);
       isLoading = false;
       setState(() {});
@@ -145,6 +137,7 @@ class _TransactionListPageState extends State<TransactionListPage> {
       }
       searchTerm.orderBy = orderBy;
     });
+    updateList().then((value) {});
   }
 
   closeDetail(int index) {
@@ -176,6 +169,15 @@ class _TransactionListPageState extends State<TransactionListPage> {
     searchTerm.orderDir = "ASC";
   }
 
+  initTabCount() {
+    apiService.getTabTransactionCount().then((value) {
+      if (value["Status"].toString() == "200") {
+        typeList = value['Data'];
+        setState(() {});
+      } else {}
+    }).onError((error, stackTrace) {});
+  }
+
   searchTransaction() {
     searchTerm.keywords = _search.text;
 
@@ -188,6 +190,7 @@ class _TransactionListPageState extends State<TransactionListPage> {
   void initState() {
     super.initState();
     initType().then((value) {
+      initTabCount();
       updateList().then((value) {
         countPagination(resultRows);
         setState(() {});
@@ -237,7 +240,9 @@ class _TransactionListPageState extends State<TransactionListPage> {
                 const SizedBox(
                   height: 30,
                 ),
-                headerTable(),
+                formType == "Settlement"
+                    ? headerTableSettlement()
+                    : headerTable(),
                 isLoading
                     ? const SizedBox(
                         height: 150,
@@ -328,6 +333,137 @@ class _TransactionListPageState extends State<TransactionListPage> {
                       ),
                     ),
                     iconSort("FormCategory"),
+                    const SizedBox(
+                      width: 20,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Expanded(
+              flex: 2,
+              child: InkWell(
+                onTap: () {
+                  onTapHeader("SiteName");
+                },
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        'Location',
+                        style: headerTableTextStyle,
+                      ),
+                    ),
+                    iconSort("SiteName"),
+                    const SizedBox(
+                      width: 20,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            SizedBox(
+              width: 165,
+              child: InkWell(
+                onTap: () {
+                  onTapHeader("Created_At");
+                },
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        'Created',
+                        style: headerTableTextStyle,
+                      ),
+                    ),
+                    iconSort("Created_At"),
+                    const SizedBox(
+                      width: 20,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Expanded(
+              child: InkWell(
+                onTap: () {
+                  onTapHeader("Status");
+                },
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        'Status',
+                        style: headerTableTextStyle,
+                      ),
+                    ),
+                    iconSort("Status"),
+                    const SizedBox(
+                      width: 20,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(
+              width: 20,
+            ),
+          ],
+        ),
+        const SizedBox(
+          height: 12,
+        ),
+        const Divider(
+          color: spanishGray,
+          thickness: 1,
+        ),
+        const SizedBox(
+          height: 19,
+        )
+      ],
+    );
+  }
+
+  Widget headerTableSettlement() {
+    return Column(
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: InkWell(
+                onTap: () {
+                  onTapHeader("FormID");
+                },
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        'Settlement ID',
+                        style: headerTableTextStyle,
+                      ),
+                    ),
+                    iconSort("FormID"),
+                    const SizedBox(
+                      width: 20,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Expanded(
+              child: InkWell(
+                onTap: () {
+                  onTapHeader("RequestID");
+                },
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        'Request ID',
+                        style: headerTableTextStyle,
+                      ),
+                    ),
+                    iconSort("requestID"),
                     const SizedBox(
                       width: 20,
                     ),

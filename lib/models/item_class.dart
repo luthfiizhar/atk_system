@@ -10,6 +10,7 @@ class Item {
     this.reqPrice = 0,
     this.actualPrice = 0,
     this.actualQty = 0,
+    this.actualTotalPrice = 0,
   });
 
   String itemId;
@@ -22,6 +23,7 @@ class Item {
   int reqPrice;
   int actualPrice;
   int actualQty;
+  int actualTotalPrice;
 
   Map<String, dynamic> toJson() => {
         '"ItemID"': '"$itemId"',

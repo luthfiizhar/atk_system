@@ -1,6 +1,7 @@
 import 'package:atk_system_ga/constant/colors.dart';
 import 'package:atk_system_ga/constant/text_style.dart';
 import 'package:atk_system_ga/models/item_class.dart';
+import 'package:atk_system_ga/widgets/divider_table.dart';
 import 'package:atk_system_ga/widgets/input_field.dart';
 import 'package:flutter/material.dart';
 
@@ -25,17 +26,7 @@ class _ApprovalSuppliesItemListContainerState
   Widget build(BuildContext context) {
     return Column(
       children: [
-        widget.index == 0
-            ? const SizedBox()
-            : const Padding(
-                padding: EdgeInsets.symmetric(
-                  vertical: 28,
-                ),
-                child: Divider(
-                  color: grayx11,
-                  thickness: 0.5,
-                ),
-              ),
+        widget.index == 0 ? const SizedBox() : const DividerTable(),
         Row(
           children: [
             Expanded(

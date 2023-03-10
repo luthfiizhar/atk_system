@@ -6,24 +6,18 @@ import 'package:atk_system_ga/layout/layout_page.dart';
 import 'package:atk_system_ga/models/item_class.dart';
 import 'package:atk_system_ga/models/search_term.dart';
 import 'package:atk_system_ga/models/transaction_class.dart';
-import 'package:atk_system_ga/modules/supplies_request/approval_supplies_item_container.dart';
-import 'package:atk_system_ga/modules/supplies_request/approve_dialog_supplies_req.dart';
-import 'package:atk_system_ga/modules/supplies_request/confirm_dialog_supplies_req.dart';
-import 'package:atk_system_ga/modules/transaction_list/transaction_list_container.dart';
+import 'package:atk_system_ga/modules/settlement_request/approval/approval_settlement_item_list_container.dart';
 import 'package:atk_system_ga/widgets/buttons.dart';
-import 'package:atk_system_ga/widgets/dialogs.dart';
 import 'package:atk_system_ga/widgets/empty_table.dart';
 import 'package:atk_system_ga/widgets/search_input_field.dart';
-import 'package:atk_system_ga/widgets/send_back_dialog.dart';
 import 'package:atk_system_ga/widgets/total.dart';
-import 'package:atk_system_ga/widgets/transaction_activity_list.dart';
 import 'package:atk_system_ga/widgets/transaction_activity_section.dart';
 import 'package:atk_system_ga/widgets/transaction_info_section.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-class SuppliesReqDetailPage extends StatefulWidget {
-  SuppliesReqDetailPage({
+class DetailApprovalSettlementRequestPage extends StatefulWidget {
+  DetailApprovalSettlementRequestPage({
     super.key,
     this.formId = "",
   });
@@ -31,23 +25,42 @@ class SuppliesReqDetailPage extends StatefulWidget {
   String formId;
 
   @override
-  State<SuppliesReqDetailPage> createState() => _SuppliesReqDetailPageState();
+  State<DetailApprovalSettlementRequestPage> createState() =>
+      _DetailApprovalSettlementRequestPageState();
 }
 
-class _SuppliesReqDetailPageState extends State<SuppliesReqDetailPage> {
+class _DetailApprovalSettlementRequestPageState
+    extends State<DetailApprovalSettlementRequestPage> {
   TextEditingController _search = TextEditingController();
   SearchTerm searchTerm = SearchTerm();
+
   ApiService apiService = ApiService();
-
   Transaction transaction = Transaction();
-  List<TransactionActivity> transactionActivity = [];
 
+  List<TransactionActivity> transactionActivity = [];
   List<Item> items = [];
 
-  bool isLoadingDetail = true;
+  GlobalKey actualCostKey = GlobalKey();
 
   int totalBudget = 0;
-  int totalCost = 0;
+  int totalReqCost = 0;
+  int totalActualCost = 0;
+
+  onChangeQtyAndPrice(int index, String qtyValue, String priceValue) {
+    if (priceValue.contains(".")) {
+      transaction.items[index].actualPrice =
+          int.parse(priceValue.replaceAll(".", ""));
+    }
+    transaction.items[index].actualQty = int.parse(qtyValue);
+
+    totalActualCost = 0;
+    for (var element in transaction.items) {
+      totalActualCost =
+          totalActualCost + (element.actualQty * element.actualPrice);
+    }
+    // setState(() {});
+    actualCostKey.currentState!.setState(() {});
+  }
 
   onTapHeader(String orderBy) {
     setState(() {
@@ -66,9 +79,10 @@ class _SuppliesReqDetailPageState extends State<SuppliesReqDetailPage> {
     });
   }
 
-  Future initDetailFilled() {
-    return apiService.getFormDetailFilled(widget.formId).then((value) {
-      print(value);
+  Future initDetailSettlement() {
+    return apiService
+        .getSettlementDetail(widget.formId, searchTerm)
+        .then((value) {
       if (value['Status'].toString() == "200") {
         List resultItems = value["Data"]["Items"];
         List resultActivity = value["Data"]["Comments"];
@@ -82,17 +96,19 @@ class _SuppliesReqDetailPageState extends State<SuppliesReqDetailPage> {
         transaction.month = value["Data"]["Month"];
         transaction.status = value["Data"]["Status"];
         totalBudget = value['Data']["Budget"];
-        totalCost = value['Data']['TotalCost'];
+        totalReqCost = value['Data']['TotalCost'];
+        totalActualCost = value['Data']['TotalActualCost'];
 
         for (var element in resultItems) {
           items.add(
             Item(
               itemId: element['ItemID'].toString(),
               itemName: element['ItemName'],
-              unit: element['Unit'],
-              basePrice: element['BasePrice'],
+              basePrice: element['ItemPrice'],
               qty: element['Quantity'],
               totalPrice: element['TotalPrice'],
+              actualPrice: element['ActualPrice'],
+              actualQty: element['ActualQuantity'],
             ),
           );
         }
@@ -100,48 +116,63 @@ class _SuppliesReqDetailPageState extends State<SuppliesReqDetailPage> {
         for (var element in resultActivity) {
           transactionActivity.add(
             TransactionActivity(
-              id: element['CommentID'],
               empName: element["EmpName"],
-              comment: element["CommentText"] ?? "-",
+              comment: element["CommentText"],
               date: element["CommentDate"],
               status: element["CommentDescription"],
               photo: element["Photo"],
-              // attachment: element['Attachments'],
             ),
           );
           if (element['Attachments'] != []) {
             attachmentResult = element['Attachments'];
           }
         }
-        for (var t in transactionActivity) {
-          for (var element in attachmentResult) {
-            if (t.id == element['CommentID']) {
-              t.attachment.add(
-                Attachment(
-                  file: element['ImageURL'],
-                  type: element['FileType'],
-                ),
-              );
+        if (resultActivity.isNotEmpty) {
+          for (var element in resultActivity) {
+            transactionActivity.add(
+              TransactionActivity(
+                id: element['CommentID'],
+                empName: element["EmpName"],
+                comment: element["CommentText"] ?? "-",
+                date: element["CommentDate"],
+                status: element["CommentDescription"],
+                photo: element["Photo"],
+                // attachment: element['Attachments'],
+              ),
+            );
+            if (element['Attachments'] != []) {
+              attachmentResult = element['Attachments'];
+            }
+
+            for (var t in transactionActivity) {
+              for (var element in attachmentResult) {
+                if (t.id == element['CommentID']) {
+                  t.attachment.add(
+                    Attachment(
+                      file: element['ImageURL'],
+                      type: element['FileType'],
+                    ),
+                  );
+                }
+              }
             }
           }
         }
+
+        transaction.items = items;
         setState(() {});
       } else {
-        showDialog(
-          context: context,
-          builder: (context) => AlertDialogBlack(
-            title: value['Title'],
-            contentText: value['Message'],
-          ),
-        );
+        print("not success");
       }
+    }).onError((error, stackTrace) {
+      print(error);
     });
   }
 
   @override
   void initState() {
     super.initState();
-    initDetailFilled();
+    initDetailSettlement();
   }
 
   @override
@@ -169,17 +200,21 @@ class _SuppliesReqDetailPageState extends State<SuppliesReqDetailPage> {
                 const SizedBox(
                   height: 20,
                 ),
-                ListView.builder(
-                  itemCount: items.length,
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemBuilder: (context, index) {
-                    return ApprovalSuppliesItemListContainer(
-                      index: index,
-                      item: items[index],
-                    );
-                  },
-                ),
+                transaction.items.isEmpty
+                    ? EmptyTable(
+                        text: 'No item in database',
+                      )
+                    : ListView.builder(
+                        itemCount: transaction.items.length,
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemBuilder: (context, index) {
+                          return ApprovalSettlementRequestItemListContainer(
+                            index: index,
+                            item: transaction.items[index],
+                          );
+                        },
+                      ),
                 const SizedBox(
                   height: 50,
                 ),
@@ -187,39 +222,13 @@ class _SuppliesReqDetailPageState extends State<SuppliesReqDetailPage> {
                 const Padding(
                   padding: EdgeInsets.only(
                     top: 38,
-                    bottom: 18,
+                    bottom: 23,
                   ),
                   child: Divider(
                     color: grayx11,
                     thickness: 1,
                   ),
                 ),
-                // Row(
-                //   mainAxisAlignment: MainAxisAlignment.end,
-                //   children: [
-                //     TransparentButtonBlack(
-                //       text: 'Cancel',
-                //       disabled: false,
-                //       padding: ButtonSize().mediumSize(),
-                //       onTap: () {},
-                //     ),
-                //     const SizedBox(
-                //       width: 20,
-                //     ),
-                //     RegularButton(
-                //       text: 'Submit Request',
-                //       disabled: false,
-                //       padding: ButtonSize().mediumSize(),
-                //       onTap: () {
-                //         showDialog(
-                //           context: context,
-                //           builder: (context) => ConfirmDialogSuppliesRequest(),
-                //         );
-                //       },
-                //     ),
-                //   ],
-                // ),
-                // commentSection(),
                 TransactionActivitySection(
                   transactionActivity: transactionActivity,
                 ),
@@ -236,15 +245,6 @@ class _SuppliesReqDetailPageState extends State<SuppliesReqDetailPage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    RegularButton(
-                      text: 'Create Settlement',
-                      disabled: false,
-                      padding: ButtonSize().mediumSize(),
-                      onTap: () {},
-                    ),
-                    const SizedBox(
-                      width: 20,
-                    ),
                     RegularButton(
                       text: 'Print Transaction',
                       disabled: false,
@@ -270,7 +270,7 @@ class _SuppliesReqDetailPageState extends State<SuppliesReqDetailPage> {
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
         TransactionInfoSection(
-          title: "Order Supplies Detail",
+          title: "Approval Order Settlement Detail",
           transaction: transaction,
         ),
         SizedBox(
@@ -285,7 +285,7 @@ class _SuppliesReqDetailPageState extends State<SuppliesReqDetailPage> {
               color: davysGray,
             ),
           ),
-        )
+        ),
       ],
     );
   }
@@ -305,7 +305,7 @@ class _SuppliesReqDetailPageState extends State<SuppliesReqDetailPage> {
                   children: [
                     Expanded(
                       child: Text(
-                        'ItemName',
+                        'Item Name',
                         style: headerTableTextStyle,
                       ),
                     ),
@@ -318,20 +318,20 @@ class _SuppliesReqDetailPageState extends State<SuppliesReqDetailPage> {
               ),
             ),
             SizedBox(
-              width: 100,
+              width: 135,
               child: InkWell(
                 onTap: () {
-                  onTapHeader("Unit");
+                  onTapHeader("reqQty");
                 },
                 child: Row(
                   children: [
                     Expanded(
                       child: Text(
-                        'Unit',
+                        'Req. Qty',
                         style: headerTableTextStyle,
                       ),
                     ),
-                    iconSort("Unit"),
+                    iconSort("Req. Qty"),
                     const SizedBox(
                       width: 20,
                     ),
@@ -342,17 +342,17 @@ class _SuppliesReqDetailPageState extends State<SuppliesReqDetailPage> {
             Expanded(
               child: InkWell(
                 onTap: () {
-                  onTapHeader("BasePrice");
+                  onTapHeader("reqPrice");
                 },
                 child: Row(
                   children: [
                     Expanded(
                       child: Text(
-                        'Base Price',
+                        'Req. Price',
                         style: headerTableTextStyle,
                       ),
                     ),
-                    iconSort("BasePrice"),
+                    iconSort("reqPrice"),
                     const SizedBox(
                       width: 20,
                     ),
@@ -361,20 +361,20 @@ class _SuppliesReqDetailPageState extends State<SuppliesReqDetailPage> {
               ),
             ),
             SizedBox(
-              width: 125,
+              width: 150,
               child: InkWell(
                 onTap: () {
-                  onTapHeader("Qty");
+                  onTapHeader("actualQty");
                 },
                 child: Row(
                   children: [
                     Expanded(
                       child: Text(
-                        'QTY',
+                        'Actual Qty',
                         style: headerTableTextStyle,
                       ),
                     ),
-                    iconSort("Qty"),
+                    iconSort("actualQty"),
                     const SizedBox(
                       width: 20,
                     ),
@@ -385,17 +385,17 @@ class _SuppliesReqDetailPageState extends State<SuppliesReqDetailPage> {
             Expanded(
               child: InkWell(
                 onTap: () {
-                  onTapHeader("TotalPrice");
+                  onTapHeader("ActualPrice");
                 },
                 child: Row(
                   children: [
                     Expanded(
                       child: Text(
-                        'Total Price',
+                        'Actual Price',
                         style: headerTableTextStyle,
                       ),
                     ),
-                    iconSort("TotalPrice"),
+                    iconSort("ActualPrice"),
                     const SizedBox(
                       width: 20,
                     ),
@@ -428,10 +428,22 @@ class _SuppliesReqDetailPageState extends State<SuppliesReqDetailPage> {
           width: 60,
         ),
         TotalInfo(
-          title: 'Total Cost',
-          number: totalCost,
-          numberColor: orangeAccent,
+          title: 'Total Requested Cost',
+          number: totalReqCost,
         ),
+        const SizedBox(
+          width: 60,
+        ),
+        StatefulBuilder(
+            key: actualCostKey,
+            builder: (context, setstate) {
+              return TotalInfo(
+                title: 'Total Actual Cost',
+                number: totalActualCost,
+                numberColor:
+                    totalActualCost > totalReqCost ? orangeAccent : greenAcent,
+              );
+            }),
       ],
     );
   }
@@ -480,41 +492,6 @@ class _SuppliesReqDetailPageState extends State<SuppliesReqDetailPage> {
                     size: 16,
                   ),
                 ),
-    );
-  }
-
-  Widget commentSection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        Text(
-          'Transaction Activity',
-          style: helveticaText.copyWith(
-            fontSize: 22,
-            fontWeight: FontWeight.w700,
-            color: davysGray,
-          ),
-        ),
-        const SizedBox(
-          height: 20,
-        ),
-        transactionActivity.isEmpty
-            ? EmptyTable(
-                text: 'No activity.',
-              )
-            : ListView.builder(
-                itemCount: transactionActivity.length,
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemBuilder: (context, index) {
-                  return TransactionActivityListContainer(
-                    index: index,
-                    transactionActivity: transactionActivity[index],
-                  );
-                },
-              ),
-      ],
     );
   }
 }

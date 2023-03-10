@@ -3,12 +3,12 @@ import 'package:atk_system_ga/functions/api_request.dart';
 import 'package:atk_system_ga/models/main_model.dart';
 import 'package:atk_system_ga/modules/home/home_page.dart';
 import 'package:atk_system_ga/modules/login/login_page.dart';
-import 'package:atk_system_ga/modules/settlement_request/approval_settlement_request_page.dart';
-import 'package:atk_system_ga/modules/settlement_request/settlement_request_page.dart';
-import 'package:atk_system_ga/models/supplies_request_class.dart';
-import 'package:atk_system_ga/modules/supplies_request/approval_supplies_req_page.dart';
-import 'package:atk_system_ga/modules/supplies_request/supplies_req_detail_page.dart';
-import 'package:atk_system_ga/modules/supplies_request/supplies_request_page.dart';
+import 'package:atk_system_ga/modules/settlement_request/approval/approval_settlement_request_page.dart';
+import 'package:atk_system_ga/modules/settlement_request/detail/settlement_request_detail_page.dart';
+import 'package:atk_system_ga/modules/settlement_request/request/settlement_request_page.dart';
+import 'package:atk_system_ga/modules/supplies_request/approval/approval_supplies_req_page.dart';
+import 'package:atk_system_ga/modules/supplies_request/detail/supplies_req_detail_page.dart';
+import 'package:atk_system_ga/modules/supplies_request/order/supplies_request_page.dart';
 import 'package:atk_system_ga/modules/transaction_list/transaction_list_page.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -107,7 +107,7 @@ class MyApp extends StatelessWidget {
             pageBuilder: (context, state) {
               return NoTransitionPage<void>(
                 key: state.pageKey,
-                child: SuppliesReqDetailPage(
+                child: DetailApprovalSettlementRequestPage(
                   formId: state.params["formId"].toString(),
                 ),
               );
@@ -126,7 +126,7 @@ class MyApp extends StatelessWidget {
             },
           ),
           GoRoute(
-            name: 'setlement_request',
+            name: 'settlement_request',
             path: 'settlement_request/:formId',
             pageBuilder: (context, state) {
               return NoTransitionPage<void>(
@@ -141,7 +141,6 @@ class MyApp extends StatelessWidget {
             name: 'approval_settlement',
             path: 'approval_settlement/:formId',
             pageBuilder: (context, state) {
-              print(state.params.toString());
               return NoTransitionPage<void>(
                 key: state.pageKey,
                 child: ApprovalSettlementRequestPage(

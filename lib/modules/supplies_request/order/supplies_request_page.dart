@@ -6,12 +6,10 @@ import 'package:atk_system_ga/layout/layout_page.dart';
 import 'package:atk_system_ga/models/item_class.dart';
 import 'package:atk_system_ga/models/search_term.dart';
 import 'package:atk_system_ga/models/transaction_class.dart';
-import 'package:atk_system_ga/modules/settlement_request/approval_settlement_item_list_container.dart';
-import 'package:atk_system_ga/modules/settlement_request/dialog_confirm_approval_settlement.dart';
-import 'package:atk_system_ga/modules/settlement_request/dialog_confirm_settlement_request.dart';
-import 'package:atk_system_ga/modules/settlement_request/settlement_request_item_list_container.dart';
-import 'package:atk_system_ga/modules/supplies_request/approve_dialog_supplies_req.dart';
+import 'package:atk_system_ga/modules/supplies_request/order/confirm_dialog_supplies_req.dart';
+import 'package:atk_system_ga/modules/supplies_request/order/supplies_item_list_container.dart';
 import 'package:atk_system_ga/widgets/buttons.dart';
+import 'package:atk_system_ga/widgets/dialogs.dart';
 import 'package:atk_system_ga/widgets/empty_table.dart';
 import 'package:atk_system_ga/widgets/search_input_field.dart';
 import 'package:atk_system_ga/widgets/total.dart';
@@ -20,8 +18,8 @@ import 'package:atk_system_ga/widgets/transaction_info_section.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-class ApprovalSettlementRequestPage extends StatefulWidget {
-  ApprovalSettlementRequestPage({
+class SuppliesRequestPage extends StatefulWidget {
+  SuppliesRequestPage({
     super.key,
     this.formId = "",
   });
@@ -29,45 +27,247 @@ class ApprovalSettlementRequestPage extends StatefulWidget {
   String formId;
 
   @override
-  State<ApprovalSettlementRequestPage> createState() =>
-      _ApprovalSettlementRequestPageState();
+  State<SuppliesRequestPage> createState() => _SuppliesRequestPageState();
 }
 
-class _ApprovalSettlementRequestPageState
-    extends State<ApprovalSettlementRequestPage> {
-  TextEditingController _search = TextEditingController();
-  SearchTerm searchTerm = SearchTerm();
-
+class _SuppliesRequestPageState extends State<SuppliesRequestPage> {
   ApiService apiService = ApiService();
+  TextEditingController _search = TextEditingController();
+  SearchTerm searchTerm =
+      SearchTerm(keywords: "", orderBy: "ItemName", orderDir: "ASC");
   Transaction transaction = Transaction();
 
-  List<TransactionActivity> transactionActivity = [];
-  List<Item> items = [];
+  GlobalKey totalCostKey = GlobalKey();
 
-  GlobalKey actualCostKey = GlobalKey();
+  List<Item> items = [];
+  List<Item> tempItems = [];
+
+  bool isLoadingGetDetail = true;
+
+  bool isLoadingItems = true;
+
+  List<TransactionActivity> transactionActivity = [];
 
   int totalBudget = 0;
-  int totalReqCost = 0;
-  int totalActualCost = 0;
+  int totalCost = 0;
 
-  onChangeQtyAndPrice(int index, String qtyValue, String priceValue) {
-    if (priceValue.contains(".")) {
-      transaction.items[index].actualPrice =
-          int.parse(priceValue.replaceAll(".", ""));
-    }
-    transaction.items[index].actualQty = int.parse(qtyValue);
+  bool isSendBack = false;
 
-    totalActualCost = 0;
-    for (var element in transaction.items) {
-      totalActualCost =
-          totalActualCost + (element.actualQty * element.actualPrice);
+  Future updateTable() {
+    isLoadingItems = false;
+    items.clear();
+    setState(() {});
+    return apiService.getFormDetail(widget.formId, searchTerm).then((value) {
+      if (value['Status'].toString() == "200") {
+        List resultItems = value["Data"]["Items"];
+        for (var element in resultItems) {
+          items.add(
+            Item(
+              itemId: element['ItemID'].toString(),
+              itemName: element['ItemName'],
+              basePrice: element['Price'],
+              qty: element['Quantity'],
+              totalPrice: element['TotalPrice'],
+              unit: element['Unit'],
+            ),
+          );
+        }
+
+        for (var temp in tempItems) {
+          for (var i in items) {
+            if (temp.itemId == i.itemId) {
+              i.qty = temp.qty;
+            }
+          }
+        }
+
+        print("Temp -> $tempItems");
+        print("Real -> $items");
+        setState(() {});
+      } else {}
+    });
+  }
+
+  initFormDetailFilled() {
+    return apiService
+        .getFormDetailFilled(widget.formId, searchTerm)
+        .then((value) {
+      // print(value);
+
+      setState(() {
+        isLoadingGetDetail = false;
+        isLoadingItems = false;
+      });
+      if (value['Status'].toString() == "200") {
+        List resultItems = value["Data"]["Items"];
+        List resultActivity = value["Data"]["Comments"];
+        List attachmentResult = [];
+
+        transaction.formId = value["Data"]["FormID"];
+        transaction.siteName = value["Data"]["SiteName"];
+        transaction.siteArea = value["Data"]["SiteArea"];
+        transaction.budget = value["Data"]["Budget"];
+        transaction.orderPeriod = value["Data"]["OrderPeriod"];
+        transaction.month = value["Data"]["Month"];
+        transaction.status = value["Data"]["Status"];
+        totalBudget = value['Data']["Budget"];
+        // isSendBack = value['Data']['Sendback'] > 0 ? true : false;
+        totalCost = value['Data']['TotalCost'];
+
+        for (var element in resultItems) {
+          items.add(
+            Item(
+              itemId: element['ItemID'].toString(),
+              itemName: element['ItemName'],
+              basePrice: element['Price'],
+              qty: element['Quantity'],
+              totalPrice: element['TotalPrice'],
+            ),
+          );
+        }
+
+        if (resultActivity.isNotEmpty) {
+          for (var element in resultActivity) {
+            transactionActivity.add(
+              TransactionActivity(
+                id: element['CommentID'],
+                empName: element["EmpName"],
+                comment: element["CommentText"] ?? "-",
+                date: element["CommentDate"],
+                status: element["CommentDescription"],
+                photo: element["Photo"],
+                // attachment: element['Attachments'],
+              ),
+            );
+            if (element['Attachments'] != []) {
+              attachmentResult = element['Attachments'];
+            }
+
+            for (var t in transactionActivity) {
+              for (var element in attachmentResult) {
+                if (t.id == element['CommentID']) {
+                  t.attachment.add(
+                    Attachment(
+                      file: element['ImageURL'],
+                      type: element['FileType'] ?? "image",
+                    ),
+                  );
+                }
+              }
+            }
+          }
+        }
+
+        setState(() {});
+      } else {
+        print("not success");
+      }
+    }).onError((error, stackTrace) {
+      print(error);
+    });
+  }
+
+  Future initFormDetail() {
+    return apiService.getFormDetail(widget.formId, searchTerm).then((value) {
+      print(value);
+
+      setState(() {
+        isLoadingGetDetail = false;
+        isLoadingItems = false;
+      });
+      if (value['Status'].toString() == "200") {
+        List resultItems = value["Data"]["Items"];
+        List resultActivity = value["Data"]["Comments"];
+        List attachmentResult = [];
+
+        transaction.formId = value["Data"]["FormID"];
+        transaction.siteName = value["Data"]["SiteName"];
+        transaction.siteArea = value["Data"]["SiteArea"];
+        transaction.budget = value["Data"]["Budget"];
+        transaction.orderPeriod = value["Data"]["OrderPeriod"];
+        transaction.month = value["Data"]["Month"];
+        transaction.status = value["Data"]["Status"];
+        totalBudget = value['Data']["Budget"];
+        isSendBack = value['Data']['Sendback'] > 0 ? true : false;
+        totalCost = value['Data']['TotalCost'];
+
+        for (var element in resultItems) {
+          items.add(
+            Item(
+              itemId: element['ItemID'].toString(),
+              itemName: element['ItemName'],
+              basePrice: element['Price'],
+              qty: element['Quantity'],
+              totalPrice: element['TotalPrice'],
+              unit: element['Unit'],
+            ),
+          );
+          totalCost = totalCost + int.parse(element['TotalPrice'].toString());
+        }
+
+        if (resultActivity.isNotEmpty) {
+          for (var element in resultActivity) {
+            transactionActivity.add(
+              TransactionActivity(
+                id: element['CommentID'],
+                empName: element["EmpName"],
+                comment: element["CommentText"] ?? "-",
+                date: element["CommentDate"],
+                status: element["CommentDescription"],
+                photo: element["Photo"],
+                // attachment: element['Attachments'],
+              ),
+            );
+            if (element['Attachments'] != []) {
+              attachmentResult = element['Attachments'];
+            }
+
+            for (var t in transactionActivity) {
+              for (var element in attachmentResult) {
+                if (t.id == element['CommentID']) {
+                  t.attachment.add(
+                    Attachment(
+                      file: element['ImageURL'],
+                      type: element['FileType'] ?? "image",
+                    ),
+                  );
+                }
+              }
+            }
+          }
+        }
+        setState(() {});
+      } else {
+        print("not success");
+      }
+    }).onError((error, stackTrace) {
+      print(error);
+    });
+  }
+
+  countTotal() {
+    totalCost = 0;
+
+    for (var element in items) {
+      totalCost = totalCost + element.totalPrice;
+      tempItems.add(element);
     }
+    totalCostKey.currentState!.setState(() {});
+    transaction.totalCost = totalCost;
+
     // setState(() {});
-    actualCostKey.currentState!.setState(() {});
+  }
+
+  calculateItems() {
+    transaction.items.clear();
+    items.where((element) => element.qty > 0).forEach((element) {
+      transaction.items.add(element);
+    });
   }
 
   onTapHeader(String orderBy) {
     setState(() {
+      // tempItems = items;
       if (searchTerm.orderBy == orderBy) {
         switch (searchTerm.orderDir) {
           case "ASC":
@@ -80,65 +280,39 @@ class _ApprovalSettlementRequestPageState
         }
       }
       searchTerm.orderBy = orderBy;
+      updateTable().then((value) {});
     });
   }
 
-  Future initDetailSettlement() {
-    return apiService.getSettlementDetail(widget.formId).then((value) {
-      if (value['Status'].toString() == "200") {
-        List resultItems = value["Data"]["Items"];
-        List resultActivity = value["Data"]["Comments"];
-
-        transaction.formId = value["Data"]["FormID"];
-        transaction.siteName = value["Data"]["SiteName"];
-        transaction.siteArea = value["Data"]["SiteArea"];
-        transaction.budget = value["Data"]["Budget"];
-        transaction.orderPeriod = value["Data"]["OrderPeriod"];
-        transaction.month = value["Data"]["Month"];
-        transaction.status = value["Data"]["Status"];
-        totalBudget = value['Data']["Budget"];
-        totalReqCost = value['Data']['TotalCost'];
-        totalActualCost = value['Data']['TotalActualCost'];
-
-        for (var element in resultItems) {
-          items.add(
-            Item(
-              itemId: element['ItemID'].toString(),
-              itemName: element['ItemName'],
-              basePrice: element['ItemPrice'],
-              qty: element['Quantity'],
-              totalPrice: element['TotalPrice'],
-              actualPrice: element['ActualPrice'],
-              actualQty: element['ActualQuantity'],
-            ),
-          );
-        }
-
-        for (var element in resultActivity) {
-          transactionActivity.add(
-            TransactionActivity(
-              empName: element["EmpName"],
-              comment: element["CommentText"],
-              date: element["CommentDate"],
-              status: element["CommentDescription"],
-              photo: element["Photo"],
-            ),
-          );
-        }
-        transaction.items = items;
-        setState(() {});
-      } else {
-        print("not success");
-      }
-    }).onError((error, stackTrace) {
-      print(error);
+  saveItem(Item item) {
+    apiService
+        .saveItemReq(transaction, item)
+        .then((value) {})
+        .onError((error, stackTrace) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialogBlack(
+          title: "Error saveItem",
+          contentText: error.toString(),
+        ),
+      );
     });
+  }
+
+  searchItem() {
+    searchTerm.keywords = _search.text;
+    updateTable().then((value) {});
   }
 
   @override
   void initState() {
     super.initState();
-    initDetailSettlement();
+    // initFormDetail().then((value) {
+    //   if (isSendBack) {
+    //     initFormDetailFilled();
+    //   }
+    // });
+    initFormDetail();
   }
 
   @override
@@ -166,21 +340,27 @@ class _ApprovalSettlementRequestPageState
                 const SizedBox(
                   height: 20,
                 ),
-                transaction.items.isEmpty
-                    ? EmptyTable(
-                        text: 'No item in database',
+                isLoadingItems
+                    ? const CircularProgressIndicator(
+                        color: eerieBlack,
                       )
-                    : ListView.builder(
-                        itemCount: transaction.items.length,
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemBuilder: (context, index) {
-                          return ApprovalSettlementRequestItemListContainer(
-                            index: index,
-                            item: transaction.items[index],
-                          );
-                        },
-                      ),
+                    : items.isEmpty
+                        ? EmptyTable(
+                            text: 'No item in database',
+                          )
+                        : ListView.builder(
+                            itemCount: items.length,
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemBuilder: (context, index) {
+                              return SuppliesItemListContainer(
+                                index: index,
+                                item: items[index],
+                                countTotal: countTotal,
+                                saveItem: saveItem,
+                              );
+                            },
+                          ),
                 const SizedBox(
                   height: 50,
                 ),
@@ -209,36 +389,28 @@ class _ApprovalSettlementRequestPageState
                   ),
                 ),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     TransparentButtonBlack(
-                      text: 'Send Back',
+                      text: 'Cancel',
                       disabled: false,
                       padding: ButtonSize().mediumSize(),
                       onTap: () {
-                        showDialog(
-                          context: context,
-                          builder: (context) => ApproveDialogSuppliesReq(
-                            transaction: transaction,
-                          ),
-                        ).then((value) {
-                          if (value) {
-                            context.goNamed('home');
-                          }
-                        });
+                        context.goNamed('home');
                       },
                     ),
                     const SizedBox(
                       width: 20,
                     ),
                     RegularButton(
-                      text: 'Approve',
+                      text: isSendBack ? 'Submit Revise' : 'Submit Request',
                       disabled: false,
                       padding: ButtonSize().mediumSize(),
-                      onTap: () {
+                      onTap: () async {
+                        await calculateItems();
                         showDialog(
                           context: context,
-                          builder: (context) => ApproveSettlementDialog(
+                          builder: (context) => ConfirmDialogSuppliesRequest(
                             transaction: transaction,
                           ),
                         ).then((value) {
@@ -252,7 +424,7 @@ class _ApprovalSettlementRequestPageState
                 ),
                 const SizedBox(
                   height: 100,
-                ),
+                )
               ],
             ),
           ),
@@ -266,10 +438,14 @@ class _ApprovalSettlementRequestPageState
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
-        TransactionInfoSection(
-          title: "Approval Order Settlement",
-          transaction: transaction,
-        ),
+        isLoadingGetDetail
+            ? const CircularProgressIndicator(
+                color: eerieBlack,
+              )
+            : TransactionInfoSection(
+                title: "Order Supplies",
+                transaction: transaction,
+              ),
         SizedBox(
           width: 220,
           child: SearchInputField(
@@ -281,6 +457,9 @@ class _ApprovalSettlementRequestPageState
               Icons.search,
               color: davysGray,
             ),
+            onFieldSubmitted: (value) {
+              searchItem();
+            },
           ),
         )
       ],
@@ -315,20 +494,20 @@ class _ApprovalSettlementRequestPageState
               ),
             ),
             SizedBox(
-              width: 135,
+              width: 100,
               child: InkWell(
                 onTap: () {
-                  onTapHeader("reqQty");
+                  onTapHeader("Unit");
                 },
                 child: Row(
                   children: [
                     Expanded(
                       child: Text(
-                        'Req. Qty',
+                        'Unit',
                         style: headerTableTextStyle,
                       ),
                     ),
-                    iconSort("Req. Qty"),
+                    iconSort("Unit"),
                     const SizedBox(
                       width: 20,
                     ),
@@ -339,17 +518,17 @@ class _ApprovalSettlementRequestPageState
             Expanded(
               child: InkWell(
                 onTap: () {
-                  onTapHeader("reqPrice");
+                  onTapHeader("Price");
                 },
                 child: Row(
                   children: [
                     Expanded(
                       child: Text(
-                        'Req. Price',
+                        'Base Price',
                         style: headerTableTextStyle,
                       ),
                     ),
-                    iconSort("reqPrice"),
+                    iconSort("Price"),
                     const SizedBox(
                       width: 20,
                     ),
@@ -358,20 +537,20 @@ class _ApprovalSettlementRequestPageState
               ),
             ),
             SizedBox(
-              width: 150,
+              width: 125,
               child: InkWell(
                 onTap: () {
-                  onTapHeader("actualQty");
+                  onTapHeader("Quantity");
                 },
                 child: Row(
                   children: [
                     Expanded(
                       child: Text(
-                        'Actual Qty',
+                        'Qty',
                         style: headerTableTextStyle,
                       ),
                     ),
-                    iconSort("actualQty"),
+                    iconSort("Quantity"),
                     const SizedBox(
                       width: 20,
                     ),
@@ -382,17 +561,17 @@ class _ApprovalSettlementRequestPageState
             Expanded(
               child: InkWell(
                 onTap: () {
-                  onTapHeader("ActualPrice");
+                  onTapHeader("TotalPrice");
                 },
                 child: Row(
                   children: [
                     Expanded(
                       child: Text(
-                        'Actual Price',
+                        'Total Price',
                         style: headerTableTextStyle,
                       ),
                     ),
-                    iconSort("ActualPrice"),
+                    iconSort("TotalPrice"),
                     const SizedBox(
                       width: 20,
                     ),
@@ -424,21 +603,13 @@ class _ApprovalSettlementRequestPageState
         const SizedBox(
           width: 60,
         ),
-        TotalInfo(
-          title: 'Total Requested Cost',
-          number: totalReqCost,
-        ),
-        const SizedBox(
-          width: 60,
-        ),
         StatefulBuilder(
-            key: actualCostKey,
-            builder: (context, setstate) {
+            key: totalCostKey,
+            builder: (context, setState) {
               return TotalInfo(
-                title: 'Total Actual Cost',
-                number: totalActualCost,
-                numberColor:
-                    totalActualCost > totalReqCost ? orangeAccent : greenAcent,
+                title: 'Total Cost',
+                number: totalCost,
+                numberColor: totalCost > totalBudget ? orangeAccent : davysGray,
               );
             }),
       ],

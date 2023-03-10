@@ -119,29 +119,39 @@ class _TransactionListContainerState extends State<TransactionListContainer> {
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
                               TransparentBorderedBlackButton(
+                                fontSize: 14,
                                 text: 'Detail',
                                 disabled: false,
                                 fontWeight: FontWeight.w700,
                                 padding: ButtonSize().tableButton(),
                                 onTap: () {
-                                  context.goNamed(
-                                    'request_order_detail',
-                                    params: {
-                                      "formId": widget.transaction.formId,
-                                    },
-                                  );
+                                  if (widget.transaction.status == "Draft") {
+                                    context.goNamed(
+                                      'supplies_request',
+                                      params: {
+                                        "formId": widget.transaction.formId,
+                                      },
+                                    );
+                                  } else {
+                                    context.goNamed(
+                                      'request_order_detail',
+                                      params: {
+                                        "formId": widget.transaction.formId,
+                                      },
+                                    );
+                                  }
                                 },
                               ),
                               const SizedBox(
                                 width: 10,
                               ),
-                              widget.transaction.status == "Draft" ||
-                                      widget.transaction.status ==
+                              widget.transaction.status ==
                                           "Waiting SM Approval" ||
                                       widget.transaction.status ==
                                           "Waiting OPS Approval"
                                   ? RegularButton(
                                       text: 'Approve',
+                                      fontSize: 14,
                                       disabled: false,
                                       padding: ButtonSize().tableButton(),
                                       onTap: () {
@@ -159,6 +169,7 @@ class _TransactionListContainerState extends State<TransactionListContainer> {
                               ),
                               widget.transaction.status == "Approved"
                                   ? RegularButton(
+                                      fontSize: 14,
                                       text: 'Settle',
                                       disabled: false,
                                       padding: ButtonSize().tableButton(),
@@ -246,13 +257,19 @@ class _TransactionListContainerStateSettlement
                         style: bodyTableNormalText,
                       ),
                     ),
-                    SizedBox(
-                      width: 165,
+                    Expanded(
                       child: Text(
-                        widget.transaction.category,
+                        widget.transaction.reqId,
                         style: bodyTableLightText,
                       ),
                     ),
+                    // SizedBox(
+                    //   width: 165,
+                    //   child: Text(
+                    //     widget.transaction.category,
+                    //     style: bodyTableLightText,
+                    //   ),
+                    // ),
                     Expanded(
                       flex: 2,
                       child: Text(
@@ -300,6 +317,7 @@ class _TransactionListContainerStateSettlement
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
                               TransparentBorderedBlackButton(
+                                fontSize: 14,
                                 text: 'Detail',
                                 disabled: false,
                                 fontWeight: FontWeight.w700,
@@ -311,23 +329,32 @@ class _TransactionListContainerStateSettlement
                                   //     "formId": widget.transaction.formId,
                                   //   },
                                   // );
-                                  context.goNamed(
-                                    'settlement_detail',
-                                    params: {
-                                      "formId": widget.transaction.formId,
-                                    },
-                                  );
+                                  if (widget.transaction.status == "Draft") {
+                                    context.goNamed(
+                                      'settlement_request',
+                                      params: {
+                                        "formId": widget.transaction.formId,
+                                      },
+                                    );
+                                  } else {
+                                    context.goNamed(
+                                      'settlement_detail',
+                                      params: {
+                                        "formId": widget.transaction.formId,
+                                      },
+                                    );
+                                  }
                                 },
                               ),
                               const SizedBox(
                                 width: 10,
                               ),
-                              widget.transaction.status == "Draft" ||
-                                      widget.transaction.status ==
+                              widget.transaction.status ==
                                           "Waiting SM Approval" ||
                                       widget.transaction.status ==
                                           "Waiting OPS Approval"
                                   ? RegularButton(
+                                      fontSize: 14,
                                       text: 'Approve',
                                       disabled: false,
                                       padding: ButtonSize().tableButton(),

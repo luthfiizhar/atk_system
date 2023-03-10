@@ -96,6 +96,53 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+  Future createOrderAdditional() async {
+    apiService.createTransaction("Additional").then((value) {
+      print(value);
+      if (value["Status"].toString() == "200") {
+        String status = value['Data']['Status'];
+        formId = value["Data"]["FormID"];
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialogBlack(
+            title: value['Title'],
+            contentText: value['Message'],
+          ),
+        ).then((value) {
+          if (status == "Draft") {
+            context.goNamed(
+              'supplies_request',
+              params: {"formId": formId},
+            );
+          } else {
+            context.goNamed(
+              'request_order_detail',
+              params: {"formId": formId},
+            );
+          }
+        });
+      } else {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialogBlack(
+            title: value['Title'],
+            contentText: value['Message'],
+            isSuccess: false,
+          ),
+        );
+      }
+    }).onError((error, stackTrace) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialogBlack(
+          title: "Error createTransaction",
+          contentText: error.toString(),
+          isSuccess: false,
+        ),
+      );
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return LayoutPageWeb(
@@ -141,7 +188,7 @@ class _HomePageState extends State<HomePage> {
             Text(
               'Welcome to Supplies Decentralization',
               style: helveticaText.copyWith(
-                fontSize: 24,
+                fontSize: 32,
                 fontWeight: FontWeight.w700,
                 color: eerieBlack,
               ),
@@ -172,6 +219,9 @@ class _HomePageState extends State<HomePage> {
                         height: 1.75,
                         color: davysGray,
                       ),
+                    ),
+                    const SizedBox(
+                      height: 5,
                     ),
                     Text(
                       'Role: $role',
@@ -277,8 +327,10 @@ class _HomePageState extends State<HomePage> {
           assets: 'assets/icons/menu_add.png',
           text: 'Order Additional Supplies',
           description:
-              'Ask for additional supplies that you’ve missed in monthly order',
-          onTap: () {},
+              'Ask for additional supplies that you\'ve missed in monthly order',
+          onTap: () {
+            createOrderAdditional().then((value) {});
+          },
         ),
         MenuButton(
           disabled: false,

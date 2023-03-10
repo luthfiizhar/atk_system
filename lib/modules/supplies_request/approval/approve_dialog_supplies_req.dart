@@ -8,8 +8,8 @@ import 'package:atk_system_ga/widgets/dialogs.dart';
 import 'package:atk_system_ga/widgets/input_field.dart';
 import 'package:flutter/material.dart';
 
-class ApproveSettlementDialog extends StatefulWidget {
-  ApproveSettlementDialog({
+class ApproveDialogSuppliesReq extends StatefulWidget {
+  ApproveDialogSuppliesReq({
     super.key,
     Transaction? transaction,
   }) : transaction = transaction ?? Transaction();
@@ -17,11 +17,11 @@ class ApproveSettlementDialog extends StatefulWidget {
   Transaction transaction;
 
   @override
-  State<ApproveSettlementDialog> createState() =>
-      _ApproveSettlementDialogState();
+  State<ApproveDialogSuppliesReq> createState() =>
+      _ApproveDialogSuppliesReqState();
 }
 
-class _ApproveSettlementDialogState extends State<ApproveSettlementDialog> {
+class _ApproveDialogSuppliesReqState extends State<ApproveDialogSuppliesReq> {
   TextEditingController _comment = TextEditingController();
 
   ApiService apiService = ApiService();
@@ -29,6 +29,8 @@ class _ApproveSettlementDialogState extends State<ApproveSettlementDialog> {
   String comment = "";
 
   List<Attachment> attachment = [];
+
+  bool isLoading = false;
 
   final formKey = GlobalKey<FormState>();
 
@@ -133,72 +135,87 @@ class _ApproveSettlementDialogState extends State<ApproveSettlementDialog> {
                         text: 'Cancel',
                         disabled: false,
                         padding: ButtonSize().mediumSize(),
-                        onTap: () {},
+                        onTap: () {
+                          Navigator.of(context).pop(false);
+                        },
                       ),
                       const SizedBox(
                         width: 10,
                       ),
-                      RegularButton(
-                        text: 'Confirm',
-                        disabled: false,
-                        padding: ButtonSize().mediumSize(),
-                        onTap: () {
-                          formKey.currentState!.save();
-                          widget.transaction.activity
-                              .add(TransactionActivity());
-                          widget.transaction.activity.first.comment = comment;
+                      isLoading
+                          ? const CircularProgressIndicator(
+                              color: eerieBlack,
+                            )
+                          : RegularButton(
+                              text: 'Confirm',
+                              disabled: false,
+                              padding: ButtonSize().mediumSize(),
+                              onTap: () {
+                                isLoading = true;
+                                setState(() {});
+                                formKey.currentState!.save();
+                                widget.transaction.activity
+                                    .add(TransactionActivity());
+                                widget.transaction.activity.first.comment =
+                                    comment;
 
-                          for (var element in attachment) {
-                            widget.transaction.activity.first.submitAttachment
-                                .add(element.file);
-                          }
+                                for (var element in attachment) {
+                                  widget.transaction.activity.first
+                                      .submitAttachment
+                                      .add('"${element.file}"');
+                                }
 
-                          print(widget.transaction);
-                          apiService
-                              .approveSettlementRequest(widget.transaction)
-                              .then((value) {
-                            if (value["Status"].toString() == "200") {
-                              showDialog(
-                                context: context,
-                                builder: (context) => AlertDialogBlack(
-                                  title: value['Title'],
-                                  contentText: value['Message'],
-                                  isSuccess: true,
-                                ),
-                              ).then((value) {
-                                Navigator.of(context).pop(true);
-                              });
-                            } else if (value["Status"].toString() == "401") {
-                              showDialog(
-                                context: context,
-                                builder: (context) => AlertDialogBlack(
-                                  title: value['Title'],
-                                  contentText: value['Message'],
-                                  isSuccess: false,
-                                ),
-                              );
-                            } else {
-                              showDialog(
-                                context: context,
-                                builder: (context) => AlertDialogBlack(
-                                  title: value['Title'],
-                                  contentText: value['Message'],
-                                  isSuccess: false,
-                                ),
-                              );
-                            }
-                          }).onError((error, stackTrace) {
-                            showDialog(
-                              context: context,
-                              builder: (context) => AlertDialogBlack(
-                                title: "Error submitSuppliesRequest",
-                                contentText: error.toString(),
-                                isSuccess: false,
-                              ),
-                            );
-                          });
-                        },
-                      )
+                                print(widget.transaction);
+                                apiService
+                                    .approveSuppliesRequest(widget.transaction)
+                                    .then((value) {
+                                  isLoading = false;
+                                  setState(() {});
+                                  if (value["Status"].toString() == "200") {
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) => AlertDialogBlack(
+                                        title: value['Title'],
+                                        contentText: value['Message'],
+                                        isSuccess: true,
+                                      ),
+                                    ).then((value) {
+                                      Navigator.of(context).pop(true);
+                                    });
+                                  } else if (value["Status"].toString() ==
+                                      "401") {
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) => AlertDialogBlack(
+                                        title: value['Title'],
+                                        contentText: value['Message'],
+                                        isSuccess: false,
+                                      ),
+                                    );
+                                  } else {
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) => AlertDialogBlack(
+                                        title: value['Title'],
+                                        contentText: value['Message'],
+                                        isSuccess: false,
+                                      ),
+                                    );
+                                  }
+                                }).onError((error, stackTrace) {
+                                  isLoading = false;
+                                  setState(() {});
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) => AlertDialogBlack(
+                                      title: "Error submitSuppliesRequest",
+                                      contentText: error.toString(),
+                                      isSuccess: false,
+                                    ),
+                                  );
+                                });
+                              },
+                            )
                     ],
                   )
                 ],

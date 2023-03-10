@@ -1,6 +1,8 @@
 import 'package:atk_system_ga/constant/colors.dart';
 import 'package:atk_system_ga/constant/text_style.dart';
+import 'package:atk_system_ga/functions/api_request.dart';
 import 'package:atk_system_ga/models/item_class.dart';
+import 'package:atk_system_ga/widgets/divider_table.dart';
 import 'package:atk_system_ga/widgets/input_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -11,6 +13,7 @@ class SuppliesItemListContainer extends StatefulWidget {
     this.index = 0,
     Item? item,
     this.countTotal,
+    this.saveItem,
   }) : item = item ?? Item();
 
   int index;
@@ -18,6 +21,7 @@ class SuppliesItemListContainer extends StatefulWidget {
   final TextEditingController _qty = TextEditingController();
   final FocusNode qtyNode = FocusNode();
   Function? countTotal;
+  Function? saveItem;
 
   @override
   State<SuppliesItemListContainer> createState() =>
@@ -25,9 +29,12 @@ class SuppliesItemListContainer extends StatefulWidget {
 }
 
 class _SuppliesItemListContainerState extends State<SuppliesItemListContainer> {
+  ApiService apiService = ApiService();
+
   onChangeQty(String value) {
     widget.item.qty = int.parse(value);
     widget.item.totalPrice = widget.item.basePrice * int.parse(value);
+    widget.saveItem!(widget.item);
     setState(() {});
   }
 
@@ -36,6 +43,8 @@ class _SuppliesItemListContainerState extends State<SuppliesItemListContainer> {
     super.initState();
 
     widget._qty.text = widget.item.qty.toString();
+    widget.item.totalPrice =
+        widget.item.basePrice * int.parse(widget._qty.text);
     widget._qty.addListener(() {
       if (widget._qty.text == "") {
         widget._qty.text = "0";
@@ -51,17 +60,7 @@ class _SuppliesItemListContainerState extends State<SuppliesItemListContainer> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        widget.index == 0
-            ? const SizedBox()
-            : const Padding(
-                padding: EdgeInsets.symmetric(
-                  vertical: 28,
-                ),
-                child: Divider(
-                  color: grayx11,
-                  thickness: 0.5,
-                ),
-              ),
+        widget.index == 0 ? const SizedBox() : const DividerTable(),
         Row(
           children: [
             Expanded(
@@ -98,20 +97,25 @@ class _SuppliesItemListContainerState extends State<SuppliesItemListContainer> {
                 children: [
                   SizedBox(
                     width: 75,
-                    child: BlackInputField(
-                      controller: widget._qty,
-                      focusNode: widget.qtyNode,
-                      inputFormatters: [
-                        FilteringTextInputFormatter.digitsOnly,
-                        FilteringTextInputFormatter.deny(
-                          RegExp(r'^0+'), //users can't type 0 at 1st position
-                        )
-                      ],
-                      onChanged: (value) async {
-                        await onChangeQty(value);
-                        widget.countTotal!();
+                    child: Focus(
+                      onFocusChange: (value) async {
+                        if (!widget.qtyNode.hasFocus) {
+                          await onChangeQty(widget._qty.text);
+                          widget.countTotal!();
+                        }
                       },
-                      enabled: true,
+                      child: BlackInputField(
+                        controller: widget._qty,
+                        focusNode: widget.qtyNode,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                          FilteringTextInputFormatter.deny(
+                            RegExp(r'^0+'), //users can't type 0 at 1st position
+                          )
+                        ],
+                        // onChanged: (value) async {},
+                        enabled: true,
+                      ),
                     ),
                   ),
                 ],

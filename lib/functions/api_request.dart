@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:atk_system_ga/functions/api_link.dart';
 import 'package:atk_system_ga/main.dart';
+import 'package:atk_system_ga/models/item_class.dart';
 import 'package:atk_system_ga/models/search_term.dart';
 import 'package:atk_system_ga/models/supplies_request_class.dart';
 import 'package:atk_system_ga/models/transaction_class.dart';
@@ -183,7 +184,7 @@ class ApiService {
     }
   }
 
-  Future getFormDetail(String formId) async {
+  Future getFormDetail(String formId, SearchTerm searchTerm) async {
     // print(bookingId);
     var box = await Hive.openBox('userLogin');
     var jwt = box.get('jwTtoken') != "" ? box.get('jwtToken') : "";
@@ -191,7 +192,14 @@ class ApiService {
     // jwt = jwtToken;
 
     var url = Uri.https(
-        urlConstant.apiUrl, '/GSS_Backend/public/api/form/supply/$formId');
+      urlConstant.apiUrl,
+      '/GSS_Backend/public/api/form/supply/$formId',
+      {
+        "item_sort": searchTerm.orderBy,
+        "item_dir": searchTerm.orderDir,
+        "search": searchTerm.keywords,
+      },
+    );
     Map<String, String> requestHeader = {
       'Authorization': 'Bearer $jwt',
       'Content-Type': 'application/json',
@@ -208,15 +216,22 @@ class ApiService {
     }
   }
 
-  Future getFormDetailFilled(String formId) async {
+  Future getFormDetailFilled(String formId, SearchTerm searchTerm) async {
     // print(bookingId);
     var box = await Hive.openBox('userLogin');
     var jwt = box.get('jwTtoken') != "" ? box.get('jwtToken') : "";
 
     // jwt = jwtToken;
 
-    var url = Uri.https(urlConstant.apiUrl,
-        '/GSS_Backend/public/api/form/supply/filled/$formId');
+    var url = Uri.https(
+      urlConstant.apiUrl,
+      '/GSS_Backend/public/api/form/supply/filled/$formId',
+      {
+        "item_sort": searchTerm.orderBy,
+        "item_dir": searchTerm.orderDir,
+        "search": searchTerm.keywords,
+      },
+    );
     Map<String, String> requestHeader = {
       'Authorization': 'Bearer $jwt',
       'Content-Type': 'application/json',
@@ -303,7 +318,7 @@ class ApiService {
     }
   }
 
-  Future getSettlementDetail(String formId) async {
+  Future getSettlementDetail(String formId, SearchTerm searchTerm) async {
     // print(bookingId);
     var box = await Hive.openBox('userLogin');
     var jwt = box.get('jwTtoken') != "" ? box.get('jwtToken') : "";
@@ -311,7 +326,11 @@ class ApiService {
     // jwt = jwtToken;
 
     var url = Uri.https(
-        urlConstant.apiUrl, '/GSS_Backend/public/api/form/settlement/$formId');
+        urlConstant.apiUrl, '/GSS_Backend/public/api/form/settlement/$formId', {
+      "item_sort": searchTerm.orderBy,
+      "item_dir": searchTerm.orderDir,
+      "search": searchTerm.keywords
+    });
     Map<String, String> requestHeader = {
       'Authorization': 'Bearer $jwt',
       'Content-Type': 'application/json',
@@ -423,6 +442,103 @@ class ApiService {
     try {
       var response =
           await http.post(url, headers: requestHeader, body: bodySend);
+
+      var data = json.decode(response.body);
+
+      return data;
+    } on Error catch (e) {
+      return e;
+    }
+  }
+
+  Future saveItemReq(Transaction transaction, Item item) async {
+    // print(bookingId);
+    var box = await Hive.openBox('userLogin');
+    var jwt = box.get('jwTtoken') != "" ? box.get('jwtToken') : "";
+
+    // jwt = jwtToken;
+
+    var url =
+        Uri.https(urlConstant.apiUrl, '/GSS_Backend/public/api/form/item-save');
+    Map<String, String> requestHeader = {
+      'Authorization': 'Bearer $jwt',
+      'Content-Type': 'application/json',
+    };
+
+    var bodySend = """
+    {
+        "FormID" : "${transaction.formId}",
+        "ItemID" : ${item.itemId},
+        "Price" : ${item.basePrice},
+        "Quantity" : ${item.qty},
+        "TotalPrice" : ${item.totalPrice}
+    }
+    """;
+    // print(bodySend);
+    try {
+      var response =
+          await http.post(url, headers: requestHeader, body: bodySend);
+
+      var data = json.decode(response.body);
+
+      return data;
+    } on Error catch (e) {
+      return e;
+    }
+  }
+
+  Future saveItemSetllement(Transaction transaction, Item item) async {
+    // print(bookingId);
+    var box = await Hive.openBox('userLogin');
+    var jwt = box.get('jwTtoken') != "" ? box.get('jwtToken') : "";
+
+    // jwt = jwtToken;
+
+    var url = Uri.https(urlConstant.apiUrl,
+        '/GSS_Backend/public/api/form/settlement/item-save');
+    Map<String, String> requestHeader = {
+      'Authorization': 'Bearer $jwt',
+      'Content-Type': 'application/json',
+    };
+
+    var bodySend = """
+    {
+        "FormID" : "${transaction.formId}",
+        "ItemID" : ${item.itemId},
+        "ActualPrice" : ${item.actualPrice},
+        "ActualQuantity" : ${item.actualQty},
+        "TotalActualPrice" : ${item.actualTotalPrice}
+    }
+    """;
+    // print(bodySend);
+    try {
+      var response =
+          await http.post(url, headers: requestHeader, body: bodySend);
+
+      var data = json.decode(response.body);
+
+      return data;
+    } on Error catch (e) {
+      return e;
+    }
+  }
+
+  Future getTabTransactionCount() async {
+    // print(bookingId);
+    var box = await Hive.openBox('userLogin');
+    var jwt = box.get('jwTtoken') != "" ? box.get('jwtToken') : "";
+
+    // jwt = jwtToken;
+
+    var url = Uri.https(
+        urlConstant.apiUrl, '/GSS_Backend/public/api/form/type-count');
+    Map<String, String> requestHeader = {
+      'Authorization': 'Bearer $jwt',
+      'Content-Type': 'application/json',
+    };
+
+    try {
+      var response = await http.get(url, headers: requestHeader);
 
       var data = json.decode(response.body);
 

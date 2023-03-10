@@ -7,6 +7,7 @@ import 'package:atk_system_ga/models/transaction_class.dart';
 import 'package:atk_system_ga/widgets/attachment_files.dart';
 import 'package:atk_system_ga/widgets/buttons.dart';
 import 'package:atk_system_ga/widgets/dialogs.dart';
+import 'package:atk_system_ga/widgets/divider_table.dart';
 import 'package:atk_system_ga/widgets/empty_table.dart';
 import 'package:atk_system_ga/widgets/input_field.dart';
 import 'package:atk_system_ga/widgets/total.dart';
@@ -27,7 +28,10 @@ class ConfirmDialogSuppliesRequest extends StatefulWidget {
 
 class _ConfirmDialogSuppliesRequestState
     extends State<ConfirmDialogSuppliesRequest> {
-  SearchTerm searchTerm = SearchTerm();
+  SearchTerm searchTerm = SearchTerm(
+    orderBy: "ItemName",
+    orderDir: "ASC",
+  );
   ApiService apiService = ApiService();
 
   TextEditingController _comment = TextEditingController();
@@ -53,7 +57,75 @@ class _ConfirmDialogSuppliesRequestState
     setState(() {});
   }
 
-  onTapHeader(String orderBy) {}
+  bool isLoading = false;
+
+  onTapHeader(String orderBy) {
+    setState(() {
+      // tempItems = items;
+      if (searchTerm.orderBy == orderBy) {
+        switch (searchTerm.orderDir) {
+          case "ASC":
+            searchTerm.orderDir = "DESC";
+            break;
+          case "DESC":
+            searchTerm.orderDir = "ASC";
+            break;
+          default:
+        }
+      }
+
+      switch (orderBy) {
+        case "BasePrice":
+          if (searchTerm.orderDir == "ASC") {
+            itemList.sort(
+              (a, b) => a.basePrice.compareTo(b.basePrice),
+            );
+          } else {
+            itemList.sort(
+              (a, b) => b.basePrice.compareTo(a.basePrice),
+            );
+          }
+          break;
+        case "ItemName":
+          if (searchTerm.orderDir == "ASC") {
+            itemList.sort(
+              (a, b) => a.itemName.compareTo(b.itemName),
+            );
+          } else {
+            itemList.sort(
+              (a, b) => b.itemName.compareTo(a.itemName),
+            );
+          }
+          break;
+        case "Qty":
+          if (searchTerm.orderDir == "ASC") {
+            itemList.sort(
+              (a, b) => a.qty.compareTo(b.qty),
+            );
+          } else {
+            itemList.sort(
+              (a, b) => b.qty.compareTo(a.qty),
+            );
+          }
+          break;
+        case "TotalPrice":
+          if (searchTerm.orderDir == "ASC") {
+            itemList.sort(
+              (a, b) => a.totalPrice.compareTo(b.totalPrice),
+            );
+          } else {
+            itemList.sort(
+              (a, b) => b.totalPrice.compareTo(a.totalPrice),
+            );
+          }
+          break;
+        default:
+      }
+
+      searchTerm.orderBy = orderBy;
+      // updateTable().then((value) {});
+    });
+  }
 
   @override
   void initState() {
@@ -173,72 +245,86 @@ class _ConfirmDialogSuppliesRequestState
                         text: 'Cancel',
                         disabled: false,
                         padding: ButtonSize().mediumSize(),
-                        onTap: () {},
+                        onTap: () {
+                          Navigator.of(context).pop(false);
+                        },
                       ),
                       const SizedBox(
                         width: 10,
                       ),
-                      RegularButton(
-                        text: 'Confirm',
-                        disabled: false,
-                        padding: ButtonSize().mediumSize(),
-                        onTap: () {
-                          formKey.currentState!.save();
-                          widget.transaction.activity
-                              .add(TransactionActivity());
-                          widget.transaction.activity.first.comment = comment;
+                      isLoading
+                          ? const CircularProgressIndicator(
+                              color: eerieBlack,
+                            )
+                          : RegularButton(
+                              text: 'Confirm',
+                              disabled: false,
+                              padding: ButtonSize().mediumSize(),
+                              onTap: () {
+                                formKey.currentState!.save();
+                                widget.transaction.totalCost = totalCost;
+                                widget.transaction.activity
+                                    .add(TransactionActivity());
+                                widget.transaction.activity.first.comment =
+                                    comment;
 
-                          for (var element in attachment) {
-                            widget.transaction.activity.first.submitAttachment
-                                .add('"${element.file}"');
-                          }
+                                for (var element in attachment) {
+                                  widget.transaction.activity.first
+                                      .submitAttachment
+                                      .add('"${element.file}"');
+                                }
 
-                          print(widget.transaction);
-                          apiService
-                              .submitSuppliesRequest(widget.transaction)
-                              .then((value) {
-                            if (value["Status"].toString() == "200") {
-                              showDialog(
-                                context: context,
-                                builder: (context) => AlertDialogBlack(
-                                  title: value['Title'],
-                                  contentText: value['Message'],
-                                  isSuccess: true,
-                                ),
-                              ).then((value) {
-                                Navigator.of(context).pop(true);
-                              });
-                            } else if (value["Status"].toString() == "401") {
-                              showDialog(
-                                context: context,
-                                builder: (context) => AlertDialogBlack(
-                                  title: value['Title'],
-                                  contentText: value['Message'],
-                                  isSuccess: false,
-                                ),
-                              );
-                            } else {
-                              showDialog(
-                                context: context,
-                                builder: (context) => AlertDialogBlack(
-                                  title: value['Title'],
-                                  contentText: value['Message'],
-                                  isSuccess: false,
-                                ),
-                              );
-                            }
-                          }).onError((error, stackTrace) {
-                            showDialog(
-                              context: context,
-                              builder: (context) => AlertDialogBlack(
-                                title: "Error submitSuppliesRequest",
-                                contentText: error.toString(),
-                                isSuccess: false,
-                              ),
-                            );
-                          });
-                        },
-                      )
+                                print(widget.transaction);
+                                apiService
+                                    .submitSuppliesRequest(widget.transaction)
+                                    .then((value) {
+                                  isLoading = false;
+                                  setState(() {});
+                                  if (value["Status"].toString() == "200") {
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) => AlertDialogBlack(
+                                        title: value['Title'],
+                                        contentText: value['Message'],
+                                        isSuccess: true,
+                                      ),
+                                    ).then((value) {
+                                      Navigator.of(context).pop(true);
+                                    });
+                                  } else if (value["Status"].toString() ==
+                                      "401") {
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) => AlertDialogBlack(
+                                        title: value['Title'],
+                                        contentText: value['Message'],
+                                        isSuccess: false,
+                                      ),
+                                    );
+                                  } else {
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) => AlertDialogBlack(
+                                        title: value['Title'],
+                                        contentText: value['Message'],
+                                        isSuccess: false,
+                                      ),
+                                    );
+                                  }
+                                }).onError((error, stackTrace) {
+                                  isLoading = false;
+                                  setState(() {});
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) => AlertDialogBlack(
+                                      title: "Error submitSuppliesRequest",
+                                      contentText: error.toString(),
+                                      isSuccess: false,
+                                    ),
+                                  );
+                                });
+                              },
+                            )
                     ],
                   )
                 ],
@@ -314,7 +400,7 @@ class _ConfirmDialogSuppliesRequestState
         TotalInfo(
           title: 'Total Cost',
           number: totalCost,
-          titleColor: orangeAccent,
+          titleColor: totalCost > totalBudget ? orangeAccent : davysGray,
         )
       ],
     );
@@ -489,13 +575,7 @@ class DialogConfirmItemListContainer extends StatelessWidget {
             ? const SizedBox(
                 height: 18,
               )
-            : const Padding(
-                padding: EdgeInsets.symmetric(vertical: 13),
-                child: Divider(
-                  color: davysGray,
-                  thickness: 0.5,
-                ),
-              ),
+            : const DividerTable(),
         Row(
           children: [
             SizedBox(

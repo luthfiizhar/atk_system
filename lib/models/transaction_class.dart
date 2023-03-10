@@ -3,6 +3,7 @@ import 'package:atk_system_ga/models/item_class.dart';
 class Transaction {
   Transaction({
     this.formId = "",
+    this.reqId = "",
     this.category = "",
     this.siteName = "",
     this.created = "",
@@ -20,6 +21,7 @@ class Transaction {
   })  : items = items ?? [],
         activity = activity ?? [];
   String formId;
+  String reqId;
   String category;
   String siteName;
   String created;

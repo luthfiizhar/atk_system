@@ -7,6 +7,7 @@ import 'package:atk_system_ga/models/transaction_class.dart';
 import 'package:atk_system_ga/widgets/attachment_files.dart';
 import 'package:atk_system_ga/widgets/buttons.dart';
 import 'package:atk_system_ga/widgets/dialogs.dart';
+import 'package:atk_system_ga/widgets/divider_table.dart';
 import 'package:atk_system_ga/widgets/empty_table.dart';
 import 'package:atk_system_ga/widgets/input_field.dart';
 import 'package:atk_system_ga/widgets/total.dart';
@@ -27,7 +28,10 @@ class ConfirmDialogSettlementRequest extends StatefulWidget {
 
 class _ConfirmDialogSettlementRequestState
     extends State<ConfirmDialogSettlementRequest> {
-  SearchTerm searchTerm = SearchTerm();
+  SearchTerm searchTerm = SearchTerm(
+    orderBy: "ItemName",
+    orderDir: "ASC",
+  );
   ApiService apiService = ApiService();
 
   TextEditingController _comment = TextEditingController();
@@ -56,7 +60,84 @@ class _ConfirmDialogSettlementRequestState
     setState(() {});
   }
 
-  onTapHeader(String orderBy) {}
+  onTapHeader(String orderBy) {
+    setState(() {
+      // tempItems = items;
+      if (searchTerm.orderBy == orderBy) {
+        switch (searchTerm.orderDir) {
+          case "ASC":
+            searchTerm.orderDir = "DESC";
+            break;
+          case "DESC":
+            searchTerm.orderDir = "ASC";
+            break;
+          default:
+        }
+      }
+
+      switch (orderBy) {
+        case "ReqPrice":
+          if (searchTerm.orderDir == "ASC") {
+            itemList.sort(
+              (a, b) => a.basePrice.compareTo(b.basePrice),
+            );
+          } else {
+            itemList.sort(
+              (a, b) => b.basePrice.compareTo(a.basePrice),
+            );
+          }
+          break;
+        case "ItemName":
+          if (searchTerm.orderDir == "ASC") {
+            itemList.sort(
+              (a, b) => a.itemName.compareTo(b.itemName),
+            );
+          } else {
+            itemList.sort(
+              (a, b) => b.itemName.compareTo(a.itemName),
+            );
+          }
+          break;
+        case "ReqQuantity":
+          if (searchTerm.orderDir == "ASC") {
+            itemList.sort(
+              (a, b) => a.qty.compareTo(b.qty),
+            );
+          } else {
+            itemList.sort(
+              (a, b) => b.qty.compareTo(a.qty),
+            );
+          }
+          break;
+        case "ActualPrice":
+          if (searchTerm.orderDir == "ASC") {
+            itemList.sort(
+              (a, b) => a.actualPrice.compareTo(b.actualPrice),
+            );
+          } else {
+            itemList.sort(
+              (a, b) => b.actualPrice.compareTo(a.actualPrice),
+            );
+          }
+          break;
+        case "ActualQuantity":
+          if (searchTerm.orderDir == "ASC") {
+            itemList.sort(
+              (a, b) => a.actualQty.compareTo(b.actualQty),
+            );
+          } else {
+            itemList.sort(
+              (a, b) => b.actualQty.compareTo(a.actualQty),
+            );
+          }
+          break;
+        default:
+      }
+
+      searchTerm.orderBy = orderBy;
+      // updateTable().then((value) {});
+    });
+  }
 
   @override
   void initState() {
@@ -176,7 +257,9 @@ class _ConfirmDialogSettlementRequestState
                         text: 'Cancel',
                         disabled: false,
                         padding: ButtonSize().mediumSize(),
-                        onTap: () {},
+                        onTap: () {
+                          Navigator.of(context).pop(false);
+                        },
                       ),
                       const SizedBox(
                         width: 10,
@@ -529,13 +612,7 @@ class DialogConfirmItemListContainerSettlementRequest extends StatelessWidget {
             ? const SizedBox(
                 height: 18,
               )
-            : const Padding(
-                padding: EdgeInsets.symmetric(vertical: 13),
-                child: Divider(
-                  color: davysGray,
-                  thickness: 0.5,
-                ),
-              ),
+            : const DividerTable(),
         Row(
           children: [
             Expanded(

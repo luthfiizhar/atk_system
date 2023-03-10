@@ -1,6 +1,7 @@
 import 'package:atk_system_ga/constant/colors.dart';
 import 'package:atk_system_ga/constant/text_style.dart';
 import 'package:atk_system_ga/models/transaction_class.dart';
+import 'package:atk_system_ga/widgets/empty_table.dart';
 import 'package:atk_system_ga/widgets/transaction_activity_list.dart';
 import 'package:flutter/material.dart';
 
@@ -29,17 +30,21 @@ class TransactionActivitySection extends StatelessWidget {
         const SizedBox(
           height: 20,
         ),
-        ListView.builder(
-          itemCount: transactionActivity.length,
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemBuilder: (context, index) {
-            return TransactionActivityListContainer(
-              index: index,
-              transactionActivity: transactionActivity[index],
-            );
-          },
-        ),
+        transactionActivity.isEmpty
+            ? EmptyTable(
+                text: 'No Comment',
+              )
+            : ListView.builder(
+                itemCount: transactionActivity.length,
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemBuilder: (context, index) {
+                  return TransactionActivityListContainer(
+                    index: index,
+                    transactionActivity: transactionActivity[index],
+                  );
+                },
+              ),
       ],
     );
   }

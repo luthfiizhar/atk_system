@@ -6,10 +6,8 @@ import 'package:atk_system_ga/layout/layout_page.dart';
 import 'package:atk_system_ga/models/item_class.dart';
 import 'package:atk_system_ga/models/search_term.dart';
 import 'package:atk_system_ga/models/transaction_class.dart';
-import 'package:atk_system_ga/modules/supplies_request/approval_supplies_item_container.dart';
-import 'package:atk_system_ga/modules/supplies_request/approve_dialog_supplies_req.dart';
-import 'package:atk_system_ga/modules/supplies_request/confirm_dialog_supplies_req.dart';
-import 'package:atk_system_ga/modules/transaction_list/transaction_list_container.dart';
+import 'package:atk_system_ga/modules/supplies_request/approval/approval_supplies_item_container.dart';
+import 'package:atk_system_ga/modules/supplies_request/approval/approve_dialog_supplies_req.dart';
 import 'package:atk_system_ga/widgets/buttons.dart';
 import 'package:atk_system_ga/widgets/dialogs.dart';
 import 'package:atk_system_ga/widgets/empty_table.dart';
@@ -37,7 +35,11 @@ class ApprovalSuppliesReqPage extends StatefulWidget {
 
 class _ApprovalSuppliesReqPageState extends State<ApprovalSuppliesReqPage> {
   TextEditingController _search = TextEditingController();
-  SearchTerm searchTerm = SearchTerm();
+  SearchTerm searchTerm = SearchTerm(
+    orderBy: "ItemName",
+    orderDir: "ASC",
+    keywords: "",
+  );
   ApiService apiService = ApiService();
 
   Transaction transaction = Transaction();
@@ -54,6 +56,34 @@ class _ApprovalSuppliesReqPageState extends State<ApprovalSuppliesReqPage> {
   int totalBudget = 0;
   int totalCost = 0;
 
+  Future updateTable() {
+    isLoadingItems = true;
+    items.clear();
+    setState(() {});
+    return apiService
+        .getFormDetailFilled(widget.formId, searchTerm)
+        .then((value) {
+      isLoadingItems = false;
+      print(value);
+      if (value['Status'].toString() == "200") {
+        List resultItems = value["Data"]["Items"];
+        for (var element in resultItems) {
+          items.add(
+            Item(
+              itemId: element['ItemID'].toString(),
+              itemName: element['ItemName'],
+              unit: element['Unit'],
+              basePrice: element['BasePrice'],
+              qty: element['Quantity'],
+              totalPrice: element['TotalPrice'],
+            ),
+          );
+        }
+        setState(() {});
+      } else {}
+    });
+  }
+
   onTapHeader(String orderBy) {
     setState(() {
       if (searchTerm.orderBy == orderBy) {
@@ -68,17 +98,22 @@ class _ApprovalSuppliesReqPageState extends State<ApprovalSuppliesReqPage> {
         }
       }
       searchTerm.orderBy = orderBy;
+      updateTable().then((value) {});
     });
   }
 
   Future initDetailFilled() {
-    return apiService.getFormDetailFilled(widget.formId).then((value) {
+    return apiService
+        .getFormDetailFilled(widget.formId, searchTerm)
+        .then((value) {
       isLoadingDetail = false;
+      isLoadingItems = false;
       setState(() {});
       print(value);
       if (value['Status'].toString() == "200") {
         List resultItems = value["Data"]["Items"];
         List resultActivity = value["Data"]["Comments"];
+        List attachmentResult = [];
 
         transaction.formId = value["Data"]["FormID"];
         transaction.siteName = value["Data"]["SiteName"];
@@ -103,16 +138,36 @@ class _ApprovalSuppliesReqPageState extends State<ApprovalSuppliesReqPage> {
           );
         }
 
-        for (var element in resultActivity) {
-          transactionActivity.add(
-            TransactionActivity(
-              empName: element["EmpName"],
-              comment: element["CommentText"] ?? "-",
-              date: element["CommentDate"],
-              status: element["CommentDescription"],
-              photo: element["Photo"],
-            ),
-          );
+        if (resultActivity.isNotEmpty) {
+          for (var element in resultActivity) {
+            transactionActivity.add(
+              TransactionActivity(
+                id: element['CommentID'],
+                empName: element["EmpName"],
+                comment: element["CommentText"] ?? "-",
+                date: element["CommentDate"],
+                status: element["CommentDescription"],
+                photo: element["Photo"],
+                // attachment: element['Attachments'],
+              ),
+            );
+            if (element['Attachments'] != []) {
+              attachmentResult = element['Attachments'];
+            }
+
+            for (var t in transactionActivity) {
+              for (var element in attachmentResult) {
+                if (t.id == element['CommentID']) {
+                  t.attachment.add(
+                    Attachment(
+                      file: element['ImageURL'],
+                      type: element['FileType'],
+                    ),
+                  );
+                }
+              }
+            }
+          }
         }
         setState(() {});
       } else {
@@ -127,10 +182,18 @@ class _ApprovalSuppliesReqPageState extends State<ApprovalSuppliesReqPage> {
     });
   }
 
+  searchItem() {
+    searchTerm.keywords = _search.text;
+
+    updateTable().then((value) {});
+  }
+
   @override
   void initState() {
     super.initState();
-    initDetailFilled();
+    initDetailFilled().onError((error, stackTrace) {
+      print(error);
+    });
   }
 
   @override
@@ -161,12 +224,18 @@ class _ApprovalSuppliesReqPageState extends State<ApprovalSuppliesReqPage> {
                   const SizedBox(
                     height: 20,
                   ),
-                  isLoadingDetail
+                  isLoadingItems
                       ? const SizedBox(
                           height: 150,
                           width: double.infinity,
-                          child: CircularProgressIndicator(
-                            color: eerieBlack,
+                          child: Center(
+                            child: SizedBox(
+                              width: 50,
+                              height: 50,
+                              child: CircularProgressIndicator(
+                                color: eerieBlack,
+                              ),
+                            ),
                           ),
                         )
                       : items.isEmpty
@@ -305,10 +374,14 @@ class _ApprovalSuppliesReqPageState extends State<ApprovalSuppliesReqPage> {
             enabled: true,
             obsecureText: false,
             hintText: 'Search here ...',
+            maxLines: 1,
             prefixIcon: const Icon(
               Icons.search,
               color: davysGray,
             ),
+            onFieldSubmitted: (value) {
+              searchItem();
+            },
           ),
         )
       ],
@@ -367,7 +440,7 @@ class _ApprovalSuppliesReqPageState extends State<ApprovalSuppliesReqPage> {
             Expanded(
               child: InkWell(
                 onTap: () {
-                  onTapHeader("BasePrice");
+                  onTapHeader("Price");
                 },
                 child: Row(
                   children: [
@@ -377,7 +450,7 @@ class _ApprovalSuppliesReqPageState extends State<ApprovalSuppliesReqPage> {
                         style: headerTableTextStyle,
                       ),
                     ),
-                    iconSort("BasePrice"),
+                    iconSort("Price"),
                     const SizedBox(
                       width: 20,
                     ),
@@ -389,7 +462,7 @@ class _ApprovalSuppliesReqPageState extends State<ApprovalSuppliesReqPage> {
               width: 125,
               child: InkWell(
                 onTap: () {
-                  onTapHeader("Qty");
+                  onTapHeader("Quantity");
                 },
                 child: Row(
                   children: [
@@ -399,7 +472,7 @@ class _ApprovalSuppliesReqPageState extends State<ApprovalSuppliesReqPage> {
                         style: headerTableTextStyle,
                       ),
                     ),
-                    iconSort("Qty"),
+                    iconSort("Quantity"),
                     const SizedBox(
                       width: 20,
                     ),

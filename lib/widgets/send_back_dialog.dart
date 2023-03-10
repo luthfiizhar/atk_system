@@ -132,7 +132,9 @@ class _SendBackDialogState extends State<SendBackDialog> {
                         text: 'Cancel',
                         disabled: false,
                         padding: ButtonSize().mediumSize(),
-                        onTap: () {},
+                        onTap: () {
+                          Navigator.of(context).pop(false);
+                        },
                       ),
                       const SizedBox(
                         width: 10,
@@ -149,7 +151,7 @@ class _SendBackDialogState extends State<SendBackDialog> {
 
                           for (var element in attachment) {
                             widget.transaction.activity.first.submitAttachment
-                                .add(element.file);
+                                .add('"${element.file}"');
                           }
 
                           print(widget.transaction);

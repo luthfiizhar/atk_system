@@ -6,11 +6,8 @@ import 'package:atk_system_ga/layout/layout_page.dart';
 import 'package:atk_system_ga/models/item_class.dart';
 import 'package:atk_system_ga/models/search_term.dart';
 import 'package:atk_system_ga/models/transaction_class.dart';
-import 'package:atk_system_ga/modules/settlement_request/approval_settlement_item_list_container.dart';
-import 'package:atk_system_ga/modules/settlement_request/dialog_confirm_approval_settlement.dart';
-import 'package:atk_system_ga/modules/settlement_request/dialog_confirm_settlement_request.dart';
-import 'package:atk_system_ga/modules/settlement_request/settlement_request_item_list_container.dart';
-import 'package:atk_system_ga/modules/supplies_request/approve_dialog_supplies_req.dart';
+import 'package:atk_system_ga/modules/settlement_request/request/dialog_confirm_settlement_request.dart';
+import 'package:atk_system_ga/modules/settlement_request/request/settlement_request_item_list_container.dart';
 import 'package:atk_system_ga/widgets/buttons.dart';
 import 'package:atk_system_ga/widgets/empty_table.dart';
 import 'package:atk_system_ga/widgets/search_input_field.dart';
@@ -20,8 +17,8 @@ import 'package:atk_system_ga/widgets/transaction_info_section.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-class DetailApprovalSettlementRequestPage extends StatefulWidget {
-  DetailApprovalSettlementRequestPage({
+class SettlementRequestPage extends StatefulWidget {
+  SettlementRequestPage({
     super.key,
     this.formId = "",
   });
@@ -29,14 +26,16 @@ class DetailApprovalSettlementRequestPage extends StatefulWidget {
   String formId;
 
   @override
-  State<DetailApprovalSettlementRequestPage> createState() =>
-      _DetailApprovalSettlementRequestPageState();
+  State<SettlementRequestPage> createState() => _SettlementRequestPageState();
 }
 
-class _DetailApprovalSettlementRequestPageState
-    extends State<DetailApprovalSettlementRequestPage> {
+class _SettlementRequestPageState extends State<SettlementRequestPage> {
   TextEditingController _search = TextEditingController();
-  SearchTerm searchTerm = SearchTerm();
+  SearchTerm searchTerm = SearchTerm(
+    keywords: "",
+    orderBy: "ItemName",
+    orderDir: "ASC",
+  );
 
   ApiService apiService = ApiService();
   Transaction transaction = Transaction();
@@ -50,12 +49,58 @@ class _DetailApprovalSettlementRequestPageState
   int totalReqCost = 0;
   int totalActualCost = 0;
 
+  bool isLoadingDetail = true;
+  bool isLoadingItems = true;
+  bool isSendBack = false;
+
+  Future updateList() {
+    isLoadingItems = true;
+    items.clear();
+    setState(() {});
+    return apiService
+        .getSettlementDetail(widget.formId, searchTerm)
+        .then((value) {
+      isLoadingItems = false;
+      setState(() {});
+      if (value['Status'].toString() == "200") {
+        List resultItems = value["Data"]["Items"];
+
+        for (var element in resultItems) {
+          items.add(
+            Item(
+              itemId: element['ItemID'].toString(),
+              itemName: element['ItemName'],
+              basePrice: element['ItemPrice'],
+              qty: element['Quantity'],
+              totalPrice: element['TotalPrice'],
+              actualPrice: element['ActualPrice'],
+              actualQty: element['ActualQuantity'],
+            ),
+          );
+          transaction.items = items;
+          setState(() {});
+
+          // totalActualCost = totalActualCost +
+          //     (int.parse(element['ActualPrice'].toString()) *
+          //         int.parse(element['ActualQuantity'].toString()));
+        }
+      } else {}
+    }).onError((error, stackTrace) {
+      isLoadingItems = false;
+      setState(() {});
+      print(error);
+    });
+  }
+
   onChangeQtyAndPrice(int index, String qtyValue, String priceValue) {
     if (priceValue.contains(".")) {
       transaction.items[index].actualPrice =
           int.parse(priceValue.replaceAll(".", ""));
     }
     transaction.items[index].actualQty = int.parse(qtyValue);
+    transaction.items[index].actualTotalPrice =
+        transaction.items[index].actualQty *
+            transaction.items[index].actualPrice;
 
     totalActualCost = 0;
     for (var element in transaction.items) {
@@ -63,6 +108,7 @@ class _DetailApprovalSettlementRequestPageState
           totalActualCost + (element.actualQty * element.actualPrice);
     }
     // setState(() {});
+    transaction.actualTotalCost = totalActualCost;
     actualCostKey.currentState!.setState(() {});
   }
 
@@ -81,13 +127,26 @@ class _DetailApprovalSettlementRequestPageState
       }
       searchTerm.orderBy = orderBy;
     });
+    updateList().then((value) {});
+  }
+
+  searchItem() {
+    searchTerm.keywords = _search.text;
+    updateList().then((value) {});
   }
 
   Future initDetailSettlement() {
-    return apiService.getSettlementDetail(widget.formId).then((value) {
+    // print(widget.formId);
+    return apiService
+        .getSettlementDetail(widget.formId, searchTerm)
+        .then((value) {
+      print(value);
+      isLoadingDetail = false;
+      isLoadingItems = false;
+      setState(() {});
       if (value['Status'].toString() == "200") {
-        List resultItems = value["Data"]["Items"];
-        List resultActivity = value["Data"]["Comments"];
+        List resultItems = value["Data"]["Items"] ?? [];
+        List resultActivity = value["Data"]["Comments"] ?? [];
         List attachmentResult = [];
 
         transaction.formId = value["Data"]["FormID"];
@@ -99,7 +158,7 @@ class _DetailApprovalSettlementRequestPageState
         transaction.status = value["Data"]["Status"];
         totalBudget = value['Data']["Budget"];
         totalReqCost = value['Data']['TotalCost'];
-        totalActualCost = value['Data']['TotalActualCost'];
+        isSendBack = value["Data"]["Sendback"] > 0 ? true : false;
 
         for (var element in resultItems) {
           items.add(
@@ -113,42 +172,64 @@ class _DetailApprovalSettlementRequestPageState
               actualQty: element['ActualQuantity'],
             ),
           );
+
+          totalActualCost = totalActualCost +
+              (int.parse(element['ActualPrice'].toString()) *
+                  int.parse(element['ActualQuantity'].toString()));
         }
 
-        for (var element in resultActivity) {
-          transactionActivity.add(
-            TransactionActivity(
-              empName: element["EmpName"],
-              comment: element["CommentText"],
-              date: element["CommentDate"],
-              status: element["CommentDescription"],
-              photo: element["Photo"],
-            ),
-          );
-          if (element['Attachments'] != []) {
-            attachmentResult = element['Attachments'];
-          }
-        }
-        for (var t in transactionActivity) {
-          for (var element in attachmentResult) {
-            if (t.id == element['CommentID']) {
-              t.attachment.add(
-                Attachment(
-                  file: element['ImageURL'],
-                  type: element['FileType'],
-                ),
-              );
+        // for (var element in resultActivity) {
+        //   transactionActivity.add(
+        //     TransactionActivity(
+        //       empName: element["EmpName"],
+        //       comment: element["CommentText"] ?? "-",
+        //       date: element["CommentDate"],
+        //       status: element["CommentDescription"],
+        //       photo: element["Photo"],
+        //     ),
+        //   );
+        // }
+        if (resultActivity.isNotEmpty) {
+          for (var element in resultActivity) {
+            transactionActivity.add(
+              TransactionActivity(
+                id: element['CommentID'],
+                empName: element["EmpName"],
+                comment: element["CommentText"] ?? "-",
+                date: element["CommentDate"],
+                status: element["CommentDescription"],
+                photo: element["Photo"],
+                // attachment: element['Attachments'],
+              ),
+            );
+            if (element['Attachments'] != []) {
+              attachmentResult = element['Attachments'];
+            }
+
+            for (var t in transactionActivity) {
+              for (var element in attachmentResult) {
+                if (t.id == element['CommentID']) {
+                  t.attachment.add(
+                    Attachment(
+                      file: element['ImageURL'],
+                      type: element['FileType'],
+                    ),
+                  );
+                }
+              }
             }
           }
         }
-
         transaction.items = items;
         setState(() {});
       } else {
         print("not success");
       }
     }).onError((error, stackTrace) {
-      print(error);
+      print("ERROR PAGE $error");
+      isLoadingDetail = false;
+      isLoadingItems = false;
+      setState(() {});
     });
   }
 
@@ -175,7 +256,11 @@ class _DetailApprovalSettlementRequestPageState
                 const SizedBox(
                   height: 50,
                 ),
-                infoAndSearch(),
+                isLoadingDetail
+                    ? const CircularProgressIndicator(
+                        color: eerieBlack,
+                      )
+                    : infoAndSearch(),
                 const SizedBox(
                   height: 55,
                 ),
@@ -183,21 +268,37 @@ class _DetailApprovalSettlementRequestPageState
                 const SizedBox(
                   height: 20,
                 ),
-                transaction.items.isEmpty
-                    ? EmptyTable(
-                        text: 'No item in database',
+                isLoadingItems
+                    ? const SizedBox(
+                        height: 150,
+                        width: double.infinity,
+                        child: Center(
+                          child: SizedBox(
+                            height: 50,
+                            width: 50,
+                            child: CircularProgressIndicator(
+                              color: eerieBlack,
+                            ),
+                          ),
+                        ),
                       )
-                    : ListView.builder(
-                        itemCount: transaction.items.length,
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemBuilder: (context, index) {
-                          return ApprovalSettlementRequestItemListContainer(
-                            index: index,
-                            item: transaction.items[index],
-                          );
-                        },
-                      ),
+                    : transaction.items.isEmpty
+                        ? EmptyTable(
+                            text: 'No item in database',
+                          )
+                        : ListView.builder(
+                            itemCount: transaction.items.length,
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemBuilder: (context, index) {
+                              return SettlementRequestItemListContainer(
+                                index: index,
+                                item: transaction.items[index],
+                                onChangedValue: onChangeQtyAndPrice,
+                                transaction: transaction,
+                              );
+                            },
+                          ),
                 const SizedBox(
                   height: 50,
                 ),
@@ -226,19 +327,41 @@ class _DetailApprovalSettlementRequestPageState
                   ),
                 ),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    RegularButton(
-                      text: 'Print Transaction',
+                    TransparentButtonBlack(
+                      text: 'Cancel',
                       disabled: false,
                       padding: ButtonSize().mediumSize(),
-                      onTap: () {},
+                      onTap: () {
+                        context.goNamed('home');
+                      },
+                    ),
+                    const SizedBox(
+                      width: 20,
+                    ),
+                    RegularButton(
+                      text: isSendBack ? 'Submit Revise' : 'Submit Request',
+                      disabled: false,
+                      padding: ButtonSize().mediumSize(),
+                      onTap: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) => ConfirmDialogSettlementRequest(
+                            transaction: transaction,
+                          ),
+                        ).then((value) {
+                          if (value) {
+                            context.goNamed('home');
+                          }
+                        });
+                      },
                     ),
                   ],
                 ),
                 const SizedBox(
                   height: 100,
-                ),
+                )
               ],
             ),
           ),
@@ -253,7 +376,7 @@ class _DetailApprovalSettlementRequestPageState
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
         TransactionInfoSection(
-          title: "Approval Order Settlement Detail",
+          title: "Order Settlement",
           transaction: transaction,
         ),
         SizedBox(
@@ -263,12 +386,16 @@ class _DetailApprovalSettlementRequestPageState
             enabled: true,
             obsecureText: false,
             hintText: 'Search here ...',
+            maxLines: 1,
+            onFieldSubmitted: (value) {
+              searchItem();
+            },
             prefixIcon: const Icon(
               Icons.search,
               color: davysGray,
             ),
           ),
-        ),
+        )
       ],
     );
   }
@@ -304,7 +431,7 @@ class _DetailApprovalSettlementRequestPageState
               width: 135,
               child: InkWell(
                 onTap: () {
-                  onTapHeader("reqQty");
+                  onTapHeader("Quantity");
                 },
                 child: Row(
                   children: [
@@ -314,7 +441,7 @@ class _DetailApprovalSettlementRequestPageState
                         style: headerTableTextStyle,
                       ),
                     ),
-                    iconSort("Req. Qty"),
+                    iconSort("Quantity"),
                     const SizedBox(
                       width: 20,
                     ),
@@ -325,7 +452,7 @@ class _DetailApprovalSettlementRequestPageState
             Expanded(
               child: InkWell(
                 onTap: () {
-                  onTapHeader("reqPrice");
+                  onTapHeader("Price");
                 },
                 child: Row(
                   children: [
@@ -335,7 +462,7 @@ class _DetailApprovalSettlementRequestPageState
                         style: headerTableTextStyle,
                       ),
                     ),
-                    iconSort("reqPrice"),
+                    iconSort("Price"),
                     const SizedBox(
                       width: 20,
                     ),
@@ -347,7 +474,7 @@ class _DetailApprovalSettlementRequestPageState
               width: 150,
               child: InkWell(
                 onTap: () {
-                  onTapHeader("actualQty");
+                  onTapHeader("ActualQuantity");
                 },
                 child: Row(
                   children: [
@@ -357,7 +484,7 @@ class _DetailApprovalSettlementRequestPageState
                         style: headerTableTextStyle,
                       ),
                     ),
-                    iconSort("actualQty"),
+                    iconSort("ActualQuantity"),
                     const SizedBox(
                       width: 20,
                     ),

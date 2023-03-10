@@ -35,6 +35,8 @@ class TotalInfo extends StatelessWidget {
           height: 10,
         ),
         Wrap(
+          alignment: WrapAlignment.start,
+          crossAxisAlignment: WrapCrossAlignment.center,
           spacing: 5,
           children: [
             Text(
