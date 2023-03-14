@@ -394,7 +394,7 @@ class _SettlementRequestPageState extends State<SettlementRequestPage> {
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
         TransactionInfoSection(
-          title: "Order Settlement",
+          title: "Create Settlement",
           transaction: transaction,
         ),
         SizedBox(

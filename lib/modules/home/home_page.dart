@@ -400,7 +400,7 @@ class _HomePageState extends State<HomePage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Expanded(
@@ -418,35 +418,37 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
               ),
-              Wrap(
-                spacing: 5,
-                children: [
-                  InkWell(
-                    onTap: () {
-                      double offset = toDoListScroll.offset - 700;
-                      toDoListScroll.animateTo(offset,
-                          duration: const Duration(milliseconds: 250),
-                          curve: Curves.linear);
-                    },
-                    child: const Icon(
-                      Icons.keyboard_arrow_left_sharp,
+              Container(
+                padding: const EdgeInsets.only(
+                  right: 35,
+                ),
+                child: Wrap(
+                  spacing: 5,
+                  children: [
+                    InkWell(
+                      onTap: () {
+                        double offset = toDoListScroll.offset - 700;
+                        toDoListScroll.animateTo(offset,
+                            duration: const Duration(milliseconds: 250),
+                            curve: Curves.linear);
+                      },
+                      child: const Icon(
+                        Icons.keyboard_arrow_left_sharp,
+                      ),
                     ),
-                  ),
-                  InkWell(
-                    onTap: () {
-                      double offset = toDoListScroll.offset + 700;
-                      toDoListScroll.animateTo(offset,
-                          duration: const Duration(milliseconds: 250),
-                          curve: Curves.linear);
-                    },
-                    child: const Icon(
-                      Icons.keyboard_arrow_right_sharp,
-                    ),
-                  )
-                ],
-              ),
-              const SizedBox(
-                width: 45,
+                    InkWell(
+                      onTap: () {
+                        double offset = toDoListScroll.offset + 700;
+                        toDoListScroll.animateTo(offset,
+                            duration: const Duration(milliseconds: 250),
+                            curve: Curves.linear);
+                      },
+                      child: const Icon(
+                        Icons.keyboard_arrow_right_sharp,
+                      ),
+                    )
+                  ],
+                ),
               ),
             ],
           ),

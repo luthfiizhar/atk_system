@@ -190,7 +190,7 @@ class ApiService {
     }
   }
 
-  Future getSettlement(String formCategory) async {
+  Future generateSettlement(String formId) async {
     // print(bookingId);
     var box = await Hive.openBox('userLogin');
     var jwt = box.get('jwTtoken') != "" ? box.get('jwtToken') : "";
@@ -198,7 +198,7 @@ class ApiService {
     // jwt = jwtToken;
 
     var url = Uri.https(
-        urlConstant.apiUrl, '/GSS_Backend/public/api/form/supply/transaction');
+        urlConstant.apiUrl, '/GSS_Backend/public/api/form/generate-settlement');
     Map<String, String> requestHeader = {
       'Authorization': 'Bearer $jwt',
       'Content-Type': 'application/json',
@@ -206,7 +206,7 @@ class ApiService {
 
     var bodySend = """
       {
-        "FormCategory" : "$formCategory"
+        "FormID" : "$formId"
       }
   """;
     // print(bodySend);

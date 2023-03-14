@@ -388,7 +388,7 @@ class _DetailApprovalSettlementRequestPageState
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
         TransactionInfoSection(
-          title: "Approval Order Settlement Detail",
+          title: "Settlement Detail",
           transaction: transaction,
         ),
         SizedBox(

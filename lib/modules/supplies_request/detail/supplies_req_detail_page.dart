@@ -52,6 +52,7 @@ class _SuppliesReqDetailPageState extends State<SuppliesReqDetailPage> {
   String settlementStatus = "";
 
   String formCategory = "";
+  String role = "";
 
   Future updateTable() {
     isLoadingItems = true;
@@ -225,6 +226,20 @@ class _SuppliesReqDetailPageState extends State<SuppliesReqDetailPage> {
   void initState() {
     super.initState();
     initDetailFilled();
+    apiService.getUserData().then((value) {
+      if (value['Status'].toString() == "200") {
+        role = value["Data"]["Role"];
+      }
+    }).onError((error, stackTrace) {
+      showDialog(
+        context: context,
+        builder: (context) => const AlertDialogBlack(
+          title: "Error getUserData",
+          contentText: "No internet connection",
+          isSuccess: false,
+        ),
+      );
+    });
   }
 
   @override
@@ -342,7 +357,10 @@ class _SuppliesReqDetailPageState extends State<SuppliesReqDetailPage> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     Visibility(
-                      visible: transaction.status == "Approved" ? true : false,
+                      visible: transaction.status == "Approved" &&
+                              role == "Store Admin"
+                          ? true
+                          : false,
                       child: Padding(
                         padding: const EdgeInsets.only(right: 20),
                         child: RegularButton(
@@ -351,7 +369,8 @@ class _SuppliesReqDetailPageState extends State<SuppliesReqDetailPage> {
                           padding: ButtonSize().mediumSize(),
                           onTap: () {
                             if (settlementId != "-") {
-                              if (settlementStatus != "Draft") {
+                              if (settlementStatus != "Draft" &&
+                                  role != "Store Admin") {
                                 context.goNamed(
                                   'settlement_detail',
                                   params: {
@@ -366,6 +385,37 @@ class _SuppliesReqDetailPageState extends State<SuppliesReqDetailPage> {
                                   },
                                 );
                               }
+                            } else {
+                              apiService
+                                  .generateSettlement(widget.formId)
+                                  .then((value) {
+                                String link = value['Data']['Link'];
+                                String id = value['Data']['SettlementID'];
+                                if (value['Status'].toString() == "200") {
+                                  context.goNamed(
+                                    link,
+                                    params: {"formId": id},
+                                  );
+                                } else {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) => AlertDialogBlack(
+                                      title: value['Title'],
+                                      contentText: value['Message'],
+                                      isSuccess: false,
+                                    ),
+                                  );
+                                }
+                              }).onError((error, stackTrace) {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) => const AlertDialogBlack(
+                                    title: "Error generateSettlement",
+                                    contentText: "No internet connection",
+                                    isSuccess: false,
+                                  ),
+                                );
+                              });
                             }
                           },
                         ),
