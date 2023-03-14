@@ -178,7 +178,7 @@ class _ConfirmDialogSettlementRequestState
                   ),
                   orderSummarySection(),
                   const SizedBox(
-                    height: 40,
+                    height: 30,
                   ),
                   headerTable(),
                   itemList.isEmpty
@@ -316,9 +316,9 @@ class _ConfirmDialogSettlementRequestState
                           }).onError((error, stackTrace) {
                             showDialog(
                               context: context,
-                              builder: (context) => AlertDialogBlack(
+                              builder: (context) => const AlertDialogBlack(
                                 title: "Error submitSuppliesRequest",
-                                contentText: error.toString(),
+                                contentText: "No internet connection",
                                 isSuccess: false,
                               ),
                             );
@@ -383,7 +383,8 @@ class _ConfirmDialogSettlementRequestState
                   style: dialogSummaryContentLightText,
                   children: [
                     TextSpan(
-                      text: "${widget.transaction.siteArea} m2",
+                      text:
+                          "${formatThousand.format(widget.transaction.siteArea)} m2",
                       style: dialogSummaryContentText,
                     ),
                   ],

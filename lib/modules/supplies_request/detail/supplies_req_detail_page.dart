@@ -17,6 +17,7 @@ import 'package:atk_system_ga/widgets/transaction_activity_section.dart';
 import 'package:atk_system_ga/widgets/transaction_info_section.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'dart:html' as html;
 
 class SuppliesReqDetailPage extends StatefulWidget {
   SuppliesReqDetailPage({
@@ -32,7 +33,8 @@ class SuppliesReqDetailPage extends StatefulWidget {
 
 class _SuppliesReqDetailPageState extends State<SuppliesReqDetailPage> {
   TextEditingController _search = TextEditingController();
-  SearchTerm searchTerm = SearchTerm();
+  SearchTerm searchTerm =
+      SearchTerm(orderBy: "ItemName", orderDir: "ASC", keywords: "");
   ApiService apiService = ApiService();
 
   Transaction transaction = Transaction();
@@ -41,9 +43,61 @@ class _SuppliesReqDetailPageState extends State<SuppliesReqDetailPage> {
   List<Item> items = [];
 
   bool isLoadingDetail = true;
+  bool isLoadingItems = true;
 
   int totalBudget = 0;
   int totalCost = 0;
+
+  String settlementId = "";
+  String settlementStatus = "";
+
+  String formCategory = "";
+
+  Future updateTable() {
+    isLoadingItems = true;
+    items.clear();
+    setState(() {});
+    return apiService
+        .getFormDetailFilled(widget.formId, searchTerm)
+        .then((value) {
+      isLoadingItems = false;
+      // print(value);
+      if (value['Status'].toString() == "200") {
+        List resultItems = value["Data"]["Items"];
+        for (var element in resultItems) {
+          items.add(
+            Item(
+              itemId: element['ItemID'].toString(),
+              itemName: element['ItemName'],
+              unit: element['Unit'],
+              basePrice: element['BasePrice'],
+              qty: element['Quantity'],
+              totalPrice: element['TotalPrice'],
+              estimatedPrice: element['EstimatedPrice'],
+            ),
+          );
+        }
+        setState(() {});
+      } else {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialogBlack(
+            title: value['Title'],
+            contentText: value['Message'],
+            isSuccess: false,
+          ),
+        );
+      }
+    }).onError((error, stackTrace) {
+      showDialog(
+        context: context,
+        builder: (context) => const AlertDialogBlack(
+          title: "Error gettransactionDetail",
+          contentText: "No internet connection.",
+        ),
+      );
+    });
+  }
 
   onTapHeader(String orderBy) {
     setState(() {
@@ -59,14 +113,23 @@ class _SuppliesReqDetailPageState extends State<SuppliesReqDetailPage> {
         }
       }
       searchTerm.orderBy = orderBy;
+      updateTable().then((value) {});
     });
+  }
+
+  searchItem() {
+    searchTerm.keywords = _search.text;
+    updateTable().then((value) {});
   }
 
   Future initDetailFilled() {
     return apiService
         .getFormDetailFilled(widget.formId, searchTerm)
         .then((value) {
-      print(value);
+      isLoadingDetail = false;
+      isLoadingItems = false;
+      setState(() {});
+      // print(value);
       if (value['Status'].toString() == "200") {
         List resultItems = value["Data"]["Items"];
         List resultActivity = value["Data"]["Comments"];
@@ -82,6 +145,11 @@ class _SuppliesReqDetailPageState extends State<SuppliesReqDetailPage> {
         totalBudget = value['Data']["Budget"];
         totalCost = value['Data']['TotalCost'];
 
+        settlementId = value['Data']['SettlementID'];
+        settlementStatus = value['Data']['SettlementStatus'];
+
+        formCategory = value['Data']['FormCategory'];
+
         for (var element in resultItems) {
           items.add(
             Item(
@@ -91,6 +159,7 @@ class _SuppliesReqDetailPageState extends State<SuppliesReqDetailPage> {
               basePrice: element['BasePrice'],
               qty: element['Quantity'],
               totalPrice: element['TotalPrice'],
+              estimatedPrice: element['EstimatedPrice'],
             ),
           );
         }
@@ -138,6 +207,17 @@ class _SuppliesReqDetailPageState extends State<SuppliesReqDetailPage> {
           ),
         );
       }
+    }).onError((error, stackTrace) {
+      isLoadingDetail = false;
+      isLoadingItems = false;
+      setState(() {});
+      showDialog(
+        context: context,
+        builder: (context) => const AlertDialogBlack(
+          title: "Error getTransactionDetail",
+          contentText: "No internet connection",
+        ),
+      );
     });
   }
 
@@ -156,7 +236,7 @@ class _SuppliesReqDetailPageState extends State<SuppliesReqDetailPage> {
         child: Align(
           alignment: Alignment.topCenter,
           child: SizedBox(
-            width: 1100,
+            width: 1160,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               // crossAxisAlignment: CrossAxisAlignment.center,
@@ -164,29 +244,47 @@ class _SuppliesReqDetailPageState extends State<SuppliesReqDetailPage> {
                 const SizedBox(
                   height: 50,
                 ),
-                infoAndSearch(),
+                isLoadingDetail
+                    ? const CircularProgressIndicator(
+                        color: eerieBlack,
+                      )
+                    : infoAndSearch(),
                 const SizedBox(
-                  height: 55,
+                  height: 30,
                 ),
                 headerTable(),
                 const SizedBox(
                   height: 20,
                 ),
-                items.isEmpty
-                    ? EmptyTable(
-                        text: 'No item in database',
+                isLoadingItems
+                    ? const SizedBox(
+                        width: double.infinity,
+                        height: 150,
+                        child: Center(
+                          child: SizedBox(
+                            width: 50,
+                            height: 50,
+                            child: CircularProgressIndicator(
+                              color: eerieBlack,
+                            ),
+                          ),
+                        ),
                       )
-                    : ListView.builder(
-                        itemCount: items.length,
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemBuilder: (context, index) {
-                          return ApprovalSuppliesItemListContainer(
-                            index: index,
-                            item: items[index],
-                          );
-                        },
-                      ),
+                    : items.isEmpty
+                        ? EmptyTable(
+                            text: 'No item in database',
+                          )
+                        : ListView.builder(
+                            itemCount: items.length,
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemBuilder: (context, index) {
+                              return ApprovalSuppliesItemListContainer(
+                                index: index,
+                                item: items[index],
+                              );
+                            },
+                          ),
                 const SizedBox(
                   height: 50,
                 ),
@@ -252,22 +350,76 @@ class _SuppliesReqDetailPageState extends State<SuppliesReqDetailPage> {
                           disabled: false,
                           padding: ButtonSize().mediumSize(),
                           onTap: () {
-                            context.goNamed(
-                              'supplies_request',
-                              params: {
-                                "formId": widget.formId,
-                              },
-                            );
+                            if (settlementId != "-") {
+                              if (settlementStatus != "Draft") {
+                                context.goNamed(
+                                  'settlement_detail',
+                                  params: {
+                                    "formId": settlementId,
+                                  },
+                                );
+                              } else {
+                                context.goNamed(
+                                  'settlement_request',
+                                  params: {
+                                    "formId": settlementId,
+                                  },
+                                );
+                              }
+                            }
                           },
                         ),
                       ),
                     ),
-                    RegularButton(
-                      text: 'Print Transaction',
-                      disabled: false,
-                      padding: ButtonSize().mediumSize(),
-                      onTap: () {},
-                    ),
+                    transaction.status != "Approved"
+                        ? const SizedBox()
+                        : RegularButton(
+                            text: 'Print Transaction',
+                            disabled: false,
+                            padding: ButtonSize().mediumSize(),
+                            onTap: () {
+                              apiService
+                                  .printOrderSupplies(widget.formId)
+                                  .then((value) {
+                                if (value["Status"].toString() == "200") {
+                                  html.AnchorElement anchorElement =
+                                      html.document.createElement('a')
+                                          as html.AnchorElement;
+
+                                  anchorElement.href = value['Data']['File'];
+                                  anchorElement.download = value['Data']['File']
+                                      .toString()
+                                      .split(",")
+                                      .last;
+                                  anchorElement.style.display = "none";
+                                  anchorElement.target = '_blank';
+                                  anchorElement.setAttribute(
+                                      "download", "${widget.formId}.pdf");
+                                  html.document.body!.children
+                                      .add(anchorElement);
+                                  anchorElement.click();
+                                } else {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) => AlertDialogBlack(
+                                      title: value['Title'],
+                                      contentText: value['Message'],
+                                      isSuccess: false,
+                                    ),
+                                  );
+                                }
+                              }).onError((error, stackTrace) {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) => AlertDialogBlack(
+                                    title: "Error printOrderSupplies",
+                                    contentText: error.toString(),
+                                    isSuccess: false,
+                                  ),
+                                );
+                              });
+                            },
+                          ),
                   ],
                 ),
                 const SizedBox(
@@ -287,7 +439,7 @@ class _SuppliesReqDetailPageState extends State<SuppliesReqDetailPage> {
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
         TransactionInfoSection(
-          title: "Order Supplies Detail",
+          title: "Order Supplies $formCategory Detail",
           transaction: transaction,
         ),
         SizedBox(
@@ -297,6 +449,10 @@ class _SuppliesReqDetailPageState extends State<SuppliesReqDetailPage> {
             enabled: true,
             obsecureText: false,
             hintText: 'Search here ...',
+            maxLines: 1,
+            onFieldSubmitted: (value) {
+              searchItem();
+            },
             prefixIcon: const Icon(
               Icons.search,
               color: davysGray,
@@ -312,8 +468,8 @@ class _SuppliesReqDetailPageState extends State<SuppliesReqDetailPage> {
       children: [
         Row(
           children: [
-            Expanded(
-              flex: 2,
+            SizedBox(
+              width: 420,
               child: InkWell(
                 onTap: () {
                   onTapHeader("ItemName");
@@ -322,7 +478,7 @@ class _SuppliesReqDetailPageState extends State<SuppliesReqDetailPage> {
                   children: [
                     Expanded(
                       child: Text(
-                        'ItemName',
+                        'Item Name',
                         style: headerTableTextStyle,
                       ),
                     ),
@@ -359,7 +515,7 @@ class _SuppliesReqDetailPageState extends State<SuppliesReqDetailPage> {
             Expanded(
               child: InkWell(
                 onTap: () {
-                  onTapHeader("BasePrice");
+                  onTapHeader("Price");
                 },
                 child: Row(
                   children: [
@@ -369,7 +525,28 @@ class _SuppliesReqDetailPageState extends State<SuppliesReqDetailPage> {
                         style: headerTableTextStyle,
                       ),
                     ),
-                    iconSort("BasePrice"),
+                    iconSort("Price"),
+                    const SizedBox(
+                      width: 20,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Expanded(
+              child: InkWell(
+                onTap: () {
+                  onTapHeader("EstimatedPrice");
+                },
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        'Est. Price',
+                        style: headerTableTextStyle,
+                      ),
+                    ),
+                    iconSort("EstimatedPrice"),
                     const SizedBox(
                       width: 20,
                     ),
@@ -381,17 +558,17 @@ class _SuppliesReqDetailPageState extends State<SuppliesReqDetailPage> {
               width: 125,
               child: InkWell(
                 onTap: () {
-                  onTapHeader("Qty");
+                  onTapHeader("Quantity");
                 },
                 child: Row(
                   children: [
                     Expanded(
                       child: Text(
-                        'QTY',
+                        'Qty',
                         style: headerTableTextStyle,
                       ),
                     ),
-                    iconSort("Qty"),
+                    iconSort("Quantity"),
                     const SizedBox(
                       width: 20,
                     ),
@@ -447,7 +624,11 @@ class _SuppliesReqDetailPageState extends State<SuppliesReqDetailPage> {
         TotalInfo(
           title: 'Total Cost',
           number: totalCost,
-          numberColor: totalCost > totalBudget ? orangeAccent : greenAcent,
+          numberColor: totalCost == totalBudget
+              ? davysGray
+              : totalCost > totalBudget
+                  ? orangeAccent
+                  : davysGray,
         ),
       ],
     );

@@ -341,97 +341,11 @@ class TokenExpiredDialog extends StatelessWidget {
 class PictureDetail extends StatelessWidget {
   PictureDetail({
     super.key,
-    // this.image = Uint8List.fromList([]),
+    this.image,
     this.urlImage,
   });
 
-  Uint8List image = Uint8List.fromList([
-    67,
-    58,
-    92,
-    108,
-    97,
-    114,
-    97,
-    103,
-    111,
-    110,
-    92,
-    119,
-    119,
-    119,
-    92,
-    103,
-    115,
-    115,
-    92,
-    112,
-    117,
-    98,
-    108,
-    105,
-    99,
-    92,
-    47,
-    116,
-    114,
-    97,
-    110,
-    115,
-    97,
-    99,
-    116,
-    105,
-    111,
-    110,
-    115,
-    47,
-    72,
-    51,
-    48,
-    49,
-    83,
-    85,
-    80,
-    77,
-    48,
-    51,
-    50,
-    51,
-    48,
-    49,
-    47,
-    67,
-    54,
-    112,
-    69,
-    49,
-    56,
-    121,
-    121,
-    95,
-    50,
-    48,
-    50,
-    51,
-    48,
-    51,
-    49,
-    48,
-    49,
-    48,
-    51,
-    56,
-    53,
-    56,
-    95,
-    49,
-    46,
-    106,
-    112,
-    101,
-    103
-  ]);
+  Uint8List? image;
   String? urlImage;
 
   Map<String, String> requestHeader = {
@@ -442,8 +356,10 @@ class PictureDetail extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // WidgetsBinding.instance.
-    return Dialog(child: Image.memory(image)
-        // : Image.network(urlImage!, fit: BoxFit.cover),
-        );
+    return Dialog(
+      child: urlImage == ""
+          ? Image.memory(image!)
+          : Image.network(urlImage!, fit: BoxFit.cover),
+    );
   }
 }

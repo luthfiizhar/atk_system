@@ -193,7 +193,6 @@ class _AttachmentTransactionItemState extends State<AttachmentTransactionItem> {
 
   @override
   Widget build(BuildContext context) {
-    print("File-> ${widget.attachment.file}");
     return widget.attachment.type == "image"
         ? CachedNetworkImage(
             imageUrl: widget.attachment.file,

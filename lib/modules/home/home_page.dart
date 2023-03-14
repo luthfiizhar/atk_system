@@ -28,6 +28,8 @@ class _HomePageState extends State<HomePage> {
   String role = "";
   String photo = "";
 
+  List<ToDoList> toDoList = [];
+
   ScrollController toDoListScroll = ScrollController();
 
   @override
@@ -46,15 +48,45 @@ class _HomePageState extends State<HomePage> {
         photo = value["Data"]["Photo"];
         setState(() {});
       } else {}
+    }).onError((error, stackTrace) {
+      showDialog(
+        context: context,
+        builder: (context) => const AlertDialogBlack(
+          title: "Error getUserData",
+          contentText: "No internet connection",
+          isSuccess: false,
+        ),
+      );
+    });
+    apiService.getToDoList().then((value) {
+      if (value['Status'].toString() == "200") {
+        List resultList = value['Data'];
+        for (var element in resultList) {
+          toDoList.add(
+            ToDoList(
+              formId: element['FormID'],
+              orderPeriod: element['OrderPeriod'],
+              formType: element['FormType'],
+              formCategory: element['FormCategory'],
+              siteName: element['SiteName'],
+              status: element['Status'],
+              link: element['Link'],
+            ),
+          );
+        }
+        setState(() {});
+      }
     });
   }
 
   Future createOrderMonthly() async {
+    String nextRoute = "";
     apiService.createTransaction("Monthly").then((value) {
-      print(value);
+      // print(value);
       if (value["Status"].toString() == "200") {
         String status = value['Data']['Status'];
         formId = value["Data"]["FormID"];
+        nextRoute = value['Data']['Link'];
         showDialog(
           context: context,
           builder: (context) => AlertDialogBlack(
@@ -62,17 +94,20 @@ class _HomePageState extends State<HomePage> {
             contentText: value['Message'],
           ),
         ).then((value) {
-          if (status == "Draft") {
-            context.goNamed(
-              'supplies_request',
-              params: {"formId": formId},
-            );
-          } else {
-            context.goNamed(
-              'request_order_detail',
-              params: {"formId": formId},
-            );
-          }
+          context.goNamed(nextRoute, params: {
+            "formId": formId,
+          });
+          // if (status == "Draft") {
+          //   context.goNamed(
+          //     'supplies_request',
+          //     params: {"formId": formId},
+          //   );
+          // } else {
+          //   context.goNamed(
+          //     'request_order_detail',
+          //     params: {"formId": formId},
+          //   );
+          // }
         });
       } else {
         showDialog(
@@ -87,9 +122,9 @@ class _HomePageState extends State<HomePage> {
     }).onError((error, stackTrace) {
       showDialog(
         context: context,
-        builder: (context) => AlertDialogBlack(
+        builder: (context) => const AlertDialogBlack(
           title: "Error createTransaction",
-          contentText: error.toString(),
+          contentText: "No internet connection",
           isSuccess: false,
         ),
       );
@@ -98,7 +133,7 @@ class _HomePageState extends State<HomePage> {
 
   Future createOrderAdditional() async {
     apiService.createTransaction("Additional").then((value) {
-      print(value);
+      // print(value);
       if (value["Status"].toString() == "200") {
         String status = value['Data']['Status'];
         formId = value["Data"]["FormID"];
@@ -134,9 +169,9 @@ class _HomePageState extends State<HomePage> {
     }).onError((error, stackTrace) {
       showDialog(
         context: context,
-        builder: (context) => AlertDialogBlack(
+        builder: (context) => const AlertDialogBlack(
           title: "Error createTransaction",
-          contentText: error.toString(),
+          contentText: "No internet connection",
           isSuccess: false,
         ),
       );
@@ -164,13 +199,13 @@ class _HomePageState extends State<HomePage> {
               height: 80,
             ),
             menuSection(),
-            // const SizedBox(
-            //   height: 75,
-            // ),
-            // toDoListSection(),
-            // const SizedBox(
-            //   height: 100,
-            // )
+            const SizedBox(
+              height: 75,
+            ),
+            toDoListSection(),
+            const SizedBox(
+              height: 100,
+            )
           ],
         ),
       ),
@@ -369,12 +404,17 @@ class _HomePageState extends State<HomePage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Expanded(
-                child: Text(
-                  'To Do List',
-                  style: helveticaText.copyWith(
-                    fontSize: 22,
-                    fontWeight: FontWeight.w700,
-                    color: eerieBlack,
+                child: Padding(
+                  padding: const EdgeInsets.only(
+                    left: 10,
+                  ),
+                  child: Text(
+                    'To Do List',
+                    style: helveticaText.copyWith(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w700,
+                      color: eerieBlack,
+                    ),
                   ),
                 ),
               ),
@@ -383,9 +423,9 @@ class _HomePageState extends State<HomePage> {
                 children: [
                   InkWell(
                     onTap: () {
-                      double offset = toDoListScroll.offset - 100.0;
+                      double offset = toDoListScroll.offset - 700;
                       toDoListScroll.animateTo(offset,
-                          duration: const Duration(milliseconds: 100),
+                          duration: const Duration(milliseconds: 250),
                           curve: Curves.linear);
                     },
                     child: const Icon(
@@ -394,9 +434,9 @@ class _HomePageState extends State<HomePage> {
                   ),
                   InkWell(
                     onTap: () {
-                      double offset = toDoListScroll.offset + 100.0;
+                      double offset = toDoListScroll.offset + 700;
                       toDoListScroll.animateTo(offset,
-                          duration: const Duration(milliseconds: 100),
+                          duration: const Duration(milliseconds: 250),
                           curve: Curves.linear);
                     },
                     child: const Icon(
@@ -413,37 +453,174 @@ class _HomePageState extends State<HomePage> {
           const SizedBox(
             height: 25,
           ),
-          SizedBox(
-            height: 190,
-            child: ScrollConfiguration(
-              behavior: MyCustomScrollBehavior(),
-              child: ListView.builder(
-                controller: toDoListScroll,
-                shrinkWrap: true,
-                scrollDirection: Axis.horizontal,
-                itemCount: 10,
-                itemBuilder: (context, index) {
-                  return Padding(
+          toDoList.isEmpty
+              ? SizedBox(
+                  height: 190,
+                  width: double.infinity,
+                  child: Padding(
                     padding: const EdgeInsets.only(
-                      right: 20,
+                      bottom: 40,
                     ),
-                    child: Container(
-                      width: 380,
-                      decoration: BoxDecoration(
-                        color: white,
-                        borderRadius: BorderRadius.circular(10),
+                    child: Center(
+                      child: Text(
+                        'There are no to do list right now',
+                        style: helveticaText.copyWith(
+                          fontSize: 22,
+                          fontWeight: FontWeight.w300,
+                          color: davysGray,
+                        ),
                       ),
                     ),
-                  );
-                },
-              ),
-            ),
-          ),
+                  ),
+                )
+              : SizedBox(
+                  height: 190,
+                  child: ScrollConfiguration(
+                    behavior: MyCustomScrollBehavior(),
+                    child: ListView.builder(
+                      controller: toDoListScroll,
+                      shrinkWrap: true,
+                      scrollDirection: Axis.horizontal,
+                      itemCount: toDoList.length,
+                      itemBuilder: (context, index) {
+                        return Padding(
+                          padding: const EdgeInsets.only(
+                            right: 20,
+                          ),
+                          child: ToDoListContainer(
+                            toDoList: toDoList[index],
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ),
           const SizedBox(
-            height: 40,
+            height: 25,
           ),
         ],
       ),
     );
   }
+}
+
+class ToDoListContainer extends StatelessWidget {
+  ToDoListContainer({
+    super.key,
+    ToDoList? toDoList,
+  }) : toDoList = toDoList ?? ToDoList();
+
+  ToDoList toDoList;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 380,
+      decoration: BoxDecoration(
+        color: white,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Stack(
+        // crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Positioned(
+            top: 16,
+            right: 18,
+            child: Text(
+              DateFormat("MMMM yyyy")
+                  .format(DateTime.parse(toDoList.orderPeriod)),
+              style: helveticaText.copyWith(
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+                color: eerieBlack,
+              ),
+            ),
+          ),
+          Positioned(
+            right: 30,
+            left: 30,
+            top: 39,
+            // bottom: 74,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "${toDoList.formCategory} ${toDoList.formType}",
+                  style: helveticaText.copyWith(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w300,
+                    color: davysGray,
+                  ),
+                ),
+                const SizedBox(
+                  height: 9,
+                ),
+                Text(
+                  toDoList.status,
+                  style: helveticaText.copyWith(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w700,
+                    color: eerieBlack,
+                  ),
+                ),
+                const SizedBox(
+                  height: 11,
+                ),
+                Text(
+                  toDoList.siteName,
+                  style: helveticaText.copyWith(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w300,
+                    color: sonicSilver,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Positioned(
+            right: 18,
+            bottom: 15,
+            child: RegularButton(
+              text: "Check",
+              disabled: false,
+              onTap: () {
+                // context.goNamed(
+                //   'transaction_list',
+                //   extra: toDoList.formType.toString(),
+                // );
+                context.goNamed(
+                  toDoList.link,
+                  params: {"formId": toDoList.formId},
+                );
+              },
+              fontSize: 14,
+              padding: const EdgeInsets.symmetric(
+                horizontal: 30,
+                vertical: 18,
+              ),
+            ),
+          )
+        ],
+      ),
+    );
+  }
+}
+
+class ToDoList {
+  ToDoList({
+    this.formId = "",
+    this.orderPeriod = "",
+    this.formType = "",
+    this.formCategory = "",
+    this.siteName = "",
+    this.status = "",
+    this.link = "",
+  });
+  String formId;
+  String orderPeriod;
+  String formType;
+  String formCategory;
+  String siteName;
+  String status;
+  String link;
 }

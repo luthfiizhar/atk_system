@@ -6,6 +6,7 @@ class Item {
     this.basePrice = 0,
     this.qty = 0,
     this.totalPrice = 0,
+    this.estimatedPrice = 0,
     this.reqQty = 0,
     this.reqPrice = 0,
     this.actualPrice = 0,
@@ -17,6 +18,7 @@ class Item {
   String itemName;
   String unit;
   int basePrice;
+  int estimatedPrice;
   int qty;
   int totalPrice;
   int reqQty;

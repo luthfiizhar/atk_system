@@ -45,7 +45,7 @@ class _AttachmentFilesState extends State<AttachmentFiles> {
       print(result.files.first.size);
 
       for (var element in result.files) {
-        if (element.size > 200000) {
+        if (element.size > 2097152) {
           showDialog(
             context: context,
             builder: (context) => const AlertDialogBlack(
@@ -89,12 +89,14 @@ class _AttachmentFilesState extends State<AttachmentFiles> {
 
   removeFile(int index) {
     files.removeAt(index);
+    widget.files.removeAt(index);
     setState(() {});
   }
 
   @override
   void initState() {
     super.initState();
+    // files = widget.files;
   }
 
   @override
@@ -130,7 +132,7 @@ class _AttachmentFilesState extends State<AttachmentFiles> {
           spacing: 16,
           runSpacing: 16,
           // direction: Axis.vertical,
-          children: files
+          children: widget.files
               .asMap()
               .map(
                 (index, element) => MapEntry(
@@ -149,7 +151,7 @@ class _AttachmentFilesState extends State<AttachmentFiles> {
           height: 16,
         ),
         RegularButton(
-          text: 'Attach Picture',
+          text: 'Attach Files',
           disabled: false,
           padding: ButtonSize().mediumSize(),
           onTap: () {

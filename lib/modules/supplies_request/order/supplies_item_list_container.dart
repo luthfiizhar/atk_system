@@ -20,6 +20,8 @@ class SuppliesItemListContainer extends StatefulWidget {
   Item item;
   final TextEditingController _qty = TextEditingController();
   final FocusNode qtyNode = FocusNode();
+  final TextEditingController _estimatedPrice = TextEditingController();
+  final FocusNode estimatedPriceNode = FocusNode();
   Function? countTotal;
   Function? saveItem;
 
@@ -31,9 +33,15 @@ class SuppliesItemListContainer extends StatefulWidget {
 class _SuppliesItemListContainerState extends State<SuppliesItemListContainer> {
   ApiService apiService = ApiService();
 
-  onChangeQty(String value) {
-    widget.item.qty = int.parse(value);
-    widget.item.totalPrice = widget.item.basePrice * int.parse(value);
+  onChange() {
+    widget.item.qty = int.parse(widget._qty.text);
+    // if (widget._estimatedPrice.text.contains(".")) {
+    widget.item.estimatedPrice =
+        int.parse(widget._estimatedPrice.text.replaceAll(".", ""));
+    // }
+
+    widget.item.totalPrice =
+        widget.item.estimatedPrice * int.parse(widget._qty.text);
     widget.saveItem!(widget.item);
     setState(() {});
   }
@@ -43,12 +51,27 @@ class _SuppliesItemListContainerState extends State<SuppliesItemListContainer> {
     super.initState();
 
     widget._qty.text = widget.item.qty.toString();
+    widget._estimatedPrice.value =
+        ThousandsSeparatorInputFormatter().formatEditUpdate(
+            TextEditingValue.empty,
+            TextEditingValue(
+              text: widget.item.basePrice.toString(),
+            ));
     widget.item.totalPrice =
         widget.item.basePrice * int.parse(widget._qty.text);
+
     widget._qty.addListener(() {
       if (widget._qty.text == "") {
         widget._qty.text = "0";
         widget._qty.selection = TextSelection.fromPosition(
+            TextPosition(offset: widget._qty.text.length));
+      }
+      setState(() {});
+    });
+    widget._estimatedPrice.addListener(() {
+      if (widget._estimatedPrice.text == "") {
+        widget._estimatedPrice.text = "0";
+        widget._estimatedPrice.selection = TextSelection.fromPosition(
             TextPosition(offset: widget._qty.text.length));
       }
       setState(() {});
@@ -84,10 +107,38 @@ class _SuppliesItemListContainerState extends State<SuppliesItemListContainer> {
               ),
             ),
             Expanded(
-              child: Text(
-                formatCurrency.format(widget.item.basePrice),
-                style: bodyTableLightText,
-                textAlign: TextAlign.left,
+              // child: Text(
+              //   formatCurrency.format(widget.item.basePrice),
+              //   style: bodyTableLightText,
+              //   textAlign: TextAlign.left,
+              // ),
+              child: Row(
+                children: [
+                  SizedBox(
+                    width: 150,
+                    child: Focus(
+                      onFocusChange: (value) async {
+                        if (!widget.estimatedPriceNode.hasFocus) {
+                          await onChange();
+                          widget.countTotal!();
+                        }
+                      },
+                      child: BlackInputField(
+                        controller: widget._estimatedPrice,
+                        focusNode: widget.estimatedPriceNode,
+                        maxLines: 1,
+                        enabled: true,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                          FilteringTextInputFormatter.deny(RegExp(
+                                  r'^0+') //users can't type 0 at 1st position
+                              ),
+                          ThousandsSeparatorInputFormatter()
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
             SizedBox(
@@ -100,7 +151,7 @@ class _SuppliesItemListContainerState extends State<SuppliesItemListContainer> {
                     child: Focus(
                       onFocusChange: (value) async {
                         if (!widget.qtyNode.hasFocus) {
-                          await onChangeQty(widget._qty.text);
+                          await onChange();
                           widget.countTotal!();
                         }
                       },

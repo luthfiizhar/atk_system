@@ -30,35 +30,13 @@ class BlackDropdown extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DropdownButtonFormField2(
-      buttonStyleData: const ButtonStyleData(
-        height: 40,
-      ),
-      isExpanded: true,
+      buttonWidth: 120,
+      buttonHeight: 39,
       value: value,
       focusNode: focusNode,
+      // isExpanded: true,
       items: items,
-      dropdownStyleData: DropdownStyleData(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(
-            color: sonicSilver,
-            width: 1,
-          ),
-          color: culturedWhite,
-        ),
-      ),
-      menuItemStyleData: MenuItemStyleData(
-        customHeights: customHeights,
-        padding: const EdgeInsets.only(
-          left: 20,
-          right: 20,
-        ),
-      ),
-      iconStyleData: IconStyleData(
-        icon: suffixIcon!,
-        openMenuIcon: suffixIcon,
-      ),
-      // customItemsHeights: customHeights,
+      customItemsHeights: customHeights,
       onChanged: onChanged,
       decoration: InputDecoration(
         border: OutlineInputBorder(
@@ -113,14 +91,15 @@ class BlackDropdown extends StatelessWidget {
         // suffixIcon: suffixIcon,
         suffixIconColor: eerieBlack,
       ),
-      // itemPadding: const EdgeInsets.only(
-      //   left: 20,
-      //   right: 20,
-      // ),
-      // icon: suffixIcon,
+      itemPadding: const EdgeInsets.only(
+        left: 20,
+        right: 20,
+      ),
+      icon: suffixIcon,
       hint: Text(
         hintText!,
         style: const TextStyle(
+          fontFamily: 'Helvetica',
           fontSize: 16,
           fontWeight: FontWeight.w300,
           color: sonicSilver,
@@ -145,8 +124,16 @@ class BlackDropdown extends StatelessWidget {
       //   ),
       //   color: culturedWhite,
       // ),
-
+      dropdownDecoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(
+          color: sonicSilver,
+          width: 1,
+        ),
+        color: culturedWhite,
+      ),
       // offset: const Offset(0, -20),
     );
+    ;
   }
 }

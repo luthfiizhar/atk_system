@@ -44,7 +44,16 @@ class _LoginPageState extends State<LoginPage> {
             ),
           );
         }
-      }).onError((error, stackTrace) {});
+      }).onError((error, stackTrace) {
+        showDialog(
+          context: context,
+          builder: (context) => const AlertDialogBlack(
+            title: "Error login",
+            contentText: "No internet connection",
+            isSuccess: false,
+          ),
+        );
+      });
     }
   }
 

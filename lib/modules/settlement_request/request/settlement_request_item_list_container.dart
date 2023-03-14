@@ -3,6 +3,7 @@ import 'package:atk_system_ga/constant/text_style.dart';
 import 'package:atk_system_ga/functions/api_request.dart';
 import 'package:atk_system_ga/models/item_class.dart';
 import 'package:atk_system_ga/models/transaction_class.dart';
+import 'package:atk_system_ga/widgets/dialogs.dart';
 import 'package:atk_system_ga/widgets/divider_table.dart';
 import 'package:atk_system_ga/widgets/input_field.dart';
 import 'package:flutter/material.dart';
@@ -38,23 +39,32 @@ class _SettlementRequestItemListContainerState
 
   onChangeQty(String value) {
     widget.item.actualQty = int.parse(value);
-    if (widget._actualPrice.text.contains(".")) {
-      widget.item.actualPrice =
-          int.parse(widget._actualPrice.text.replaceAll(".", ""));
-    }
+    // if (widget._actualPrice.text.contains(".")) {
+    widget.item.actualPrice =
+        int.parse(widget._actualPrice.text.replaceAll(".", ""));
+    // }
     widget.item.actualTotalPrice = int.parse(value) * widget.item.actualPrice;
 
     apiService
         .saveItemSetllement(widget.transaction, widget.item)
         .then((value) {})
         .onError((error, stackTrace) {
-      print(error);
+      showDialog(
+        context: context,
+        builder: (context) => const AlertDialogBlack(
+          title: "Error saveItemSettlement",
+          contentText: "No internet connection",
+          isSuccess: false,
+        ),
+      );
     });
   }
 
   onChangePrice(String value) {
     if (value.contains(".")) {
       widget.item.actualPrice = int.parse(value.replaceAll(".", ""));
+    } else {
+      widget.item.actualPrice = int.parse(value);
     }
     widget.item.actualTotalPrice =
         widget.item.actualPrice * int.parse(widget._qty.text);
@@ -63,7 +73,14 @@ class _SettlementRequestItemListContainerState
         .saveItemSetllement(widget.transaction, widget.item)
         .then((value) {})
         .onError((error, stackTrace) {
-      print(error);
+      showDialog(
+        context: context,
+        builder: (context) => const AlertDialogBlack(
+          title: "Error saveItemSetllement",
+          contentText: "No internet connection",
+          isSuccess: false,
+        ),
+      );
     });
   }
 
@@ -194,51 +211,5 @@ class _SettlementRequestItemListContainerState
         ),
       ],
     );
-  }
-}
-
-class ThousandsSeparatorInputFormatter extends TextInputFormatter {
-  static const separator = '.'; // Change this to '.' for other locales
-
-  @override
-  TextEditingValue formatEditUpdate(
-      TextEditingValue oldValue, TextEditingValue newValue) {
-    // Short-circuit if the new value is empty
-    if (newValue.text.length == 0) {
-      return newValue.copyWith(text: '');
-    }
-
-    // Handle "deletion" of separator character
-    String oldValueText = oldValue.text.replaceAll(separator, '');
-    String newValueText = newValue.text.replaceAll(separator, '');
-
-    if (oldValue.text.endsWith(separator) &&
-        oldValue.text.length == newValue.text.length + 1) {
-      newValueText = newValueText.substring(0, newValueText.length - 1);
-    }
-
-    // Only process if the old value and new value are different
-    if (oldValueText != newValueText) {
-      int selectionIndex =
-          newValue.text.length - newValue.selection.extentOffset;
-      final chars = newValueText.split('');
-
-      String newString = '';
-      for (int i = chars.length - 1; i >= 0; i--) {
-        if ((chars.length - 1 - i) % 3 == 0 && i != chars.length - 1)
-          newString = separator + newString;
-        newString = chars[i] + newString;
-      }
-
-      return TextEditingValue(
-        text: newString.toString(),
-        selection: TextSelection.collapsed(
-          offset: newString.length - selectionIndex,
-        ),
-      );
-    }
-
-    // If the new value and old value are the same, just return as-is
-    return newValue;
   }
 }

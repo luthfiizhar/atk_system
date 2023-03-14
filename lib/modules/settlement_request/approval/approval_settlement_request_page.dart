@@ -9,6 +9,7 @@ import 'package:atk_system_ga/models/transaction_class.dart';
 import 'package:atk_system_ga/modules/settlement_request/approval/approval_settlement_item_list_container.dart';
 import 'package:atk_system_ga/modules/settlement_request/approval/dialog_confirm_approval_settlement.dart';
 import 'package:atk_system_ga/widgets/buttons.dart';
+import 'package:atk_system_ga/widgets/dialogs.dart';
 import 'package:atk_system_ga/widgets/empty_table.dart';
 import 'package:atk_system_ga/widgets/search_input_field.dart';
 import 'package:atk_system_ga/widgets/send_back_dialog.dart';
@@ -117,7 +118,14 @@ class _ApprovalSettlementRequestPageState
         }
       } else {}
     }).onError((error, stackTrace) {
-      print(error);
+      showDialog(
+        context: context,
+        builder: (context) => const AlertDialogBlack(
+          title: "Error getSettlementDetail",
+          contentText: "No internet connection",
+          isSuccess: false,
+        ),
+      );
       isLoadingItem = false;
       setState(() {});
     });
@@ -150,7 +158,7 @@ class _ApprovalSettlementRequestPageState
         transaction.status = value["Data"]["Status"];
         totalBudget = value['Data']["Budget"];
         totalReqCost = value['Data']['TotalCost'];
-        totalActualCost = value['Data']['TotalActualCost'];
+        // totalActualCost = value['Data']['TotalActualCost'];
 
         for (var element in resultItems) {
           items.add(
@@ -205,6 +213,7 @@ class _ApprovalSettlementRequestPageState
                     Attachment(
                       file: element['ImageURL'],
                       type: element['FileType'],
+                      fileName: element['FileName'] ?? "",
                     ),
                   );
                 }
@@ -215,13 +224,28 @@ class _ApprovalSettlementRequestPageState
         transaction.items = items;
         setState(() {});
       } else {
-        print("not success");
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialogBlack(
+            title: value['Title'],
+            contentText: value['Message'],
+            isSuccess: false,
+          ),
+        );
       }
     }).onError((error, stackTrace) {
       print(error);
       isLoadingDetail = false;
       isLoadingItem = false;
       setState(() {});
+      showDialog(
+        context: context,
+        builder: (context) => const AlertDialogBlack(
+          title: "Error getSettlementDetail",
+          contentText: "No internet connection",
+          isSuccess: false,
+        ),
+      );
     });
   }
 
@@ -254,7 +278,7 @@ class _ApprovalSettlementRequestPageState
                       )
                     : infoAndSearch(),
                 const SizedBox(
-                  height: 55,
+                  height: 30,
                 ),
                 headerTable(),
                 const SizedBox(
@@ -331,7 +355,9 @@ class _ApprovalSettlementRequestPageState
                           ),
                         ).then((value) {
                           if (value) {
-                            context.goNamed('home');
+                            context.goNamed('settlement_detail', params: {
+                              "formId": widget.formId,
+                            });
                           }
                         });
                       },
@@ -351,7 +377,9 @@ class _ApprovalSettlementRequestPageState
                           ),
                         ).then((value) {
                           if (value) {
-                            context.goNamed('home');
+                            context.goNamed('setllement_detail', params: {
+                              "formId": widget.formId,
+                            });
                           }
                         });
                       },
@@ -550,17 +578,22 @@ class _ApprovalSettlementRequestPageState
               return TotalInfo(
                 title: 'Total Actual Cost',
                 number: totalActualCost,
-                numberColor:
-                    totalActualCost > totalReqCost ? orangeAccent : greenAcent,
-                icon: totalActualCost > totalReqCost
-                    ? const ImageIcon(
-                        AssetImage('icons/budget_up.png'),
-                        color: orangeAccent,
-                      )
-                    : const ImageIcon(
-                        AssetImage('icons/budget_down.png'),
-                        color: greenAcent,
-                      ),
+                numberColor: totalActualCost == totalReqCost
+                    ? davysGray
+                    : totalActualCost > totalReqCost
+                        ? orangeAccent
+                        : greenAcent,
+                icon: totalActualCost == totalReqCost
+                    ? const SizedBox()
+                    : totalActualCost > totalReqCost
+                        ? const ImageIcon(
+                            AssetImage('icons/budget_up.png'),
+                            color: orangeAccent,
+                          )
+                        : const ImageIcon(
+                            AssetImage('icons/budget_down.png'),
+                            color: greenAcent,
+                          ),
               );
             }),
       ],

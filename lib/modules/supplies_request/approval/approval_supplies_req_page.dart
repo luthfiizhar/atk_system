@@ -49,6 +49,8 @@ class _ApprovalSuppliesReqPageState extends State<ApprovalSuppliesReqPage> {
 
   bool isLoadingDetail = true;
 
+  String formCategory = "";
+
   // bool isLoadingGetDetail = true;
 
   bool isLoadingItems = true;
@@ -76,11 +78,21 @@ class _ApprovalSuppliesReqPageState extends State<ApprovalSuppliesReqPage> {
               basePrice: element['BasePrice'],
               qty: element['Quantity'],
               totalPrice: element['TotalPrice'],
+              estimatedPrice: element['EstimatedPrice'],
             ),
           );
         }
         setState(() {});
       } else {}
+    }).onError((error, stackTrace) {
+      showDialog(
+        context: context,
+        builder: (context) => const AlertDialogBlack(
+          title: "Error getDetailFormFilled",
+          contentText: "No internet connection",
+          isSuccess: false,
+        ),
+      );
     });
   }
 
@@ -125,6 +137,8 @@ class _ApprovalSuppliesReqPageState extends State<ApprovalSuppliesReqPage> {
         totalBudget = value['Data']["Budget"];
         totalCost = value['Data']['TotalCost'];
 
+        formCategory = value['Data']['FormCategory'];
+
         for (var element in resultItems) {
           items.add(
             Item(
@@ -134,6 +148,7 @@ class _ApprovalSuppliesReqPageState extends State<ApprovalSuppliesReqPage> {
               basePrice: element['BasePrice'],
               qty: element['Quantity'],
               totalPrice: element['TotalPrice'],
+              estimatedPrice: element['EstimatedPrice'],
             ),
           );
         }
@@ -162,6 +177,7 @@ class _ApprovalSuppliesReqPageState extends State<ApprovalSuppliesReqPage> {
                     Attachment(
                       file: element['ImageURL'],
                       type: element['FileType'],
+                      fileName: element['FileName'],
                     ),
                   );
                 }
@@ -179,6 +195,15 @@ class _ApprovalSuppliesReqPageState extends State<ApprovalSuppliesReqPage> {
           ),
         );
       }
+    }).onError((error, stackTrace) {
+      showDialog(
+        context: context,
+        builder: (context) => const AlertDialogBlack(
+          title: "Error initDetailFilled",
+          contentText: "No internet connection",
+          isSuccess: false,
+        ),
+      );
     });
   }
 
@@ -205,7 +230,7 @@ class _ApprovalSuppliesReqPageState extends State<ApprovalSuppliesReqPage> {
         child: Align(
           alignment: Alignment.topCenter,
           child: SizedBox(
-            width: 1100,
+            width: 1160,
             child: Column(mainAxisAlignment: MainAxisAlignment.start,
                 // crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
@@ -218,7 +243,7 @@ class _ApprovalSuppliesReqPageState extends State<ApprovalSuppliesReqPage> {
                         )
                       : infoAndSearch(),
                   const SizedBox(
-                    height: 55,
+                    height: 30,
                   ),
                   headerTable(),
                   const SizedBox(
@@ -321,7 +346,9 @@ class _ApprovalSuppliesReqPageState extends State<ApprovalSuppliesReqPage> {
                             ),
                           ).then((value) {
                             if (value) {
-                              context.goNamed('home');
+                              context.goNamed('request_order_detail', params: {
+                                "formId": widget.formId,
+                              });
                             }
                           });
                         },
@@ -341,7 +368,10 @@ class _ApprovalSuppliesReqPageState extends State<ApprovalSuppliesReqPage> {
                             ),
                           ).then((value) {
                             if (value) {
-                              context.goNamed('home');
+                              // context.goNamed('home');
+                              context.goNamed('request_order_detail', params: {
+                                "formId": widget.formId,
+                              });
                             }
                           });
                         },
@@ -364,7 +394,7 @@ class _ApprovalSuppliesReqPageState extends State<ApprovalSuppliesReqPage> {
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
         TransactionInfoSection(
-          title: "Order Supplies Approval",
+          title: "Order Supplies $formCategory Approval",
           transaction: transaction,
         ),
         SizedBox(
@@ -393,8 +423,8 @@ class _ApprovalSuppliesReqPageState extends State<ApprovalSuppliesReqPage> {
       children: [
         Row(
           children: [
-            Expanded(
-              flex: 2,
+            SizedBox(
+              width: 420,
               child: InkWell(
                 onTap: () {
                   onTapHeader("ItemName");
@@ -451,6 +481,27 @@ class _ApprovalSuppliesReqPageState extends State<ApprovalSuppliesReqPage> {
                       ),
                     ),
                     iconSort("Price"),
+                    const SizedBox(
+                      width: 20,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Expanded(
+              child: InkWell(
+                onTap: () {
+                  onTapHeader("EstimatedPrice");
+                },
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        'Est. Price',
+                        style: headerTableTextStyle,
+                      ),
+                    ),
+                    iconSort("EstimatedPrice"),
                     const SizedBox(
                       width: 20,
                     ),
@@ -528,7 +579,11 @@ class _ApprovalSuppliesReqPageState extends State<ApprovalSuppliesReqPage> {
         TotalInfo(
           title: 'Total Cost',
           number: totalCost,
-          numberColor: totalCost > totalBudget ? orangeAccent : greenAcent,
+          numberColor: totalCost == totalBudget
+              ? davysGray
+              : totalCost > totalBudget
+                  ? orangeAccent
+                  : davysGray,
         ),
       ],
     );

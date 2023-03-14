@@ -9,6 +9,7 @@ import 'package:atk_system_ga/models/transaction_class.dart';
 import 'package:atk_system_ga/modules/settlement_request/request/dialog_confirm_settlement_request.dart';
 import 'package:atk_system_ga/modules/settlement_request/request/settlement_request_item_list_container.dart';
 import 'package:atk_system_ga/widgets/buttons.dart';
+import 'package:atk_system_ga/widgets/dialogs.dart';
 import 'package:atk_system_ga/widgets/empty_table.dart';
 import 'package:atk_system_ga/widgets/search_input_field.dart';
 import 'package:atk_system_ga/widgets/total.dart';
@@ -88,15 +89,22 @@ class _SettlementRequestPageState extends State<SettlementRequestPage> {
     }).onError((error, stackTrace) {
       isLoadingItems = false;
       setState(() {});
-      print(error);
+      showDialog(
+        context: context,
+        builder: (context) => const AlertDialogBlack(
+          title: "Error getSettlementDetail",
+          contentText: "No internet connection",
+          isSuccess: false,
+        ),
+      );
     });
   }
 
   onChangeQtyAndPrice(int index, String qtyValue, String priceValue) {
-    if (priceValue.contains(".")) {
-      transaction.items[index].actualPrice =
-          int.parse(priceValue.replaceAll(".", ""));
-    }
+    // if (priceValue.contains(".")) {
+    transaction.items[index].actualPrice =
+        int.parse(priceValue.replaceAll(".", ""));
+    // }
     transaction.items[index].actualQty = int.parse(qtyValue);
     transaction.items[index].actualTotalPrice =
         transaction.items[index].actualQty *
@@ -226,7 +234,14 @@ class _SettlementRequestPageState extends State<SettlementRequestPage> {
         print("not success");
       }
     }).onError((error, stackTrace) {
-      print("ERROR PAGE $error");
+      showDialog(
+        context: context,
+        builder: (context) => const AlertDialogBlack(
+          title: "Error initDetailSettlement",
+          contentText: "No internet connection",
+          isSuccess: false,
+        ),
+      );
       isLoadingDetail = false;
       isLoadingItems = false;
       setState(() {});
@@ -262,7 +277,7 @@ class _SettlementRequestPageState extends State<SettlementRequestPage> {
                       )
                     : infoAndSearch(),
                 const SizedBox(
-                  height: 55,
+                  height: 30,
                 ),
                 headerTable(),
                 const SizedBox(
@@ -352,7 +367,10 @@ class _SettlementRequestPageState extends State<SettlementRequestPage> {
                           ),
                         ).then((value) {
                           if (value) {
-                            context.goNamed('home');
+                            // context.goNamed('home');
+                            context.goNamed('settlement_detail', params: {
+                              "formId": widget.formId,
+                            });
                           }
                         });
                       },
@@ -550,8 +568,22 @@ class _SettlementRequestPageState extends State<SettlementRequestPage> {
               return TotalInfo(
                 title: 'Total Actual Cost',
                 number: totalActualCost,
-                numberColor:
-                    totalActualCost > totalReqCost ? orangeAccent : greenAcent,
+                numberColor: totalActualCost == totalReqCost
+                    ? davysGray
+                    : totalActualCost > totalReqCost
+                        ? orangeAccent
+                        : greenAcent,
+                icon: totalActualCost == totalReqCost
+                    ? const SizedBox()
+                    : totalActualCost > totalReqCost
+                        ? const ImageIcon(
+                            AssetImage('icons/budget_up.png'),
+                            color: orangeAccent,
+                          )
+                        : const ImageIcon(
+                            AssetImage('icons/budget_down.png'),
+                            color: greenAcent,
+                          ),
               );
             }),
       ],

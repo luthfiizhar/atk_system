@@ -32,6 +32,8 @@ class _TransactionListPageState extends State<TransactionListPage> {
 
   bool isLoading = true;
 
+  String role = "";
+
   String formType = "Supply Request";
   List typeList = [];
 
@@ -48,6 +50,9 @@ class _TransactionListPageState extends State<TransactionListPage> {
   onChangedTab(String value) {
     searchTerm.formType = value;
     searchTerm.orderBy = "FormID";
+    searchTerm.orderDir = "ASC";
+    searchTerm.keywords = "";
+    _search.text = "";
     formType = value;
     updateList().then((value) {
       countPagination(resultRows);
@@ -92,6 +97,8 @@ class _TransactionListPageState extends State<TransactionListPage> {
               siteName: element["SiteName"],
               created: element["Created_At"],
               status: element["Status"],
+              settlementId: element['SettlementID'],
+              settlementStatus: element['SettlementStatus'],
             ),
           );
         }
@@ -306,7 +313,7 @@ class _TransactionListPageState extends State<TransactionListPage> {
                   children: [
                     Expanded(
                       child: Text(
-                        'Form ID',
+                        'Request ID',
                         style: headerTableTextStyle,
                       ),
                     ),

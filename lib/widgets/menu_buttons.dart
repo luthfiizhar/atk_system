@@ -31,7 +31,7 @@ class MenuButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      // highlightColor: Color.fromARGB(0, 255, 255, 255),
+      highlightColor: Color.fromARGB(0, 255, 255, 255),
       hoverColor: Color.fromARGB(0, 255, 255, 255),
       splashFactory: NoSplash.splashFactory,
       splashColor: Color.fromARGB(0, 255, 255, 255),

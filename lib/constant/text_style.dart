@@ -5,6 +5,9 @@ import 'package:intl/intl.dart';
 final formatCurrency =
     NumberFormat.currency(locale: "ID", decimalDigits: 0, symbol: "Rp ");
 
+final formatThousand =
+    NumberFormat.currency(locale: "ID", decimalDigits: 0, symbol: "");
+
 const TextStyle helveticaText = TextStyle(
   fontFamily: 'Helvetica',
   height: 1.15,

@@ -29,8 +29,8 @@ class _ApprovalSuppliesItemListContainerState
         widget.index == 0 ? const SizedBox() : const DividerTable(),
         Row(
           children: [
-            Expanded(
-              flex: 2,
+            SizedBox(
+              width: 420,
               child: Row(
                 children: [
                   Text(
@@ -54,6 +54,31 @@ class _ApprovalSuppliesItemListContainerState
                 formatCurrency.format(widget.item.basePrice),
                 style: bodyTableLightText,
                 textAlign: TextAlign.left,
+              ),
+            ),
+            Expanded(
+              child: Wrap(
+                alignment: WrapAlignment.start,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                spacing: 10,
+                children: [
+                  Text(
+                    formatCurrency.format(widget.item.estimatedPrice),
+                    style: bodyTableLightText,
+                    textAlign: TextAlign.left,
+                  ),
+                  widget.item.basePrice == widget.item.estimatedPrice
+                      ? const SizedBox()
+                      : widget.item.estimatedPrice < widget.item.basePrice
+                          ? const ImageIcon(
+                              AssetImage('assets/icons/budget_down.png'),
+                              color: greenAcent,
+                            )
+                          : const ImageIcon(
+                              AssetImage('assets/icons/budget_up.png'),
+                              color: orangeAccent,
+                            )
+                ],
               ),
             ),
             SizedBox(

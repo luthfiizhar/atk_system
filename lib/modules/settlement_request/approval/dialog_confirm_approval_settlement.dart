@@ -152,7 +152,7 @@ class _ApproveSettlementDialogState extends State<ApproveSettlementDialog> {
 
                           for (var element in attachment) {
                             widget.transaction.activity.first.submitAttachment
-                                .add(element.file);
+                                .add('"${element.file}"');
                           }
 
                           print(widget.transaction);
@@ -192,9 +192,9 @@ class _ApproveSettlementDialogState extends State<ApproveSettlementDialog> {
                           }).onError((error, stackTrace) {
                             showDialog(
                               context: context,
-                              builder: (context) => AlertDialogBlack(
+                              builder: (context) => const AlertDialogBlack(
                                 title: "Error submitSuppliesRequest",
-                                contentText: error.toString(),
+                                contentText: "No internet connection",
                                 isSuccess: false,
                               ),
                             );

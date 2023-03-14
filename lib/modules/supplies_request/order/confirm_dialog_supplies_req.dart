@@ -54,6 +54,11 @@ class _ConfirmDialogSuppliesRequestState
 
     itemList = widget.transaction.items;
 
+    // for (var element in widget.transaction.activity) {
+    //   activity.add(element);
+    // }
+    // activity = widget.transaction.activity;
+
     setState(() {});
   }
 
@@ -166,7 +171,7 @@ class _ConfirmDialogSuppliesRequestState
                   ),
                   orderSummarySection(),
                   const SizedBox(
-                    height: 40,
+                    height: 30,
                   ),
                   headerTable(),
                   itemList.isEmpty
@@ -316,9 +321,10 @@ class _ConfirmDialogSuppliesRequestState
                                   setState(() {});
                                   showDialog(
                                     context: context,
-                                    builder: (context) => AlertDialogBlack(
+                                    builder: (context) =>
+                                        const AlertDialogBlack(
                                       title: "Error submitSuppliesRequest",
-                                      contentText: error.toString(),
+                                      contentText: "No internet connection",
                                       isSuccess: false,
                                     ),
                                   );
@@ -383,7 +389,8 @@ class _ConfirmDialogSuppliesRequestState
                   style: dialogSummaryContentLightText,
                   children: [
                     TextSpan(
-                      text: "${widget.transaction.siteArea} m2",
+                      text:
+                          "${formatThousand.format(widget.transaction.siteArea)} m2",
                       style: dialogSummaryContentText,
                     ),
                   ],
@@ -400,7 +407,7 @@ class _ConfirmDialogSuppliesRequestState
         TotalInfo(
           title: 'Total Cost',
           number: totalCost,
-          titleColor: totalCost > totalBudget ? orangeAccent : davysGray,
+          numberColor: totalCost > totalBudget ? orangeAccent : davysGray,
         )
       ],
     );
@@ -411,8 +418,9 @@ class _ConfirmDialogSuppliesRequestState
       children: [
         Row(
           children: [
-            SizedBox(
-              width: 250,
+            Expanded(
+              // width: 300,
+              flex: 2,
               child: InkWell(
                 onTap: () {
                   onTapHeader("ItemName");
@@ -421,7 +429,7 @@ class _ConfirmDialogSuppliesRequestState
                   children: [
                     Expanded(
                       child: Text(
-                        'ItemName',
+                        'Item Name',
                         style: headerTableTextStyle,
                       ),
                     ),
@@ -433,7 +441,8 @@ class _ConfirmDialogSuppliesRequestState
                 ),
               ),
             ),
-            Expanded(
+            SizedBox(
+              width: 175,
               child: InkWell(
                 onTap: () {
                   onTapHeader("BasePrice");
@@ -441,6 +450,7 @@ class _ConfirmDialogSuppliesRequestState
                 child: Row(
                   children: [
                     Expanded(
+                      // width: 150,
                       child: Text(
                         'Base Price',
                         style: headerTableTextStyle,
@@ -476,7 +486,8 @@ class _ConfirmDialogSuppliesRequestState
                 ),
               ),
             ),
-            Expanded(
+            SizedBox(
+              width: 175,
               child: InkWell(
                 onTap: () {
                   onTapHeader("TotalPrice");
@@ -578,14 +589,15 @@ class DialogConfirmItemListContainer extends StatelessWidget {
             : const DividerTable(),
         Row(
           children: [
-            SizedBox(
-              width: 250,
+            Expanded(
+              flex: 2,
               child: Text(
                 item.itemName,
                 style: bodyTableNormalText,
               ),
             ),
-            Expanded(
+            SizedBox(
+              width: 175,
               child: Text(
                 formatCurrency.format(item.basePrice),
                 style: bodyTableLightText,
@@ -598,7 +610,8 @@ class DialogConfirmItemListContainer extends StatelessWidget {
                 style: bodyTableLightText,
               ),
             ),
-            Expanded(
+            SizedBox(
+              width: 175,
               child: Text(
                 formatCurrency.format(item.totalPrice),
                 style: bodyTableLightText,

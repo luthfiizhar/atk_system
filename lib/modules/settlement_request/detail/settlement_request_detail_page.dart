@@ -8,6 +8,7 @@ import 'package:atk_system_ga/models/search_term.dart';
 import 'package:atk_system_ga/models/transaction_class.dart';
 import 'package:atk_system_ga/modules/settlement_request/approval/approval_settlement_item_list_container.dart';
 import 'package:atk_system_ga/widgets/buttons.dart';
+import 'package:atk_system_ga/widgets/dialogs.dart';
 import 'package:atk_system_ga/widgets/empty_table.dart';
 import 'package:atk_system_ga/widgets/search_input_field.dart';
 import 'package:atk_system_ga/widgets/total.dart';
@@ -15,6 +16,7 @@ import 'package:atk_system_ga/widgets/transaction_activity_section.dart';
 import 'package:atk_system_ga/widgets/transaction_info_section.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'dart:html' as html;
 
 class DetailApprovalSettlementRequestPage extends StatefulWidget {
   DetailApprovalSettlementRequestPage({
@@ -32,7 +34,8 @@ class DetailApprovalSettlementRequestPage extends StatefulWidget {
 class _DetailApprovalSettlementRequestPageState
     extends State<DetailApprovalSettlementRequestPage> {
   TextEditingController _search = TextEditingController();
-  SearchTerm searchTerm = SearchTerm();
+  SearchTerm searchTerm =
+      SearchTerm(keywords: "", orderBy: "ItemName", orderDir: "ASC");
 
   ApiService apiService = ApiService();
   Transaction transaction = Transaction();
@@ -45,6 +48,9 @@ class _DetailApprovalSettlementRequestPageState
   int totalBudget = 0;
   int totalReqCost = 0;
   int totalActualCost = 0;
+
+  bool isLoadingDetail = true;
+  bool isLoadingItem = true;
 
   onChangeQtyAndPrice(int index, String qtyValue, String priceValue) {
     if (priceValue.contains(".")) {
@@ -76,6 +82,44 @@ class _DetailApprovalSettlementRequestPageState
         }
       }
       searchTerm.orderBy = orderBy;
+      updateList().then((value) {});
+    });
+  }
+
+  Future updateList() {
+    isLoadingItem = true;
+    items.clear();
+    setState(() {});
+    return apiService
+        .getSettlementDetail(widget.formId, searchTerm)
+        .then((value) {
+      isLoadingItem = false;
+      setState(() {});
+      if (value['Status'].toString() == "200") {
+        List resultItems = value["Data"]["Items"];
+
+        for (var element in resultItems) {
+          items.add(
+            Item(
+              itemId: element['ItemID'].toString(),
+              itemName: element['ItemName'],
+              basePrice: element['ItemPrice'],
+              qty: element['Quantity'],
+              totalPrice: element['TotalPrice'],
+              actualPrice: element['ActualPrice'],
+              actualQty: element['ActualQuantity'],
+            ),
+          );
+          transaction.items = items;
+          // totalActualCost = totalActualCost +
+          //     (int.parse(element['ActualPrice'].toString()) *
+          //         int.parse(element['ActualQuantity'].toString()));
+        }
+      } else {}
+    }).onError((error, stackTrace) {
+      print(error);
+      isLoadingItem = false;
+      setState(() {});
     });
   }
 
@@ -83,6 +127,9 @@ class _DetailApprovalSettlementRequestPageState
     return apiService
         .getSettlementDetail(widget.formId, searchTerm)
         .then((value) {
+      isLoadingDetail = false;
+      isLoadingItem = false;
+      setState(() {});
       if (value['Status'].toString() == "200") {
         List resultItems = value["Data"]["Items"];
         List resultActivity = value["Data"]["Comments"];
@@ -111,21 +158,11 @@ class _DetailApprovalSettlementRequestPageState
               actualQty: element['ActualQuantity'],
             ),
           );
-        }
-
-        for (var element in resultActivity) {
-          transactionActivity.add(
-            TransactionActivity(
-              empName: element["EmpName"],
-              comment: element["CommentText"],
-              date: element["CommentDate"],
-              status: element["CommentDescription"],
-              photo: element["Photo"],
-            ),
-          );
-          if (element['Attachments'] != []) {
-            attachmentResult = element['Attachments'];
-          }
+          // if (totalActualCost == 0) {
+          // totalActualCost = totalActualCost +
+          //     (int.parse(element['ActualPrice'].toString()) *
+          //         int.parse(element['ActualQuantity'].toString()));
+          // }
         }
         if (resultActivity.isNotEmpty) {
           for (var element in resultActivity) {
@@ -151,6 +188,7 @@ class _DetailApprovalSettlementRequestPageState
                     Attachment(
                       file: element['ImageURL'],
                       type: element['FileType'],
+                      fileName: element['FileName'],
                     ),
                   );
                 }
@@ -162,10 +200,24 @@ class _DetailApprovalSettlementRequestPageState
         transaction.items = items;
         setState(() {});
       } else {
-        print("not success");
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialogBlack(
+            title: value['Title'],
+            contentText: value['Message'],
+            isSuccess: false,
+          ),
+        );
       }
     }).onError((error, stackTrace) {
-      print(error);
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialogBlack(
+          title: "Error getSettlementDetail",
+          contentText: error.toString(),
+          isSuccess: false,
+        ),
+      );
     });
   }
 
@@ -192,29 +244,47 @@ class _DetailApprovalSettlementRequestPageState
                 const SizedBox(
                   height: 50,
                 ),
-                infoAndSearch(),
+                isLoadingDetail
+                    ? const CircularProgressIndicator(
+                        color: eerieBlack,
+                      )
+                    : infoAndSearch(),
                 const SizedBox(
-                  height: 55,
+                  height: 30,
                 ),
                 headerTable(),
                 const SizedBox(
                   height: 20,
                 ),
-                transaction.items.isEmpty
-                    ? EmptyTable(
-                        text: 'No item in database',
+                isLoadingItem
+                    ? const SizedBox(
+                        width: double.infinity,
+                        height: 150,
+                        child: Center(
+                          child: SizedBox(
+                            height: 50,
+                            width: 50,
+                            child: CircularProgressIndicator(
+                              color: eerieBlack,
+                            ),
+                          ),
+                        ),
                       )
-                    : ListView.builder(
-                        itemCount: transaction.items.length,
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemBuilder: (context, index) {
-                          return ApprovalSettlementRequestItemListContainer(
-                            index: index,
-                            item: transaction.items[index],
-                          );
-                        },
-                      ),
+                    : transaction.items.isEmpty
+                        ? EmptyTable(
+                            text: 'No item in database',
+                          )
+                        : ListView.builder(
+                            itemCount: transaction.items.length,
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemBuilder: (context, index) {
+                              return ApprovalSettlementRequestItemListContainer(
+                                index: index,
+                                item: transaction.items[index],
+                              );
+                            },
+                          ),
                 const SizedBox(
                   height: 50,
                 ),
@@ -245,12 +315,55 @@ class _DetailApprovalSettlementRequestPageState
                 Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    RegularButton(
-                      text: 'Print Transaction',
-                      disabled: false,
-                      padding: ButtonSize().mediumSize(),
-                      onTap: () {},
-                    ),
+                    transaction.status != "Approved"
+                        ? const SizedBox()
+                        : RegularButton(
+                            text: 'Print Transaction',
+                            disabled: false,
+                            padding: ButtonSize().mediumSize(),
+                            onTap: () {
+                              apiService
+                                  .printSettlement(widget.formId)
+                                  .then((value) {
+                                if (value["Status"].toString() == "200") {
+                                  html.AnchorElement anchorElement =
+                                      html.document.createElement('a')
+                                          as html.AnchorElement;
+
+                                  anchorElement.href = value['Data']['File'];
+                                  anchorElement.download = value['Data']['File']
+                                      .toString()
+                                      .split(",")
+                                      .last;
+                                  anchorElement.style.display = "none";
+                                  anchorElement.target = '_blank';
+                                  anchorElement.setAttribute(
+                                      "download", "${widget.formId}.pdf");
+                                  html.document.body!.children
+                                      .add(anchorElement);
+                                  anchorElement.click();
+                                } else {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) => AlertDialogBlack(
+                                      title: value['Title'],
+                                      contentText: value['Message'],
+                                      isSuccess: false,
+                                    ),
+                                  );
+                                }
+                              }).onError((error, stackTrace) {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) => AlertDialogBlack(
+                                    title: "Error printOrderSupplies",
+                                    contentText: error.toString(),
+                                    isSuccess: false,
+                                  ),
+                                );
+                              });
+                            },
+                          ),
                   ],
                 ),
                 const SizedBox(
@@ -440,8 +553,22 @@ class _DetailApprovalSettlementRequestPageState
               return TotalInfo(
                 title: 'Total Actual Cost',
                 number: totalActualCost,
-                numberColor:
-                    totalActualCost > totalReqCost ? orangeAccent : greenAcent,
+                numberColor: totalActualCost == totalReqCost
+                    ? davysGray
+                    : totalActualCost > totalReqCost
+                        ? orangeAccent
+                        : greenAcent,
+                icon: totalActualCost == totalReqCost
+                    ? const SizedBox()
+                    : totalActualCost > totalReqCost
+                        ? const ImageIcon(
+                            AssetImage('assets/icons/budget_up.png'),
+                            color: orangeAccent,
+                          )
+                        : const ImageIcon(
+                            AssetImage('assets/icons/budget_down.png'),
+                            color: greenAcent,
+                          ),
               );
             }),
       ],

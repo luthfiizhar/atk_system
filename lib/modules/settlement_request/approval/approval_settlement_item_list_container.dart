@@ -111,15 +111,13 @@ class _ApprovalSettlementRequestItemListContainerState
                         widget.item.actualQty == widget.item.qty
                             ? const SizedBox()
                             : widget.item.actualQty < widget.item.qty
-                                ? const Icon(
-                                    Icons.arrow_drop_down_rounded,
+                                ? const ImageIcon(
+                                    AssetImage('assets/icons/budget_down.png'),
                                     color: greenAcent,
-                                    size: 32,
                                   )
-                                : const Icon(
-                                    Icons.arrow_drop_up_rounded,
+                                : const ImageIcon(
+                                    AssetImage('assets/icons/budget_up.png'),
                                     color: orangeAccent,
-                                    size: 32,
                                   )
                       ],
                     ),
@@ -153,7 +151,7 @@ class _ApprovalSettlementRequestItemListContainerState
                                 color: greenAcent,
                               )
                             : const ImageIcon(
-                                AssetImage('assets/icon/budget_up.png'),
+                                AssetImage('assets/icons/budget_up.png'),
                                 color: orangeAccent,
                               )
                   ],

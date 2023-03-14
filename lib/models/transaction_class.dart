@@ -16,6 +16,8 @@ class Transaction {
     this.month = "",
     this.totalCost = 0,
     this.actualTotalCost = 0,
+    this.settlementId = "",
+    this.settlementStatus = "",
     List<Item>? items,
     List<TransactionActivity>? activity,
   })  : items = items ?? [],
@@ -29,6 +31,8 @@ class Transaction {
   String formType;
   String orderPeriod;
   String month;
+  String settlementId;
+  String settlementStatus;
 
   int siteArea;
   int budget;

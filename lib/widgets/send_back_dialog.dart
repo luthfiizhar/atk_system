@@ -189,9 +189,9 @@ class _SendBackDialogState extends State<SendBackDialog> {
                           }).onError((error, stackTrace) {
                             showDialog(
                               context: context,
-                              builder: (context) => AlertDialogBlack(
+                              builder: (context) => const AlertDialogBlack(
                                 title: "Error submitSuppliesRequest",
-                                contentText: error.toString(),
+                                contentText: "No internet connection.",
                                 isSuccess: false,
                               ),
                             );

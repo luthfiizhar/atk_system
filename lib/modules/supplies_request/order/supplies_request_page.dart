@@ -46,6 +46,8 @@ class _SuppliesRequestPageState extends State<SuppliesRequestPage> {
 
   bool isLoadingItems = true;
 
+  String formCategory = "";
+
   List<TransactionActivity> transactionActivity = [];
 
   int totalBudget = 0;
@@ -54,10 +56,12 @@ class _SuppliesRequestPageState extends State<SuppliesRequestPage> {
   bool isSendBack = false;
 
   Future updateTable() {
-    isLoadingItems = false;
+    isLoadingItems = true;
     items.clear();
     setState(() {});
     return apiService.getFormDetail(widget.formId, searchTerm).then((value) {
+      isLoadingItems = false;
+      setState(() {});
       if (value['Status'].toString() == "200") {
         List resultItems = value["Data"]["Items"];
         for (var element in resultItems) {
@@ -65,7 +69,8 @@ class _SuppliesRequestPageState extends State<SuppliesRequestPage> {
             Item(
               itemId: element['ItemID'].toString(),
               itemName: element['ItemName'],
-              basePrice: element['Price'],
+              basePrice: element['EstimatedPrice'],
+              // estimatedPrice: element[''],
               qty: element['Quantity'],
               totalPrice: element['TotalPrice'],
               unit: element['Unit'],
@@ -85,87 +90,105 @@ class _SuppliesRequestPageState extends State<SuppliesRequestPage> {
         print("Real -> $items");
         setState(() {});
       } else {}
-    });
-  }
-
-  initFormDetailFilled() {
-    return apiService
-        .getFormDetailFilled(widget.formId, searchTerm)
-        .then((value) {
-      // print(value);
-
-      setState(() {
-        isLoadingGetDetail = false;
-        isLoadingItems = false;
-      });
-      if (value['Status'].toString() == "200") {
-        List resultItems = value["Data"]["Items"];
-        List resultActivity = value["Data"]["Comments"];
-        List attachmentResult = [];
-
-        transaction.formId = value["Data"]["FormID"];
-        transaction.siteName = value["Data"]["SiteName"];
-        transaction.siteArea = value["Data"]["SiteArea"];
-        transaction.budget = value["Data"]["Budget"];
-        transaction.orderPeriod = value["Data"]["OrderPeriod"];
-        transaction.month = value["Data"]["Month"];
-        transaction.status = value["Data"]["Status"];
-        totalBudget = value['Data']["Budget"];
-        // isSendBack = value['Data']['Sendback'] > 0 ? true : false;
-        totalCost = value['Data']['TotalCost'];
-
-        for (var element in resultItems) {
-          items.add(
-            Item(
-              itemId: element['ItemID'].toString(),
-              itemName: element['ItemName'],
-              basePrice: element['Price'],
-              qty: element['Quantity'],
-              totalPrice: element['TotalPrice'],
-            ),
-          );
-        }
-
-        if (resultActivity.isNotEmpty) {
-          for (var element in resultActivity) {
-            transactionActivity.add(
-              TransactionActivity(
-                id: element['CommentID'],
-                empName: element["EmpName"],
-                comment: element["CommentText"] ?? "-",
-                date: element["CommentDate"],
-                status: element["CommentDescription"],
-                photo: element["Photo"],
-                // attachment: element['Attachments'],
-              ),
-            );
-            if (element['Attachments'] != []) {
-              attachmentResult = element['Attachments'];
-            }
-
-            for (var t in transactionActivity) {
-              for (var element in attachmentResult) {
-                if (t.id == element['CommentID']) {
-                  t.attachment.add(
-                    Attachment(
-                      file: element['ImageURL'],
-                      type: element['FileType'] ?? "image",
-                    ),
-                  );
-                }
-              }
-            }
-          }
-        }
-
-        setState(() {});
-      } else {
-        print("not success");
-      }
     }).onError((error, stackTrace) {
-      print(error);
+      showDialog(
+        context: context,
+        builder: (context) => const AlertDialogBlack(
+          title: "Error getFormDetail",
+          contentText: "No internet connection",
+          isSuccess: false,
+        ),
+      );
     });
   }
+
+  // initFormDetailFilled() {
+  //   return apiService
+  //       .getFormDetailFilled(widget.formId, searchTerm)
+  //       .then((value) {
+  //     // print(value);
+
+  //     setState(() {
+  //       isLoadingGetDetail = false;
+  //       isLoadingItems = false;
+  //     });
+  //     if (value['Status'].toString() == "200") {
+  //       List resultItems = value["Data"]["Items"];
+  //       List resultActivity = value["Data"]["Comments"];
+  //       List attachmentResult = [];
+
+  //       formCategory = value["Data"]["FormCategory"];
+
+  //       transaction.formId = value["Data"]["FormID"];
+  //       transaction.siteName = value["Data"]["SiteName"];
+  //       transaction.siteArea = value["Data"]["SiteArea"];
+  //       transaction.budget = value["Data"]["Budget"];
+  //       transaction.orderPeriod = value["Data"]["OrderPeriod"];
+  //       transaction.month = value["Data"]["Month"];
+  //       transaction.status = value["Data"]["Status"];
+  //       totalBudget = value['Data']["Budget"];
+  //       // isSendBack = value['Data']['Sendback'] > 0 ? true : false;
+  //       totalCost = value['Data']['TotalCost'];
+
+  //       for (var element in resultItems) {
+  //         items.add(
+  //           Item(
+  //             itemId: element['ItemID'].toString(),
+  //             itemName: element['ItemName'],
+  //             basePrice: element['EstimatedPrice'],
+  //             qty: element['Quantity'],
+  //             totalPrice: element['TotalPrice'],
+  //           ),
+  //         );
+  //       }
+
+  //       if (resultActivity.isNotEmpty) {
+  //         for (var element in resultActivity) {
+  //           transactionActivity.add(
+  //             TransactionActivity(
+  //               id: element['CommentID'],
+  //               empName: element["EmpName"],
+  //               comment: element["CommentText"] ?? "-",
+  //               date: element["CommentDate"],
+  //               status: element["CommentDescription"],
+  //               photo: element["Photo"],
+  //               // attachment: element['Attachments'],
+  //             ),
+  //           );
+  //           if (element['Attachments'] != []) {
+  //             attachmentResult = element['Attachments'];
+  //           }
+
+  //           for (var t in transactionActivity) {
+  //             for (var element in attachmentResult) {
+  //               if (t.id == element['CommentID']) {
+  //                 t.attachment.add(
+  //                   Attachment(
+  //                     file: element['ImageURL'],
+  //                     type: element['FileType'] ?? "image",
+  //                   ),
+  //                 );
+  //               }
+  //             }
+  //           }
+  //         }
+  //       }
+
+  //       setState(() {});
+  //     } else {
+  //       print("not success");
+  //     }
+  //   }).onError((error, stackTrace) {
+  //     showDialog(
+  //       context: context,
+  //       builder: (context) => const AlertDialogBlack(
+  //         title: "Error getFormDetailFilled",
+  //         contentText: "No internet connection",
+  //         isSuccess: false,
+  //       ),
+  //     );
+  //   });
+  // }
 
   Future initFormDetail() {
     return apiService.getFormDetail(widget.formId, searchTerm).then((value) {
@@ -191,12 +214,14 @@ class _SuppliesRequestPageState extends State<SuppliesRequestPage> {
         isSendBack = value['Data']['Sendback'] > 0 ? true : false;
         totalCost = value['Data']['TotalCost'];
 
+        formCategory = value['Data']['FormCategory'];
+
         for (var element in resultItems) {
           items.add(
             Item(
               itemId: element['ItemID'].toString(),
               itemName: element['ItemName'],
-              basePrice: element['Price'],
+              basePrice: element['EstimatedPrice'],
               qty: element['Quantity'],
               totalPrice: element['TotalPrice'],
               unit: element['Unit'],
@@ -241,7 +266,14 @@ class _SuppliesRequestPageState extends State<SuppliesRequestPage> {
         print("not success");
       }
     }).onError((error, stackTrace) {
-      print(error);
+      showDialog(
+        context: context,
+        builder: (context) => const AlertDialogBlack(
+          title: "Error getFormDetail",
+          contentText: "No internet connection",
+          isSuccess: false,
+        ),
+      );
     });
   }
 
@@ -334,7 +366,7 @@ class _SuppliesRequestPageState extends State<SuppliesRequestPage> {
                 ),
                 infoAndSearch(),
                 const SizedBox(
-                  height: 55,
+                  height: 30,
                 ),
                 headerTable(),
                 const SizedBox(
@@ -415,7 +447,9 @@ class _SuppliesRequestPageState extends State<SuppliesRequestPage> {
                           ),
                         ).then((value) {
                           if (value) {
-                            context.goNamed('home');
+                            context.goNamed('request_order_detail', params: {
+                              "formId": widget.formId,
+                            });
                           }
                         });
                       },
@@ -443,7 +477,7 @@ class _SuppliesRequestPageState extends State<SuppliesRequestPage> {
                 color: eerieBlack,
               )
             : TransactionInfoSection(
-                title: "Order Supplies",
+                title: "Order Supplies $formCategory",
                 transaction: transaction,
               ),
         SizedBox(
@@ -453,6 +487,7 @@ class _SuppliesRequestPageState extends State<SuppliesRequestPage> {
             enabled: true,
             obsecureText: false,
             hintText: 'Search here ...',
+            maxLines: 1,
             prefixIcon: const Icon(
               Icons.search,
               color: davysGray,

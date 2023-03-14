@@ -78,6 +78,18 @@ class MyApp extends StatelessWidget {
         },
       ),
       GoRoute(
+        name: 'settlement_request',
+        path: '/settlement_request/:formId',
+        pageBuilder: (context, state) {
+          return NoTransitionPage<void>(
+            key: state.pageKey,
+            child: SettlementRequestPage(
+              formId: state.params["formId"].toString(),
+            ),
+          );
+        },
+      ),
+      GoRoute(
         name: 'transaction_list',
         path: '/transaction_list',
         pageBuilder: (context, state) {
@@ -120,18 +132,6 @@ class MyApp extends StatelessWidget {
               return NoTransitionPage<void>(
                 key: state.pageKey,
                 child: ApprovalSuppliesReqPage(
-                  formId: state.params["formId"].toString(),
-                ),
-              );
-            },
-          ),
-          GoRoute(
-            name: 'settlement_request',
-            path: 'settlement_request/:formId',
-            pageBuilder: (context, state) {
-              return NoTransitionPage<void>(
-                key: state.pageKey,
-                child: SettlementRequestPage(
                   formId: state.params["formId"].toString(),
                 ),
               );

@@ -51,7 +51,7 @@ class TransactionInfoSection extends StatelessWidget {
             style: infoTextLight,
             children: [
               TextSpan(
-                text: '${formatCurrency.format(transaction.siteArea)} m2',
+                text: '${formatThousand.format(transaction.siteArea)} m2',
                 style: infoTextBold,
               ),
             ],
