@@ -48,10 +48,12 @@ class _TransactionListPageState extends State<TransactionListPage> {
   List<Transaction> transactionList = [];
 
   onChangedTab(String value) {
+    currentPaginatedPage = 1;
     searchTerm.formType = value;
     searchTerm.orderBy = "FormID";
     searchTerm.orderDir = "ASC";
     searchTerm.keywords = "";
+    searchTerm.pageNumber = currentPaginatedPage.toString();
     _search.text = "";
     formType = value;
     updateList().then((value) {

@@ -377,7 +377,7 @@ class _ApprovalSettlementRequestPageState
                           ),
                         ).then((value) {
                           if (value) {
-                            context.goNamed('setllement_detail', params: {
+                            context.goNamed('settlement_detail', params: {
                               "formId": widget.formId,
                             });
                           }

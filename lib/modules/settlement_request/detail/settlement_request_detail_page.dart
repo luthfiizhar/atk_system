@@ -221,6 +221,11 @@ class _DetailApprovalSettlementRequestPageState
     });
   }
 
+  Future searchItem() async {
+    searchTerm.keywords = _search.text;
+    updateList().then((value) {});
+  }
+
   @override
   void initState() {
     super.initState();
@@ -393,6 +398,10 @@ class _DetailApprovalSettlementRequestPageState
             enabled: true,
             obsecureText: false,
             hintText: 'Search here ...',
+            maxLines: 1,
+            onFieldSubmitted: (value) {
+              searchItem();
+            },
             prefixIcon: const Icon(
               Icons.search,
               color: davysGray,
