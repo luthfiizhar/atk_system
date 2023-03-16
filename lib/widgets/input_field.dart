@@ -1,4 +1,5 @@
 import 'package:atk_system_ga/constant/colors.dart';
+import 'package:atk_system_ga/constant/text_style.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -21,9 +22,12 @@ class BlackInputField extends StatefulWidget {
     this.inputFormatters,
     this.onEditingComplete,
     this.onChanged,
+    this.prefixText = "",
     this.contentPadding =
         const EdgeInsets.only(right: 15, left: 15, top: 18, bottom: 15),
-  }) : focusNode = focusNode ?? FocusNode();
+    Widget? prefix,
+  })  : focusNode = focusNode ?? FocusNode(),
+        prefix = prefix ?? SizedBox();
 
   final TextEditingController controller;
   final String? hintText;
@@ -34,6 +38,8 @@ class BlackInputField extends StatefulWidget {
   final Widget? suffixIcon;
   final bool? enabled;
   final VoidCallback? onTap;
+  final String prefixText;
+  Widget? prefix;
   ValueChanged<String>? onFieldSubmitted;
   ValueChanged<String>? onChanged;
   int? maxLines;
@@ -90,6 +96,13 @@ class _BlackInputFieldState extends State<BlackInputField> {
         inputFormatters: widget.inputFormatters,
         onTap: widget.onTap,
         decoration: InputDecoration(
+          // prefix: widget.prefix!,
+          prefixText: widget.prefixText,
+          prefixStyle: helveticaText.copyWith(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            color: eerieBlack,
+          ),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(5),
             borderSide: const BorderSide(

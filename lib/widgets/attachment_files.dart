@@ -17,6 +17,7 @@ class AttachmentFiles extends StatefulWidget {
     this.addFiles,
     Transaction? transaction,
     List<TransactionActivity>? activity,
+    this.isRequired = false,
   })  : transaction = transaction ?? Transaction(),
         files = files ?? [],
         activity = activity ?? [];
@@ -25,6 +26,7 @@ class AttachmentFiles extends StatefulWidget {
   Function? addFiles;
   Transaction transaction;
   List<TransactionActivity> activity;
+  bool isRequired;
 
   @override
   State<AttachmentFiles> createState() => _AttachmentFilesState();
@@ -114,6 +116,18 @@ class _AttachmentFilesState extends State<AttachmentFiles> {
               color: eerieBlack,
             ),
             children: [
+              widget.isRequired
+                  ? TextSpan(
+                      text: "*",
+                      style: helveticaText.copyWith(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w700,
+                        color: orangeAccent,
+                      ),
+                    )
+                  : const TextSpan(
+                      text: "",
+                    ),
               TextSpan(
                 text: "(max 2 MB)",
                 style: helveticaText.copyWith(

@@ -177,7 +177,7 @@ class _ApprovalSuppliesReqPageState extends State<ApprovalSuppliesReqPage> {
                     Attachment(
                       file: element['ImageURL'],
                       type: element['FileType'],
-                      fileName: element['FileName'],
+                      fileName: element['FileName'] ?? "",
                     ),
                   );
                 }

@@ -158,11 +158,11 @@ class _DetailApprovalSettlementRequestPageState
               actualQty: element['ActualQuantity'],
             ),
           );
-          // if (totalActualCost == 0) {
-          // totalActualCost = totalActualCost +
-          //     (int.parse(element['ActualPrice'].toString()) *
-          //         int.parse(element['ActualQuantity'].toString()));
-          // }
+          if (totalActualCost == 0) {
+            totalActualCost = totalActualCost +
+                (int.parse(element['ActualPrice'].toString()) *
+                    int.parse(element['ActualQuantity'].toString()));
+          }
         }
         if (resultActivity.isNotEmpty) {
           for (var element in resultActivity) {
@@ -188,7 +188,7 @@ class _DetailApprovalSettlementRequestPageState
                     Attachment(
                       file: element['ImageURL'],
                       type: element['FileType'],
-                      fileName: element['FileName'],
+                      fileName: element['FileName'] ?? "",
                     ),
                   );
                 }

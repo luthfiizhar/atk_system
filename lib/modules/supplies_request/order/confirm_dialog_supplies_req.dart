@@ -407,6 +407,7 @@ class _ConfirmDialogSuppliesRequestState
         TotalInfo(
           title: 'Total Cost',
           number: totalCost,
+          titleColor: orangeAccent,
           numberColor: totalCost > totalBudget ? orangeAccent : davysGray,
         )
       ],

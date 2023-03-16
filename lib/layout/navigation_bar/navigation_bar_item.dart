@@ -21,7 +21,7 @@ class NavigationItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        context.go(routeName!);
+        context.goNamed(routeName!);
         onHighlight!(routeName);
       },
       child: Padding(

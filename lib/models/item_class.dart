@@ -12,6 +12,7 @@ class Item {
     this.actualPrice = 0,
     this.actualQty = 0,
     this.actualTotalPrice = 0,
+    this.isExpanded = false,
   });
 
   String itemId;
@@ -26,6 +27,7 @@ class Item {
   int actualPrice;
   int actualQty;
   int actualTotalPrice;
+  bool isExpanded;
 
   Map<String, dynamic> toJson() => {
         '"ItemID"': '"$itemId"',

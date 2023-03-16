@@ -660,4 +660,112 @@ class ApiService {
       return e;
     }
   }
+
+  Future getAdminPageSiteList(SearchTerm searchTerm) async {
+    // print(bookingId);
+    var box = await Hive.openBox('userLogin');
+    var jwt = box.get('jwTtoken') != "" ? box.get('jwtToken') : "";
+
+    // jwt = jwtToken;
+
+    var url = Uri.https(
+        urlConstant.apiUrl, '/GSS_Backend/public/api/admin/site-list');
+    Map<String, String> requestHeader = {
+      'Authorization': 'Bearer $jwt',
+      'Content-Type': 'application/json',
+    };
+
+    var bodySend = """
+    {
+        "Keywords" : "${searchTerm.keywords}",
+        "PageNumber" : ${searchTerm.pageNumber},
+        "MaxRecord" : ${searchTerm.max},
+        "SortBy" : "${searchTerm.orderBy}",
+        "SortOrder" : "${searchTerm.orderDir}"
+    }
+    """;
+
+    try {
+      var response =
+          await http.post(url, headers: requestHeader, body: bodySend);
+
+      var data = json.decode(response.body);
+
+      return data;
+    } on Error catch (e) {
+      return e;
+    }
+  }
+
+  Future getAdminPageItemList(SearchTerm searchTerm) async {
+    // print(bookingId);
+    var box = await Hive.openBox('userLogin');
+    var jwt = box.get('jwTtoken') != "" ? box.get('jwtToken') : "";
+
+    // jwt = jwtToken;
+
+    var url = Uri.https(
+        urlConstant.apiUrl, '/GSS_Backend/public/api/admin/item-list');
+    Map<String, String> requestHeader = {
+      'Authorization': 'Bearer $jwt',
+      'Content-Type': 'application/json',
+    };
+
+    var bodySend = """
+    {
+        "Keywords" : "${searchTerm.keywords}",
+        "PageNumber" : ${searchTerm.pageNumber},
+        "MaxRecord" : ${searchTerm.max},
+        "SortBy" : "${searchTerm.orderBy}",
+        "SortOrder" : "${searchTerm.orderDir}"
+    }
+    """;
+
+    try {
+      var response =
+          await http.post(url, headers: requestHeader, body: bodySend);
+
+      var data = json.decode(response.body);
+
+      return data;
+    } on Error catch (e) {
+      return e;
+    }
+  }
+
+  Future getAdminPageUserList(SearchTerm searchTerm) async {
+    // print(bookingId);
+    var box = await Hive.openBox('userLogin');
+    var jwt = box.get('jwTtoken') != "" ? box.get('jwtToken') : "";
+
+    // jwt = jwtToken;
+
+    var url = Uri.https(
+        urlConstant.apiUrl, '/GSS_Backend/public/api/admin/user-list');
+    Map<String, String> requestHeader = {
+      'Authorization': 'Bearer $jwt',
+      'Content-Type': 'application/json',
+    };
+
+    var bodySend = """
+    {
+        "Keywords" : "${searchTerm.keywords}",
+        "PageNumber" : ${searchTerm.pageNumber},
+        "MaxRecord" : ${searchTerm.max},
+        "SortBy" : "${searchTerm.orderBy}",
+        "SortOrder" : "${searchTerm.orderDir}"
+    }
+    """;
+
+    try {
+      var response =
+          await http.post(url, headers: requestHeader, body: bodySend);
+
+      var data = json.decode(response.body);
+
+      return data;
+    } on Error catch (e) {
+      return e;
+    }
+  }
 }

@@ -587,11 +587,11 @@ class _ApprovalSettlementRequestPageState
                     ? const SizedBox()
                     : totalActualCost > totalReqCost
                         ? const ImageIcon(
-                            AssetImage('icons/budget_up.png'),
+                            AssetImage('assets/icons/budget_up.png'),
                             color: orangeAccent,
                           )
                         : const ImageIcon(
-                            AssetImage('icons/budget_down.png'),
+                            AssetImage('assets/icons/budget_down.png'),
                             color: greenAcent,
                           ),
               );

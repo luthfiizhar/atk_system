@@ -161,10 +161,14 @@ class _TransactionListContainerState extends State<TransactionListContainer> {
                               const SizedBox(
                                 width: 10,
                               ),
-                              widget.transaction.status == "Draft" ||
-                                      widget.transaction.status == "Approved"
-                                  ? const SizedBox()
-                                  : widget.transaction.status ==
+                              (widget.transaction.status ==
+                                              "Waiting SM Approval" ||
+                                          widget.transaction.status ==
+                                              "Waiting OPS Approval" ||
+                                          widget.transaction.status ==
+                                              "Expired") &&
+                                      role != "Store Admin"
+                                  ? widget.transaction.status ==
                                               "Waiting SM Approval" &&
                                           role != "Store Manager"
                                       ? const SizedBox()
@@ -173,8 +177,8 @@ class _TransactionListContainerState extends State<TransactionListContainer> {
                                               role != "Operation HO"
                                           ? const SizedBox()
                                           : RegularButton(
-                                              text: 'Approve',
                                               fontSize: 14,
+                                              text: 'Approve',
                                               disabled: false,
                                               padding:
                                                   ButtonSize().tableButton(),
@@ -210,7 +214,58 @@ class _TransactionListContainerState extends State<TransactionListContainer> {
                                                   );
                                                 }
                                               },
-                                            ),
+                                            )
+                                  : const SizedBox(),
+                              // widget.transaction.status == "Draft" ||
+                              //         widget.transaction.status == "Approved"
+                              //     ? const SizedBox()
+                              //     : widget.transaction.status ==
+                              //                 "Waiting SM Approval" &&
+                              //             role != "Store Manager"
+                              //         ? const SizedBox()
+                              //         : widget.transaction.status ==
+                              //                     "Waiting OPS Approval" &&
+                              //                 role != "Operation HO"
+                              //             ? const SizedBox()
+                              //             : RegularButton(
+                              //                 text: 'Approve',
+                              //                 fontSize: 14,
+                              //                 disabled: false,
+                              //                 padding:
+                              //                     ButtonSize().tableButton(),
+                              //                 onTap: () {
+                              //                   if (widget.transaction.status ==
+                              //                           "Waiting SM Approval" &&
+                              //                       role == "Store Manager") {
+                              //                     context.goNamed(
+                              //                       'approval_request',
+                              //                       params: {
+                              //                         "formId": widget
+                              //                             .transaction.formId,
+                              //                       },
+                              //                     );
+                              //                   } else if (widget.transaction
+                              //                               .status ==
+                              //                           "Waiting OPS Approval" &&
+                              //                       role == "Operation HO") {
+                              //                     context.goNamed(
+                              //                       'approval_request',
+                              //                       params: {
+                              //                         "formId": widget
+                              //                             .transaction.formId,
+                              //                       },
+                              //                     );
+                              //                   } else {
+                              //                     context.goNamed(
+                              //                       'request_order_detail',
+                              //                       params: {
+                              //                         "formId": widget
+                              //                             .transaction.formId,
+                              //                       },
+                              //                     );
+                              //                   }
+                              //                 },
+                              //               ),
                               const SizedBox(
                                 width: 10,
                               ),
@@ -500,7 +555,9 @@ class _TransactionListContainerStateSettlement
                               (widget.transaction.status ==
                                               "Waiting SM Approval" ||
                                           widget.transaction.status ==
-                                              "Waiting OPS Approval") &&
+                                              "Waiting OPS Approval" ||
+                                          widget.transaction.status ==
+                                              "Expired") &&
                                       role != "Store Admin"
                                   ? widget.transaction.status ==
                                               "Waiting SM Approval" &&

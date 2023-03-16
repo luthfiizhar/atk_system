@@ -1,6 +1,11 @@
 import 'package:atk_system_ga/constant/colors.dart';
 import 'package:atk_system_ga/functions/api_request.dart';
+import 'package:atk_system_ga/layout/admin_setting_layout.dart';
 import 'package:atk_system_ga/models/main_model.dart';
+import 'package:atk_system_ga/modules/admin_settings/admin_setting_page.dart';
+import 'package:atk_system_ga/modules/admin_settings/item/setting_item_page.dart';
+import 'package:atk_system_ga/modules/admin_settings/site/setting_site_page.dart';
+import 'package:atk_system_ga/modules/admin_settings/user/setting_user_page.dart';
 import 'package:atk_system_ga/modules/home/home_page.dart';
 import 'package:atk_system_ga/modules/login/login_page.dart';
 import 'package:atk_system_ga/modules/settlement_request/approval/approval_settlement_request_page.dart';
@@ -19,6 +24,7 @@ import 'package:hive/hive.dart';
 
 String? jwtToken = "";
 bool isTokenValid = false;
+bool isSystemAdmin = false;
 
 loginCheck() async {
   var box = await Hive.openBox('userLogin');
@@ -38,7 +44,11 @@ void main() async {
     } else {
       isTokenValid = false;
     }
-    runApp(MyApp());
+    apiService.getUserData().then((value) {
+      isSystemAdmin = value['Data']['SystemAdmin'];
+    }).then((value) {
+      runApp(MyApp());
+    });
   });
 }
 
@@ -48,6 +58,8 @@ class MyApp extends StatelessWidget {
   final GlobalKey<NavigatorState> _rootNavigatorKey =
       GlobalKey<NavigatorState>();
   final GlobalKey<NavigatorState> _shellNavigatorKey =
+      GlobalKey<NavigatorState>();
+  final GlobalKey<NavigatorState> _rootAdminNavigatorKey =
       GlobalKey<NavigatorState>();
   late final _router = GoRouter(
     navigatorKey: _rootNavigatorKey,
@@ -152,6 +164,64 @@ class MyApp extends StatelessWidget {
         ],
       ),
       GoRoute(
+        name: 'admin_setting',
+        path: '/admin_setting',
+        pageBuilder: (context, state) {
+          return NoTransitionPage<void>(
+            key: state.pageKey,
+            child: const AdminSettingPage(),
+          );
+        },
+        redirect: (context, state) {
+          final adminPage = state.subloc == '/admin_setting';
+          if (!isSystemAdmin) {
+            return adminPage ? '/home' : null;
+          }
+          return null;
+        },
+      ),
+      // GoRoute(
+      //     path: '/setting',
+      //     name: 'setting',
+      //     pageBuilder: (context, state) {
+      //       return NoTransitionPage<void>(
+      //         key: state.pageKey,
+      //         child: const SizedBox(),
+      //       );
+      //     },
+      //     routes: [
+      //       GoRoute(
+      //         name: "setting_item",
+      //         path: 'item',
+      //         pageBuilder: (context, state) {
+      //           return NoTransitionPage<void>(
+      //             key: state.pageKey,
+      //             child: ItemSettingPage(),
+      //           );
+      //         },
+      //       ),
+      //       GoRoute(
+      //         name: "setting_site",
+      //         path: 'site',
+      //         pageBuilder: (context, state) {
+      //           return NoTransitionPage<void>(
+      //             key: state.pageKey,
+      //             child: SettingSitePage(),
+      //           );
+      //         },
+      //       ),
+      //       GoRoute(
+      //         name: "setting_user",
+      //         path: 'user',
+      //         pageBuilder: (context, state) {
+      //           return NoTransitionPage<void>(
+      //             key: state.pageKey,
+      //             child: UserSettingPage(),
+      //           );
+      //         },
+      //       ),
+      //     ]),
+      GoRoute(
         path: '/login',
         pageBuilder: (context, state) {
           return NoTransitionPage<void>(
@@ -159,14 +229,26 @@ class MyApp extends StatelessWidget {
             child: const LoginPage(),
           );
         },
+        redirect: (context, state) {
+          // final home = state.subloc == '/home';
+
+          // if (jwtToken != null || jwtToken != "" || isTokenValid) {
+          //   return home ? null : '/home';
+          // }
+          // return null;
+        },
       )
     ],
     initialLocation: '/home',
     redirect: (context, state) {
       final login = state.subloc == '/login';
+      final home = state.subloc == '/home';
 
-      if (jwtToken == null || jwtToken == "" || !isTokenValid) {
+      if ((jwtToken == null || jwtToken == "") && !isTokenValid) {
         return login ? null : '/login';
+      }
+      if ((jwtToken != null || jwtToken != "") && isTokenValid) {
+        return login ? '/home' : null;
       }
       return null;
     },

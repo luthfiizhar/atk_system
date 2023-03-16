@@ -1,5 +1,6 @@
 import 'package:atk_system_ga/constant/colors.dart';
 import 'package:atk_system_ga/constant/text_style.dart';
+import 'package:atk_system_ga/functions/api_request.dart';
 import 'package:atk_system_ga/layout/navigation_bar/navigation_bar_item.dart';
 import 'package:atk_system_ga/main.dart';
 import 'package:flutter/material.dart';
@@ -19,6 +20,10 @@ class NavigationBarWeb extends StatefulWidget {
 
 class _NavigationBarWebState extends State<NavigationBarWeb> {
   int index = 0;
+  ApiService apiService = ApiService();
+
+  String role = "";
+  bool isSysAdmin = false;
 
   void onHighlight(String route) {
     switch (route) {
@@ -39,6 +44,14 @@ class _NavigationBarWebState extends State<NavigationBarWeb> {
     // TODO: implement initState
     super.initState();
     index = widget.index;
+    apiService.getUserData().then((value) {
+      if (value['Status'].toString() == "200") {
+        isSysAdmin = value['Data']['SystemAdmin'];
+        setState(() {});
+      } else {}
+    }).onError((error, stackTrace) {
+      print(error);
+    });
   }
 
   @override
@@ -91,15 +104,32 @@ class _NavigationBarWebState extends State<NavigationBarWeb> {
               ],
             ),
           ),
-          Wrap(
+          Row(
             // mainAxisAlignment: MainAxisAlignment.end,
-            spacing: 50,
+            // spacing: 50,
             children: [
-              NavigationItem(
-                title: 'Home',
-                routeName: '/home',
-                selected: index == 0,
-                onHighlight: onHighlight,
+              Padding(
+                padding: const EdgeInsets.only(right: 50),
+                child: NavigationItem(
+                  title: 'Home',
+                  routeName: 'home',
+                  selected: index == 0,
+                  onHighlight: onHighlight,
+                ),
+              ),
+              Visibility(
+                visible: isSysAdmin,
+                child: Padding(
+                  padding: const EdgeInsets.only(
+                    right: 50,
+                  ),
+                  child: NavigationItem(
+                    title: 'Setting',
+                    routeName: 'admin_setting',
+                    selected: index == 1,
+                    onHighlight: onHighlight,
+                  ),
+                ),
               ),
               // NavigationItem(
               //   title: 'Logout',

@@ -221,6 +221,7 @@ class _SettlementRequestPageState extends State<SettlementRequestPage> {
                     Attachment(
                       file: element['ImageURL'],
                       type: element['FileType'],
+                      fileName: element['FileName'] ?? "",
                     ),
                   );
                 }
