@@ -5,6 +5,7 @@ import 'package:atk_system_ga/layout/navigation_bar/navigation_bar_item.dart';
 import 'package:atk_system_ga/main.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hive/hive.dart';
 
 class NavigationBarWeb extends StatefulWidget {
   NavigationBarWeb({
@@ -136,7 +137,9 @@ class _NavigationBarWebState extends State<NavigationBarWeb> {
               //   selected: false,
               // ),
               InkWell(
-                onTap: () {
+                onTap: () async {
+                  var box = await Hive.openBox('userLogin');
+                  box.delete('jwtToken');
                   jwtToken = "";
                   isTokenValid = false;
                   isSysAdmin = false;
