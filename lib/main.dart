@@ -45,10 +45,11 @@ void main() async {
       isTokenValid = false;
     }
     apiService.getUserData().then((value) {
-      isSystemAdmin = value['Data']['SystemAdmin'];
-    }).then((value) {
-      runApp(MyApp());
+      if (value['Status'].toString() == "200") {
+        isSystemAdmin = value['Data']['SystemAdmin'];
+      }
     });
+    runApp(MyApp());
   });
 }
 
