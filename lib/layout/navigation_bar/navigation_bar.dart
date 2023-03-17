@@ -139,6 +139,7 @@ class _NavigationBarWebState extends State<NavigationBarWeb> {
                 onTap: () {
                   jwtToken = "";
                   isTokenValid = false;
+                  isSysAdmin = false;
                   context.go('/login');
                   setState(() {});
                 },
