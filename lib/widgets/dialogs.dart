@@ -441,7 +441,7 @@ class ConfirmDialogBlack extends StatelessWidget {
                         text: 'Cancel',
                         disabled: false,
                         onTap: () {
-                          Navigator.of(context).pop(false);
+                          Navigator.of(context).pop(0);
                         },
                         padding: const EdgeInsets.symmetric(
                           vertical: 13,
@@ -460,7 +460,7 @@ class ConfirmDialogBlack extends StatelessWidget {
                         text: 'Confirm',
                         disabled: false,
                         onTap: () {
-                          Navigator.of(context).pop(true);
+                          Navigator.of(context).pop(1);
                         },
                         padding: const EdgeInsets.symmetric(
                           vertical: 13,
@@ -569,7 +569,7 @@ class ConfirmDialogBlack extends StatelessWidget {
                   TransparentButtonWhite(
                     text: 'Cancel',
                     onTap: () {
-                      Navigator.of(context).pop(false);
+                      Navigator.of(context).pop(0);
                     },
                     padding: ButtonSize().mediumSize(),
                     disabled: false,
@@ -580,7 +580,7 @@ class ConfirmDialogBlack extends StatelessWidget {
                   WhiteRegularButton(
                     text: 'Confirm',
                     onTap: () {
-                      Navigator.of(context).pop(true);
+                      Navigator.of(context).pop(1);
                     },
                     padding: ButtonSize().mediumSize(),
                     disabled: false,

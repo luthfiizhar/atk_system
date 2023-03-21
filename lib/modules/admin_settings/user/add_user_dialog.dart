@@ -363,7 +363,7 @@ class _AddUserDialogState extends State<AddUserDialog> {
                           disabled: false,
                           padding: ButtonSize().mediumSize(),
                           onTap: () {
-                            Navigator.of(context).pop(false);
+                            Navigator.of(context).pop(0);
                           },
                         ),
                         const SizedBox(
@@ -392,7 +392,7 @@ class _AddUserDialogState extends State<AddUserDialog> {
                                         contentText: value['Message'],
                                       ),
                                     ).then((value) {
-                                      Navigator.of(context).pop(true);
+                                      Navigator.of(context).pop(1);
                                     });
                                   } else {
                                     showDialog(
@@ -425,7 +425,7 @@ class _AddUserDialogState extends State<AddUserDialog> {
                                         contentText: value['Message'],
                                       ),
                                     ).then((value) {
-                                      Navigator.of(context).pop(true);
+                                      Navigator.of(context).pop(1);
                                     });
                                   } else {
                                     showDialog(

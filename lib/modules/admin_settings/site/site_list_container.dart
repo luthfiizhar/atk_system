@@ -172,7 +172,7 @@ class _SiteListContainerState extends State<SiteListContainer> {
                                           site: widget.site,
                                         ),
                                       ).then((value) {
-                                        if (value) {
+                                        if (value == 1) {
                                           widget.updateList!(widget.menu);
                                         }
                                       });
@@ -199,7 +199,7 @@ class _SiteListContainerState extends State<SiteListContainer> {
                                               "Are you sure to delete site?",
                                         ),
                                       ).then((value) {
-                                        if (value) {
+                                        if (value == 1) {
                                           ApiService apiService = ApiService();
                                           apiService
                                               .deleteSite(widget.site.siteId)

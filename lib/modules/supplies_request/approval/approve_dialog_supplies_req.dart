@@ -136,7 +136,7 @@ class _ApproveDialogSuppliesReqState extends State<ApproveDialogSuppliesReq> {
                         disabled: false,
                         padding: ButtonSize().mediumSize(),
                         onTap: () {
-                          Navigator.of(context).pop(false);
+                          Navigator.of(context).pop(0);
                         },
                       ),
                       const SizedBox(
@@ -180,7 +180,7 @@ class _ApproveDialogSuppliesReqState extends State<ApproveDialogSuppliesReq> {
                                         isSuccess: true,
                                       ),
                                     ).then((value) {
-                                      Navigator.of(context).pop(true);
+                                      Navigator.of(context).pop(1);
                                     });
                                   } else if (value["Status"].toString() ==
                                       "401") {

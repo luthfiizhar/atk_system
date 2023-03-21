@@ -416,7 +416,7 @@ class _AdminSettingPageState extends State<AdminSettingPage> {
               context: context,
               builder: (context) => AddSiteDialog(),
             ).then((value) {
-              if (value) {
+              if (value == 1) {
                 updateList(menu).then((value) {});
               }
             });
@@ -457,7 +457,7 @@ class _AdminSettingPageState extends State<AdminSettingPage> {
           context: context,
           builder: (context) => AddUserDialog(),
         ).then((value) {
-          if (value) {
+          if (value == 1) {
             updateList(menu).then((value) {});
           }
         });
@@ -496,7 +496,11 @@ class _AdminSettingPageState extends State<AdminSettingPage> {
         showDialog(
           context: context,
           builder: (context) => AddItemDialog(),
-        );
+        ).then((value) {
+          if (value == 1) {
+            updateList(menu).then((value) {});
+          }
+        });
       },
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -1163,6 +1167,8 @@ class _AdminSettingPageState extends State<AdminSettingPage> {
                       close: closeItemListDetail,
                       onClick: onClickListItem,
                       item: itemList[index],
+                      menu: menu,
+                      updateList: updateList,
                     ),
                   )
       ],

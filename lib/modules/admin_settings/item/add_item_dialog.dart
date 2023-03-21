@@ -3,6 +3,7 @@ import 'package:atk_system_ga/constant/text_style.dart';
 import 'package:atk_system_ga/functions/api_request.dart';
 import 'package:atk_system_ga/models/item_class.dart';
 import 'package:atk_system_ga/widgets/buttons.dart';
+import 'package:atk_system_ga/widgets/dialogs.dart';
 import 'package:atk_system_ga/widgets/dropdown.dart';
 import 'package:atk_system_ga/widgets/input_field.dart';
 import 'package:flutter/material.dart';
@@ -42,10 +43,56 @@ class _AddItemDialogState extends State<AddItemDialog> {
   List unitList = [];
   List categoryList = [];
 
+  initUnitList() {
+    apiService.getUnitList().then((value) {
+      if (value["Status"].toString() == "200") {
+        unitList = value['Data'];
+        setState(() {});
+      } else {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialogBlack(
+            title: value['Title'],
+            contentText: value['Message'],
+            isSuccess: false,
+          ),
+        );
+      }
+    }).onError((error, stackTrace) {
+      showDialog(
+        context: context,
+        builder: (context) => const AlertDialogBlack(
+          title: "Error getUnitList",
+          contentText: "No internet connection",
+          isSuccess: false,
+        ),
+      );
+    });
+  }
+
   @override
   void initState() {
     super.initState();
-    if (widget.isEdit) {}
+    initUnitList();
+    if (widget.isEdit) {
+      _itemName.text = widget.item.itemName;
+      _price.value = ThousandsSeparatorInputFormatter().formatEditUpdate(
+          TextEditingValue.empty,
+          TextEditingValue(
+            text: widget.item.basePrice.toString(),
+          ));
+      selectedCategory = widget.item.category;
+      selectedUnit = widget.item.unit;
+    }
+
+    _price.addListener(() {
+      if (_price.text == "") {
+        _price.text = "0";
+        _price.selection = TextSelection.fromPosition(
+            TextPosition(offset: _price.text.length));
+      }
+      setState(() {});
+    });
   }
 
   @override
@@ -106,6 +153,11 @@ class _AddItemDialogState extends State<AddItemDialog> {
                         enabled: true,
                         hintText: 'Name here ...',
                         maxLines: 1,
+                        validator: (value) =>
+                            value == "" ? "This field is required" : null,
+                        onSaved: (newValue) {
+                          itemName = newValue.toString();
+                        },
                       ),
                     ),
                   ),
@@ -144,6 +196,10 @@ class _AddItemDialogState extends State<AddItemDialog> {
                         ],
                         validator: (value) =>
                             value == "0" ? "This field is required." : null,
+                        onSaved: (newValue) {
+                          price = int.parse(
+                              newValue.toString().replaceAll(".", ""));
+                        },
                       ),
                     ),
                   ),
@@ -183,42 +239,42 @@ class _AddItemDialogState extends State<AddItemDialog> {
                       ),
                     ),
                   ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  inputField(
-                    'Category',
-                    widget: SizedBox(
-                      width: 250,
-                      child: BlackDropdown(
-                        items: categoryList
-                            .map((item) => DropdownMenuItem(
-                                  value: item['Value'],
-                                  child: Text(
-                                    item['Name'],
-                                    style: helveticaText.copyWith(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w300,
-                                      color: davysGray,
-                                    ),
-                                  ),
-                                ))
-                            .toList(),
-                        enabled: true,
-                        hintText: 'Choose',
-                        value: widget.isEdit ? selectedCategory : null,
-                        onChanged: (value) {
-                          selectedCategory = value;
-                        },
-                        validator: (value) =>
-                            value == "" ? "This field is required" : null,
-                        suffixIcon: const Icon(
-                          Icons.keyboard_arrow_down_outlined,
-                          color: eerieBlack,
-                        ),
-                      ),
-                    ),
-                  ),
+                  // const SizedBox(
+                  //   height: 20,
+                  // ),
+                  // inputField(
+                  //   'Category',
+                  //   widget: SizedBox(
+                  //     width: 250,
+                  //     child: BlackDropdown(
+                  //       items: categoryList
+                  //           .map((item) => DropdownMenuItem(
+                  //                 value: item['Value'],
+                  //                 child: Text(
+                  //                   item['Name'],
+                  //                   style: helveticaText.copyWith(
+                  //                     fontSize: 14,
+                  //                     fontWeight: FontWeight.w300,
+                  //                     color: davysGray,
+                  //                   ),
+                  //                 ),
+                  //               ))
+                  //           .toList(),
+                  //       enabled: true,
+                  //       hintText: 'Choose',
+                  //       value: widget.isEdit ? selectedCategory : null,
+                  //       onChanged: (value) {
+                  //         selectedCategory = value;
+                  //       },
+                  //       validator: (value) =>
+                  //           value == "" ? "This field is required" : null,
+                  //       suffixIcon: const Icon(
+                  //         Icons.keyboard_arrow_down_outlined,
+                  //         color: eerieBlack,
+                  //       ),
+                  //     ),
+                  //   ),
+                  // ),
                   const SizedBox(
                     height: 40,
                   ),
@@ -230,7 +286,7 @@ class _AddItemDialogState extends State<AddItemDialog> {
                         disabled: false,
                         padding: ButtonSize().mediumSize(),
                         onTap: () {
-                          Navigator.of(context).pop(false);
+                          Navigator.of(context).pop(0);
                         },
                       ),
                       const SizedBox(
@@ -243,6 +299,76 @@ class _AddItemDialogState extends State<AddItemDialog> {
                         onTap: () {
                           if (formKey.currentState!.validate()) {
                             formKey.currentState!.save();
+                            Item itemSave = Item();
+                            itemSave.itemName = itemName;
+                            itemSave.basePrice = price;
+                            itemSave.unit = selectedUnit;
+                            if (widget.isEdit) {
+                              itemSave.itemId = widget.item.itemId;
+                              apiService.updateItem(itemSave).then((value) {
+                                if (value['Status'].toString() == "200") {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) => AlertDialogBlack(
+                                      title: value['Title'],
+                                      contentText: value['Message'],
+                                    ),
+                                  ).then((value) {
+                                    Navigator.of(context).pop(1);
+                                  });
+                                } else {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) => AlertDialogBlack(
+                                      title: value['Title'],
+                                      contentText: value['Message'],
+                                      isSuccess: false,
+                                    ),
+                                  );
+                                }
+                              }).onError((error, stackTrace) {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) => const AlertDialogBlack(
+                                    title: "Error updateItem",
+                                    contentText: "No internet connection.",
+                                    isSuccess: false,
+                                  ),
+                                );
+                              });
+                            } else {
+                              apiService.addItem(itemSave).then((value) {
+                                if (value['Status'].toString() == "200") {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) => AlertDialogBlack(
+                                      title: value['Title'],
+                                      contentText: value['Message'],
+                                    ),
+                                  ).then((value) {
+                                    Navigator.of(context).pop(1);
+                                  });
+                                } else {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) => AlertDialogBlack(
+                                      title: value['Title'],
+                                      contentText: value['Message'],
+                                      isSuccess: false,
+                                    ),
+                                  );
+                                }
+                              }).onError((error, stackTrace) {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) => const AlertDialogBlack(
+                                    title: "Error updateItem",
+                                    contentText: "No internet connection.",
+                                    isSuccess: false,
+                                  ),
+                                );
+                              });
+                            }
                           }
                         },
                       ),

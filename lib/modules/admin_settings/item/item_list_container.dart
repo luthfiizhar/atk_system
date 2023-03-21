@@ -1,7 +1,10 @@
 import 'package:atk_system_ga/constant/colors.dart';
 import 'package:atk_system_ga/constant/text_style.dart';
+import 'package:atk_system_ga/functions/api_request.dart';
 import 'package:atk_system_ga/models/item_class.dart';
+import 'package:atk_system_ga/modules/admin_settings/item/add_item_dialog.dart';
 import 'package:atk_system_ga/widgets/buttons.dart';
+import 'package:atk_system_ga/widgets/dialogs.dart';
 import 'package:flutter/material.dart';
 
 class ItemListContainer extends StatefulWidget {
@@ -116,7 +119,19 @@ class _ItemListContainerState extends State<ItemListContainer> {
                                     disabled: false,
                                     padding: const EdgeInsets.symmetric(
                                         vertical: 20),
-                                    onTap: () {},
+                                    onTap: () {
+                                      showDialog(
+                                        context: context,
+                                        builder: (context) => AddItemDialog(
+                                          isEdit: true,
+                                          item: widget.item,
+                                        ),
+                                      ).then((value) {
+                                        if (value == 1) {
+                                          widget.updateList!(widget.menu);
+                                        }
+                                      });
+                                    },
                                   ),
                                 ),
                                 const SizedBox(
@@ -129,7 +144,59 @@ class _ItemListContainerState extends State<ItemListContainer> {
                                     disabled: false,
                                     padding: const EdgeInsets.symmetric(
                                         vertical: 20),
-                                    onTap: () {},
+                                    onTap: () {
+                                      ApiService apiService = ApiService();
+                                      showDialog(
+                                        context: context,
+                                        builder: (context) =>
+                                            const ConfirmDialogBlack(
+                                          title: "Confirmation",
+                                          contentText:
+                                              "Are you sure want delete this item?",
+                                        ),
+                                      ).then((value) {
+                                        if (value == 1) {
+                                          apiService
+                                              .deleteItem(widget.item.itemId)
+                                              .then((value) {
+                                            if (value['Status'].toString() ==
+                                                "200") {
+                                              showDialog(
+                                                context: context,
+                                                builder: (context) =>
+                                                    AlertDialogBlack(
+                                                  title: value['Title'],
+                                                  contentText: value['Message'],
+                                                ),
+                                              ).then((value) {
+                                                widget.updateList!(widget.menu);
+                                              });
+                                            } else {
+                                              showDialog(
+                                                context: context,
+                                                builder: (context) =>
+                                                    AlertDialogBlack(
+                                                  title: value['Title'],
+                                                  contentText: value['Message'],
+                                                  isSuccess: false,
+                                                ),
+                                              );
+                                            }
+                                          }).onError((error, stackTrace) {
+                                            showDialog(
+                                              context: context,
+                                              builder: (context) =>
+                                                  const AlertDialogBlack(
+                                                title: "Error deleteItem",
+                                                contentText:
+                                                    "No internet connection",
+                                                isSuccess: false,
+                                              ),
+                                            );
+                                          });
+                                        }
+                                      });
+                                    },
                                   ),
                                 )
                               ],

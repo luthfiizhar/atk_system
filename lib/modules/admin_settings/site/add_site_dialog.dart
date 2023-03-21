@@ -334,7 +334,7 @@ class _AddSiteDialogState extends State<AddSiteDialog> {
                         text: 'Cancel',
                         disabled: false,
                         onTap: () {
-                          Navigator.of(context).pop(false);
+                          Navigator.of(context).pop(0);
                         },
                         padding: ButtonSize().mediumSize(),
                       ),
@@ -354,7 +354,7 @@ class _AddSiteDialogState extends State<AddSiteDialog> {
                                 contentText: 'Are you sure to add / edit site?',
                               ),
                             ).then((value) {
-                              if (value) {
+                              if (value == 1) {
                                 Site saveSite = Site();
                                 saveSite.siteId = siteId;
                                 saveSite.siteName = siteName;
@@ -372,7 +372,7 @@ class _AddSiteDialogState extends State<AddSiteDialog> {
                                           contentText: value['Message'],
                                         ),
                                       ).then((value) {
-                                        Navigator.of(context).pop(true);
+                                        Navigator.of(context).pop(1);
                                       });
                                     } else {
                                       showDialog(
@@ -405,7 +405,7 @@ class _AddSiteDialogState extends State<AddSiteDialog> {
                                           contentText: value['Message'],
                                         ),
                                       ).then((value) {
-                                        Navigator.of(context).pop(true);
+                                        Navigator.of(context).pop(1);
                                       });
                                     } else {
                                       showDialog(
