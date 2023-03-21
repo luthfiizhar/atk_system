@@ -1,6 +1,7 @@
 import 'package:atk_system_ga/constant/colors.dart';
 import 'package:atk_system_ga/constant/text_style.dart';
 import 'package:atk_system_ga/models/admin_page_class.dart';
+import 'package:atk_system_ga/modules/admin_settings/user/add_user_dialog.dart';
 import 'package:atk_system_ga/widgets/buttons.dart';
 import 'package:flutter/material.dart';
 
@@ -11,12 +12,16 @@ class UserListContainer extends StatefulWidget {
     this.index = 0,
     this.onClick,
     this.close,
+    this.menu = "",
+    this.updateList,
   }) : user = user ?? User();
 
   User user;
   int index;
   Function? onClick;
   Function? close;
+  Function? updateList;
+  String menu;
 
   @override
   State<UserListContainer> createState() => _UserListContainerState();
@@ -121,7 +126,17 @@ class _UserListContainerState extends State<UserListContainer> {
                                     disabled: false,
                                     padding: const EdgeInsets.symmetric(
                                         vertical: 20),
-                                    onTap: () {},
+                                    onTap: () {
+                                      showDialog(
+                                        context: context,
+                                        builder: (context) => AddUserDialog(
+                                          isEdit: true,
+                                          user: widget.user,
+                                        ),
+                                      ).then((value) {
+                                        widget.updateList!(widget.menu);
+                                      });
+                                    },
                                   ),
                                 ),
                                 const SizedBox(
@@ -129,7 +144,7 @@ class _UserListContainerState extends State<UserListContainer> {
                                 ),
                                 SizedBox(
                                   width: 120,
-                                  child: RegularButton(
+                                  child: DeleteButton(
                                     text: 'Delete',
                                     disabled: false,
                                     padding: const EdgeInsets.symmetric(

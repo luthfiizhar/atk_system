@@ -13,4 +13,9 @@ class SearchTerm {
   String orderDir;
   String max;
   String formType;
+
+  @override
+  String toString() {
+    return "orderBy : $orderBy, orderDir : $orderDir";
+  }
 }

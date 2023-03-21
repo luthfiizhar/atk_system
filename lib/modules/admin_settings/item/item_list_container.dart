@@ -11,12 +11,16 @@ class ItemListContainer extends StatefulWidget {
     this.index = 0,
     this.onClick,
     this.close,
+    this.menu = "",
+    this.updateList,
   }) : item = item ?? Item();
 
   Item item;
   int index;
   Function? onClick;
   Function? close;
+  Function? updateList;
+  String menu;
 
   @override
   State<ItemListContainer> createState() => _ItemListContainerState();
@@ -120,7 +124,7 @@ class _ItemListContainerState extends State<ItemListContainer> {
                                 ),
                                 SizedBox(
                                   width: 120,
-                                  child: RegularButton(
+                                  child: DeleteButton(
                                     text: 'Delete',
                                     disabled: false,
                                     padding: const EdgeInsets.symmetric(

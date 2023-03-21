@@ -43,13 +43,15 @@ void main() async {
       isTokenValid = true;
     } else {
       isTokenValid = false;
+      // isSystemAdmin = false;
     }
     apiService.getUserData().then((value) {
+      // print(value);
       if (value['Status'].toString() == "200") {
         isSystemAdmin = value['Data']['SystemAdmin'];
       }
+      runApp(MyApp());
     });
-    runApp(MyApp());
   });
 }
 
@@ -245,10 +247,10 @@ class MyApp extends StatelessWidget {
       final login = state.subloc == '/login';
       final home = state.subloc == '/home';
 
-      if ((jwtToken == null || jwtToken == "") && !isTokenValid) {
+      if ((jwtToken == null || jwtToken == "") || !isTokenValid) {
         return login ? null : '/login';
       }
-      if ((jwtToken != null || jwtToken != "") && isTokenValid) {
+      if ((jwtToken != null || jwtToken != "") || isTokenValid) {
         return login ? '/home' : null;
       }
       return null;

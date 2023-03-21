@@ -2,6 +2,7 @@ class Site {
   Site({
     this.siteId = "",
     this.siteName = "",
+    this.oldSiteId = "",
     this.siteArea = 0,
     this.monthlyBudget = 0,
     this.additionalBudget = 0,
@@ -9,6 +10,7 @@ class Site {
   });
 
   String siteId;
+  String oldSiteId;
   String siteName;
   int monthlyBudget;
   int additionalBudget;
@@ -36,6 +38,8 @@ class User {
     this.name = "",
     this.siteId = "",
     this.role = "",
+    this.oldNip = "",
+    this.siteName = "",
     this.isExpanded = false,
   });
 
@@ -43,6 +47,8 @@ class User {
   String name;
   String siteId;
   String role;
+  String oldNip;
+  String siteName;
   bool isExpanded;
 
   Map<String, String> toJson() => {

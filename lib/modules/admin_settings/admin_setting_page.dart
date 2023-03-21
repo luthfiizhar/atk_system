@@ -9,12 +9,16 @@ import 'package:atk_system_ga/models/admin_page_class.dart';
 import 'package:atk_system_ga/models/item_class.dart';
 import 'package:atk_system_ga/models/search_term.dart';
 import 'package:atk_system_ga/modules/admin_settings/admin_tab_menu.dart';
+import 'package:atk_system_ga/modules/admin_settings/item/add_item_dialog.dart';
 import 'package:atk_system_ga/modules/admin_settings/item/item_list_container.dart';
 import 'package:atk_system_ga/modules/admin_settings/site/add_site_dialog.dart';
 import 'package:atk_system_ga/modules/admin_settings/site/site_list_container.dart';
+import 'package:atk_system_ga/modules/admin_settings/user/add_user_dialog.dart';
 import 'package:atk_system_ga/modules/admin_settings/user/user_list_container.dart';
 import 'package:atk_system_ga/widgets/buttons.dart';
+import 'package:atk_system_ga/widgets/dialogs.dart';
 import 'package:atk_system_ga/widgets/dropdown.dart';
+import 'package:atk_system_ga/widgets/empty_table.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -32,46 +36,11 @@ class _AdminSettingPageState extends State<AdminSettingPage> {
   TextEditingController _search = TextEditingController();
   FocusNode showPerRowsNode = FocusNode();
 
-  List<Site> siteList = [
-    Site(
-      siteId: 'H301',
-      siteName: 'ST INFORMA PURI MALL JKT',
-      siteArea: 4000,
-      monthlyBudget: 3000000,
-      additionalBudget: 1500000,
-    ),
-    Site(
-      siteId: 'H301',
-      siteName: 'ST INFORMA PURI MALL JKT',
-      siteArea: 4000,
-      monthlyBudget: 3000000,
-      additionalBudget: 1500000,
-    ),
-  ];
+  List<Site> siteList = [];
 
-  List<User> userList = [
-    User(
-        nip: '1111111',
-        name: 'Eerling Haaland',
-        siteId: 'HO',
-        role: 'System Admin'),
-    User(
-        nip: '1111111',
-        name: 'Eerling Haaland',
-        siteId: 'HO',
-        role: 'System Admin'),
-    User(
-        nip: '1111111',
-        name: 'Eerling Haaland',
-        siteId: 'HO',
-        role: 'System Admin'),
-  ];
+  List<User> userList = [];
 
-  List<Item> itemList = [
-    Item(itemName: 'AAAAAA', unit: 'EA', basePrice: 10000),
-    Item(itemName: 'AAAAAA', unit: 'EA', basePrice: 10000),
-    Item(itemName: 'AAAAAA', unit: 'EA', basePrice: 10000),
-  ];
+  List<Item> itemList = [];
 
   bool isLoading = true;
 
@@ -84,28 +53,6 @@ class _AdminSettingPageState extends State<AdminSettingPage> {
     {"value": "Item", "name": "Item List"},
   ];
 
-  final List<String> items = [
-    'A_Item1',
-    'A_Item2',
-    'A_Item3',
-    'A_Item4',
-    'B_Item1',
-    'B_Item2',
-    'B_Item3',
-    'luthfi',
-    'luthfi',
-    'luthfi',
-    'luthfi',
-    'luthfi',
-    'luthfi',
-    'luthfi',
-    'luthfi',
-    'luthfi',
-    'luthfi',
-    'luthfi',
-  ];
-
-  String? selectedValue;
   final TextEditingController textEditingController = TextEditingController();
 
   double rowPerPage = 10;
@@ -118,18 +65,24 @@ class _AdminSettingPageState extends State<AdminSettingPage> {
 
   onChangedTab(String value) {
     currentPaginatedPage = 1;
-    // searchTerm.formType = value;
-    searchTerm.orderBy = "FormID";
-    searchTerm.orderDir = "ASC";
-    searchTerm.keywords = "";
     searchTerm.pageNumber = currentPaginatedPage.toString();
     _search.text = "";
+    searchTerm.keywords = _search.text;
+    searchTerm.orderDir = "ASC";
     menu = value;
-    // updateList().then((value) {
-    //   countPagination(resultRows);
-    //   setState(() {});
-    // });
+    if (menu == "Site") {
+      searchTerm.orderBy = "SiteID";
+    }
+    if (menu == "User") {
+      searchTerm.orderBy = "EmpNIP";
+    }
+    if (menu == "Item") {
+      searchTerm.orderBy = "ItemName";
+    }
     setState(() {});
+    updateList(menu).then((value) {
+      countPagination(resultRows);
+    });
   }
 
   countPagination(int totalRow) {
@@ -149,20 +102,22 @@ class _AdminSettingPageState extends State<AdminSettingPage> {
   }
 
   onTapHeader(String orderBy, String menu) {
-    if (searchTerm.orderBy == orderBy) {
-      switch (searchTerm.orderDir) {
-        case "ASC":
-          searchTerm.orderDir = "DESC";
-          break;
-        case "DESC":
-          searchTerm.orderDir = "ASC";
-          break;
-        default:
+    setState(() {
+      if (searchTerm.orderBy == orderBy) {
+        switch (searchTerm.orderDir) {
+          case "ASC":
+            searchTerm.orderDir = "DESC";
+            break;
+          case "DESC":
+            searchTerm.orderDir = "ASC";
+            break;
+          default:
+        }
       }
-    }
-    searchTerm.orderBy = orderBy;
-    updateList(menu);
-    setState(() {});
+      searchTerm.orderBy = orderBy;
+      print(searchTerm.toString());
+    });
+    updateList(menu).then((value) {});
   }
 
   Future nothing() async {}
@@ -170,11 +125,75 @@ class _AdminSettingPageState extends State<AdminSettingPage> {
   Future updateList(String menu) {
     switch (menu) {
       case "Site":
-        return apiService.getAdminPageSiteList(searchTerm).then((value) {});
+        siteList.clear();
+        setState(() {});
+        return apiService.getAdminPageSiteList(searchTerm).then((value) {
+          // print(value);
+          isLoading = false;
+          if (value['Status'].toString() == "200") {
+            resultRows = value['Data']['TotalRows'];
+            List siteResult = value['Data']['List'];
+            for (var element in siteResult) {
+              siteList.add(Site(
+                siteId: element["SiteID"],
+                siteName: element['SiteName'],
+                monthlyBudget: element['Budget'],
+                siteArea: element['SiteArea'],
+                additionalBudget: element['AdditionalBudget'] ?? 0,
+              ));
+            }
+          } else {}
+          setState(() {});
+        }).onError((error, stackTrace) {
+          isLoading = false;
+          setState(() {});
+          showDialog(
+            context: context,
+            builder: (context) => const AlertDialogBlack(
+              title: "Error getSiteList",
+              contentText: "No internet connection",
+              isSuccess: false,
+            ),
+          );
+        });
       case "User":
-        return apiService.getAdminPageUserList(searchTerm).then((value) {});
+        userList.clear();
+        return apiService.getAdminPageUserList(searchTerm).then((value) {
+          isLoading = false;
+          if (value['Status'].toString() == "200") {
+            resultRows = value['Data']['TotalRows'];
+            List userResult = value['Data']['List'];
+            for (var element in userResult) {
+              userList.add(User(
+                name: element['EmpName'],
+                nip: element['EmpNIP'],
+                siteId: element['SiteID'],
+                role: element['Role'],
+                siteName: element['SiteName'],
+              ));
+            }
+          } else {}
+          setState(() {});
+        });
       case "Item":
-        return apiService.getAdminPageItemList(searchTerm).then((value) {});
+        itemList.clear();
+        return apiService.getAdminPageItemList(searchTerm).then((value) {
+          print(value);
+          if (value['Status'].toString() == "200") {
+            resultRows = value['Data']['TotalRows'];
+            List itemResult = value['Data']['List'];
+            for (var element in itemResult) {
+              itemList.add(Item(
+                itemId: element["ItemID"].toString(),
+                itemName: element["ItemName"],
+                category: element["Category"],
+                unit: element["Unit"],
+                basePrice: element["Price"],
+              ));
+            }
+            setState(() {});
+          } else {}
+        });
       default:
         return nothing();
     }
@@ -231,6 +250,65 @@ class _AdminSettingPageState extends State<AdminSettingPage> {
     setState(() {});
   }
 
+  initList() {
+    switch (menu) {
+      case "Site":
+        searchTerm.keywords = "";
+        searchTerm.max = "10";
+        searchTerm.orderBy = "SiteID";
+        searchTerm.orderDir = "ASC";
+        apiService.getAdminPageSiteList(searchTerm).then((value) {
+          // print(value);
+          isLoading = false;
+          if (value['Status'].toString() == "200") {
+            resultRows = value['Data']['TotalRows'];
+            List siteResult = value['Data']['List'];
+            for (var element in siteResult) {
+              siteList.add(Site(
+                siteId: element["SiteID"],
+                siteName: element['SiteName'],
+                monthlyBudget: element['Budget'],
+                siteArea: element['SiteArea'],
+                additionalBudget: element['AdditionalBudget'] ?? 0,
+              ));
+            }
+            countPagination(resultRows);
+            setState(() {});
+          } else {}
+          setState(() {});
+        }).onError((error, stackTrace) {
+          isLoading = false;
+          setState(() {});
+          showDialog(
+            context: context,
+            builder: (context) => const AlertDialogBlack(
+              title: "Error getSiteList",
+              contentText: "No internet connection",
+              isSuccess: false,
+            ),
+          );
+        });
+        break;
+      default:
+    }
+  }
+
+  searchList(String menu) {
+    searchTerm.keywords = _search.text;
+
+    updateList(menu).then((value) {
+      countPagination(resultRows);
+      setState(() {});
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    initList();
+  }
+
   @override
   Widget build(BuildContext context) {
     return LayoutPageWeb(
@@ -259,7 +337,7 @@ class _AdminSettingPageState extends State<AdminSettingPage> {
                   height: 45,
                 ),
                 AdminMenuSearchBar(
-                  search: () {},
+                  search: searchList,
                   menuList: menuList,
                   updateList: onChangedTab,
                   searchController: _search,
@@ -337,7 +415,11 @@ class _AdminSettingPageState extends State<AdminSettingPage> {
             showDialog(
               context: context,
               builder: (context) => AddSiteDialog(),
-            );
+            ).then((value) {
+              if (value) {
+                updateList(menu).then((value) {});
+              }
+            });
           },
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -360,25 +442,6 @@ class _AdminSettingPageState extends State<AdminSettingPage> {
             ],
           ),
         ),
-        SearchDropDown(
-          items: items
-              .map((item) => DropdownMenuItem(
-                    value: item,
-                    child: Text(
-                      item,
-                      style: const TextStyle(
-                        fontSize: 14,
-                      ),
-                    ),
-                  ))
-              .toList(),
-          value: selectedValue,
-          onChanged: (value) {},
-          suffixIcon: const Icon(
-            Icons.keyboard_arrow_down_outlined,
-            color: eerieBlack,
-          ),
-        )
       ],
     );
   }
@@ -389,7 +452,16 @@ class _AdminSettingPageState extends State<AdminSettingPage> {
         vertical: 18,
         horizontal: 20,
       ),
-      onTap: () {},
+      onTap: () {
+        showDialog(
+          context: context,
+          builder: (context) => AddUserDialog(),
+        ).then((value) {
+          if (value) {
+            updateList(menu).then((value) {});
+          }
+        });
+      },
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
@@ -423,7 +495,7 @@ class _AdminSettingPageState extends State<AdminSettingPage> {
       onTap: () {
         showDialog(
           context: context,
-          builder: (context) => AddSiteDialog(),
+          builder: (context) => AddItemDialog(),
         );
       },
       child: Row(
@@ -488,10 +560,9 @@ class _AdminSettingPageState extends State<AdminSettingPage> {
                         //   countPagination(value['Data']['TotalRows']);
                         //   showedPage = availablePage.take(5).toList();
                         // });
-                        // updateList().then((value) {
-                        //   countPagination(resultRows);
-                        //   showedPage = availablePage.take(5).toList();
-                        // });
+                        updateList(menu).then((value) {
+                          countPagination(resultRows);
+                        });
                       });
                     },
                     value: searchTerm.max,
@@ -540,6 +611,9 @@ class _AdminSettingPageState extends State<AdminSettingPage> {
                             }
                             searchTerm.pageNumber =
                                 currentPaginatedPage.toString();
+                            updateList(menu).then((value) {
+                              // countPagination(resultRows);
+                            });
                           });
                         }
                       : null,
@@ -600,6 +674,9 @@ class _AdminSettingPageState extends State<AdminSettingPage> {
                                       });
                                       searchTerm.pageNumber =
                                           currentPaginatedPage.toString();
+                                      updateList(menu).then((value) {
+                                        // countPagination(resultRows);
+                                      });
                                     },
                               child: Container(
                                 width: 35,
@@ -687,7 +764,9 @@ class _AdminSettingPageState extends State<AdminSettingPage> {
                             //   countPagination(
                             //       value['Data']['TotalRows']);
                             // });
-                            // updateList();
+                            updateList(menu).then((value) {
+                              // countPagination(resultRows);
+                            });
                           });
                         }
                       : null,
@@ -796,17 +875,37 @@ class _AdminSettingPageState extends State<AdminSettingPage> {
           color: spanishGray,
           thickness: 1,
         ),
-        ListView.builder(
-          physics: const NeverScrollableScrollPhysics(),
-          shrinkWrap: true,
-          itemCount: 2,
-          itemBuilder: (context, index) => SiteListContainer(
-            index: index,
-            close: closeSiteListDetail,
-            onClick: onClickListSite,
-            site: siteList[index],
-          ),
-        )
+        isLoading
+            ? const SizedBox(
+                width: double.infinity,
+                height: 150,
+                child: Center(
+                  child: SizedBox(
+                    height: 50,
+                    width: 50,
+                    child: CircularProgressIndicator(
+                      color: eerieBlack,
+                    ),
+                  ),
+                ),
+              )
+            : siteList.isEmpty
+                ? EmptyTable(
+                    text: "Site list is empty.",
+                  )
+                : ListView.builder(
+                    physics: const NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    itemCount: siteList.length,
+                    itemBuilder: (context, index) => SiteListContainer(
+                      index: index,
+                      menu: menu,
+                      updateList: updateList,
+                      close: closeSiteListDetail,
+                      onClick: onClickListSite,
+                      site: siteList[index],
+                    ),
+                  )
       ],
     );
   }
@@ -916,17 +1015,37 @@ class _AdminSettingPageState extends State<AdminSettingPage> {
           color: spanishGray,
           thickness: 1,
         ),
-        ListView.builder(
-          physics: const NeverScrollableScrollPhysics(),
-          shrinkWrap: true,
-          itemCount: userList.length,
-          itemBuilder: (context, index) => UserListContainer(
-            index: index,
-            close: closeUserListDetail,
-            onClick: onClickListUser,
-            user: userList[index],
-          ),
-        )
+        isLoading
+            ? const SizedBox(
+                width: double.infinity,
+                height: 150,
+                child: Center(
+                  child: SizedBox(
+                    height: 50,
+                    width: 50,
+                    child: CircularProgressIndicator(
+                      color: eerieBlack,
+                    ),
+                  ),
+                ),
+              )
+            : userList.isEmpty
+                ? EmptyTable(
+                    text: "User list is empty.",
+                  )
+                : ListView.builder(
+                    physics: const NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    itemCount: userList.length,
+                    itemBuilder: (context, index) => UserListContainer(
+                      index: index,
+                      close: closeUserListDetail,
+                      onClick: onClickListUser,
+                      user: userList[index],
+                      menu: menu,
+                      updateList: updateList,
+                    ),
+                  )
       ],
     );
   }
@@ -1017,17 +1136,35 @@ class _AdminSettingPageState extends State<AdminSettingPage> {
           color: spanishGray,
           thickness: 1,
         ),
-        ListView.builder(
-          physics: const NeverScrollableScrollPhysics(),
-          shrinkWrap: true,
-          itemCount: itemList.length,
-          itemBuilder: (context, index) => ItemListContainer(
-            index: index,
-            close: closeItemListDetail,
-            onClick: onClickListItem,
-            item: itemList[index],
-          ),
-        )
+        isLoading
+            ? const SizedBox(
+                width: double.infinity,
+                height: 150,
+                child: Center(
+                  child: SizedBox(
+                    height: 50,
+                    width: 50,
+                    child: CircularProgressIndicator(
+                      color: eerieBlack,
+                    ),
+                  ),
+                ),
+              )
+            : itemList.isEmpty
+                ? EmptyTable(
+                    text: "Item list is empty.",
+                  )
+                : ListView.builder(
+                    physics: const NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    itemCount: itemList.length,
+                    itemBuilder: (context, index) => ItemListContainer(
+                      index: index,
+                      close: closeItemListDetail,
+                      onClick: onClickListItem,
+                      item: itemList[index],
+                    ),
+                  )
       ],
     );
   }

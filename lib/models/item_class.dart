@@ -13,11 +13,13 @@ class Item {
     this.actualQty = 0,
     this.actualTotalPrice = 0,
     this.isExpanded = false,
+    this.category = "",
   });
 
   String itemId;
   String itemName;
   String unit;
+  String category;
   int basePrice;
   int estimatedPrice;
   int qty;

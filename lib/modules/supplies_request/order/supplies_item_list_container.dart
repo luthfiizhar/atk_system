@@ -72,7 +72,7 @@ class _SuppliesItemListContainerState extends State<SuppliesItemListContainer> {
       if (widget._estimatedPrice.text == "") {
         widget._estimatedPrice.text = "0";
         widget._estimatedPrice.selection = TextSelection.fromPosition(
-            TextPosition(offset: widget._qty.text.length));
+            TextPosition(offset: widget._estimatedPrice.text.length));
       }
       setState(() {});
     });

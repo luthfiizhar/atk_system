@@ -4,6 +4,7 @@ import 'package:atk_system_ga/constant/custom_behavior.dart';
 import 'package:atk_system_ga/constant/text_style.dart';
 import 'package:atk_system_ga/functions/api_request.dart';
 import 'package:atk_system_ga/layout/layout_page.dart';
+import 'package:atk_system_ga/main.dart';
 import 'package:atk_system_ga/widgets/buttons.dart';
 import 'package:atk_system_ga/widgets/dialogs.dart';
 import 'package:atk_system_ga/widgets/menu_buttons.dart';
@@ -46,6 +47,7 @@ class _HomePageState extends State<HomePage> {
         nip = value["Data"]["EmpNIP"];
         role = value["Data"]["Role"];
         photo = value["Data"]["Photo"];
+        isSystemAdmin = value['Data']['SystemAdmin'];
         setState(() {});
       } else {}
     }).onError((error, stackTrace) {
