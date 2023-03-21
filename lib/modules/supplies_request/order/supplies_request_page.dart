@@ -446,7 +446,7 @@ class _SuppliesRequestPageState extends State<SuppliesRequestPage> {
                             transaction: transaction,
                           ),
                         ).then((value) {
-                          if (value) {
+                          if (value == 1) {
                             context.goNamed('request_order_detail', params: {
                               "formId": widget.formId,
                             });

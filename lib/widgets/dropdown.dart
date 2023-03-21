@@ -7,7 +7,7 @@ class BlackDropdown extends StatelessWidget {
   BlackDropdown({
     required this.items,
     this.hintText,
-    this.focusNode,
+    FocusNode? focusNode,
     this.validator,
     this.onChanged,
     this.suffixIcon,
@@ -15,7 +15,7 @@ class BlackDropdown extends StatelessWidget {
     this.onTap,
     this.value,
     this.customHeights,
-  });
+  }) : focusNode = focusNode ?? FocusNode();
 
   final List<DropdownMenuItem<dynamic>>? items;
   final String? hintText;
@@ -23,7 +23,7 @@ class BlackDropdown extends StatelessWidget {
   final ValueChanged? onChanged;
   final FormFieldValidator? validator;
   Widget? suffixIcon = Icon(Icons.keyboard_arrow_down_sharp);
-  final bool? enabled;
+  bool? enabled;
   final VoidCallback? onTap;
   final dynamic value;
   final List<double>? customHeights;
@@ -104,7 +104,7 @@ class BlackDropdown extends StatelessWidget {
         focusColor: culturedWhite,
         hintText: hintText,
         hintStyle: const TextStyle(
-          fontSize: 18,
+          fontSize: 16,
           fontWeight: FontWeight.w300,
           color: lightGray,
         ),
@@ -116,8 +116,8 @@ class BlackDropdown extends StatelessWidget {
         ),
         // suffixIcon: suffixIcon,
         suffixIconColor: eerieBlack,
+        enabled: enabled!,
       ),
-
       hint: Text(
         hintText!,
         style: const TextStyle(
@@ -127,29 +127,13 @@ class BlackDropdown extends StatelessWidget {
           color: sonicSilver,
         ),
       ),
-      // buttonPadding: EdgeInsets.only(
-      //   right: 5,
-      //   left: 5,
-      //   top: 0,
-      //   bottom: 0,
-      // ),
       style: const TextStyle(
         fontSize: 16,
         fontWeight: FontWeight.w300,
         fontFamily: 'Helvetica',
       ),
-      // buttonDecoration: BoxDecoration(
-      //   borderRadius: BorderRadius.circular(5),
-      //   border: Border.all(
-      //     color: eerieBlack,
-      //     width: 1,
-      //   ),
-      //   color: culturedWhite,
-      // ),
-      // dropdownDecoration: ,
-      // offset: const Offset(0, -20),
+      validator: validator,
     );
-    ;
   }
 }
 
@@ -159,111 +143,175 @@ class SearchDropDown extends StatelessWidget {
     required List<DropdownMenuItem<String>>? items,
     required this.value,
     required this.onChanged,
-    this.hintText = "Search",
+    this.hintText = "Choose",
     this.suffixIcon,
-  }) : items = items ?? [];
+    this.width = 300,
+    this.validator,
+    this.enabled = true,
+    FocusNode? focusNode,
+  })  : items = items ?? [],
+        focusNode = focusNode ?? FocusNode();
 
   TextEditingController searchController = TextEditingController();
   List<DropdownMenuItem<String>> items;
   List<double>? customHeights;
   dynamic value;
+  final FormFieldValidator? validator;
   ValueChanged? onChanged;
   String hintText;
   Widget? suffixIcon;
+  double width;
+  bool enabled;
+  FocusNode focusNode;
 
   @override
   Widget build(BuildContext context) {
-    return DropdownButtonHideUnderline(
-      child: DropdownButton2<String>(
-        isExpanded: true,
-        iconStyleData: IconStyleData(
-          icon: suffixIcon!,
-        ),
-        hint: Text(
-          hintText,
-          style: helveticaText.copyWith(
-            fontSize: 14,
-            color: eerieBlack,
+    return DropdownButtonFormField2(
+      validator: validator,
+      // isExpanded: true,
+      iconStyleData: IconStyleData(
+        icon: suffixIcon!,
+      ),
+      // hint: Text(
+      //   hintText,
+      //   style: const TextStyle(
+      //     fontFamily: 'Helvetica',
+      //     fontSize: 16,
+      //     fontWeight: FontWeight.w300,
+      //     color: sonicSilver,
+      //   ),
+      // ),
+      style: const TextStyle(
+        fontSize: 16,
+        fontWeight: FontWeight.w300,
+        fontFamily: 'Helvetica',
+      ),
+      items: items,
+      value: value,
+      onChanged: onChanged,
+      decoration: InputDecoration(
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(5),
+          borderSide: const BorderSide(
+            color: davysGray,
+            width: 1,
           ),
         ),
-        items: items,
-        value: value,
-        onChanged: onChanged,
-        buttonStyleData: ButtonStyleData(
-          width: 500,
-          height: 39,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(5),
-            border: Border.all(
-              color: davysGray,
-              width: 1,
-            ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(5),
+          borderSide: const BorderSide(
+            color: davysGray,
+            width: 1,
           ),
         ),
-        dropdownStyleData: DropdownStyleData(
-          width: 500,
-          offset: const Offset(2, 0),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(
-              color: sonicSilver,
-              width: 1,
-            ),
-            color: culturedWhite,
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(5),
+          borderSide: const BorderSide(
+            color: davysGray,
+            width: 2,
           ),
         ),
-        menuItemStyleData: MenuItemStyleData(
-          customHeights: customHeights,
+        disabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(5),
+          borderSide: const BorderSide(
+            color: grayx11,
+            width: 1,
+          ),
+        ),
+        fillColor: enabled
+            ? focusNode.hasFocus
+                ? culturedWhite
+                : Colors.transparent
+            : platinum,
+        filled: true,
+        isDense: true,
+        // isCollapsed: true,
+        focusColor: culturedWhite,
+        hintText: hintText,
+        hintStyle: const TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.w300,
+          color: sonicSilver,
+        ),
+        contentPadding: const EdgeInsets.only(
+          right: 15,
+          left: 15,
+          top: 0,
+          bottom: 12,
+        ),
+        // suffixIcon: suffixIcon,
+        suffixIconColor: eerieBlack,
+      ),
+      buttonStyleData: const ButtonStyleData(
+        // width: width,
+        height: 39,
+      ),
+      dropdownStyleData: DropdownStyleData(
+        // width: width,
+        maxHeight: 300,
+        // padding: const EdgeInsets.symmetric(
+        //   vertical: 20,
+        //   horizontal: 15,
+        // ),
+        offset: const Offset(0, -5),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(
+            color: sonicSilver,
+            width: 1,
+          ),
+          color: culturedWhite,
+        ),
+      ),
+      menuItemStyleData: MenuItemStyleData(
+        customHeights: customHeights,
+        padding: const EdgeInsets.only(
+          left: 20,
+          right: 20,
+        ),
+      ),
+      dropdownSearchData: DropdownSearchData(
+        searchController: searchController,
+        searchInnerWidgetHeight: 50,
+        searchInnerWidget: Container(
+          height: 50,
           padding: const EdgeInsets.only(
             left: 20,
             right: 20,
           ),
-        ),
-        dropdownSearchData: DropdownSearchData(
-          searchController: searchController,
-          searchInnerWidgetHeight: 50,
-          searchInnerWidget: Container(
-            height: 50,
-            padding: const EdgeInsets.only(
-              top: 8,
-              bottom: 4,
-              right: 8,
-              left: 8,
-            ),
-            child: TextFormField(
-              expands: true,
-              maxLines: null,
-              controller: searchController,
-              decoration: const InputDecoration(
-                prefixIcon: Icon(
-                  Icons.search,
-                ),
-                isDense: true,
-                contentPadding: EdgeInsets.symmetric(
-                  vertical: 15,
-                  horizontal: 0,
-                ),
-                hintText: 'Search here ...',
-                hintStyle: TextStyle(fontSize: 12),
-                border: UnderlineInputBorder(
-                  borderSide: BorderSide(
-                    color: davysGray,
-                  ),
+          child: TextFormField(
+            expands: true,
+            maxLines: null,
+            controller: searchController,
+            decoration: InputDecoration(
+              prefixIcon: const Icon(
+                Icons.search,
+              ),
+              isDense: true,
+              contentPadding: const EdgeInsets.symmetric(
+                vertical: 15,
+                horizontal: 0,
+              ),
+              hintText: 'Search here ...',
+              hintStyle: helveticaText.copyWith(fontSize: 12),
+              border: const UnderlineInputBorder(
+                borderSide: BorderSide(
+                  color: davysGray,
                 ),
               ),
             ),
           ),
-          searchMatchFn: (item, searchValue) {
-            return (item.value.toString().contains(searchValue));
-          },
         ),
-        //This to clear the search value when you close the menu
-        onMenuStateChange: (isOpen) {
-          if (!isOpen) {
-            searchController.clear();
-          }
+        searchMatchFn: (item, searchValue) {
+          return (item.value.toString().toLowerCase().contains(searchValue));
         },
       ),
+      //This to clear the search value when you close the menu
+      onMenuStateChange: (isOpen) {
+        if (!isOpen) {
+          searchController.clear();
+        }
+      },
     );
   }
 }

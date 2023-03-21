@@ -354,7 +354,7 @@ class _ApprovalSettlementRequestPageState
                             transaction: transaction,
                           ),
                         ).then((value) {
-                          if (value) {
+                          if (value == 1) {
                             context.goNamed('settlement_detail', params: {
                               "formId": widget.formId,
                             });
@@ -376,7 +376,7 @@ class _ApprovalSettlementRequestPageState
                             transaction: transaction,
                           ),
                         ).then((value) {
-                          if (value) {
+                          if (value == 1) {
                             context.goNamed('settlement_detail', params: {
                               "formId": widget.formId,
                             });

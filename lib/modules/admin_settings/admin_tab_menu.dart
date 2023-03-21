@@ -154,7 +154,7 @@ class _AdminMenuSearchBarState extends State<AdminMenuSearchBar> {
                       enabled: true,
                       maxLines: 1,
                       hintText: 'Search here...',
-                      onFieldSubmitted: (value) => widget.search!(),
+                      onFieldSubmitted: (value) => widget.search!(widget.type),
                       prefixIcon: const ImageIcon(
                         AssetImage(
                           'assets/icons/search_icon.png',

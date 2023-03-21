@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:atk_system_ga/functions/api_link.dart';
 import 'package:atk_system_ga/main.dart';
+import 'package:atk_system_ga/models/admin_page_class.dart';
 import 'package:atk_system_ga/models/item_class.dart';
 import 'package:atk_system_ga/models/search_term.dart';
 import 'package:atk_system_ga/models/supplies_request_class.dart';
@@ -680,8 +681,8 @@ class ApiService {
         "Keywords" : "${searchTerm.keywords}",
         "PageNumber" : ${searchTerm.pageNumber},
         "MaxRecord" : ${searchTerm.max},
-        "SortBy" : "${searchTerm.orderBy}",
-        "SortOrder" : "${searchTerm.orderDir}"
+        "OrderBy" : "${searchTerm.orderBy}",
+        "OrderDir" : "${searchTerm.orderDir}"
     }
     """;
 
@@ -716,8 +717,8 @@ class ApiService {
         "Keywords" : "${searchTerm.keywords}",
         "PageNumber" : ${searchTerm.pageNumber},
         "MaxRecord" : ${searchTerm.max},
-        "SortBy" : "${searchTerm.orderBy}",
-        "SortOrder" : "${searchTerm.orderDir}"
+        "OrderBy" : "${searchTerm.orderBy}",
+        "OrderDir" : "${searchTerm.orderDir}"
     }
     """;
 
@@ -749,17 +750,385 @@ class ApiService {
 
     var bodySend = """
     {
-        "Keywords" : "${searchTerm.keywords}",
+       "Keywords" : "${searchTerm.keywords}",
         "PageNumber" : ${searchTerm.pageNumber},
         "MaxRecord" : ${searchTerm.max},
-        "SortBy" : "${searchTerm.orderBy}",
-        "SortOrder" : "${searchTerm.orderDir}"
+        "OrderBy" : "${searchTerm.orderBy}",
+        "OrderDir" : "${searchTerm.orderDir}"
     }
     """;
 
     try {
       var response =
           await http.post(url, headers: requestHeader, body: bodySend);
+
+      var data = json.decode(response.body);
+
+      return data;
+    } on Error catch (e) {
+      return e;
+    }
+  }
+
+  Future addSite(Site site) async {
+    // print(bookingId);
+    var box = await Hive.openBox('userLogin');
+    var jwt = box.get('jwTtoken') != "" ? box.get('jwtToken') : "";
+
+    // jwt = jwtToken;
+
+    var url =
+        Uri.https(urlConstant.apiUrl, '/GSS_Backend/public/api/admin/site-add');
+    Map<String, String> requestHeader = {
+      'Authorization': 'Bearer $jwt',
+      'Content-Type': 'application/json',
+    };
+
+    var bodySend = """
+    {
+        "SiteId" : "${site.siteId}",
+        "SiteName" : "${site.siteName}",
+        "SiteArea" : ${site.siteArea},
+        "MonthlyBudget" : ${site.monthlyBudget},
+        "AdditionalBudget" : ${site.additionalBudget}
+    }
+    """;
+
+    try {
+      var response =
+          await http.post(url, headers: requestHeader, body: bodySend);
+
+      var data = json.decode(response.body);
+
+      return data;
+    } on Error catch (e) {
+      return e;
+    }
+  }
+
+  Future updateSite(Site site) async {
+    // print(bookingId);
+    var box = await Hive.openBox('userLogin');
+    var jwt = box.get('jwTtoken') != "" ? box.get('jwtToken') : "";
+
+    // jwt = jwtToken;
+
+    var url = Uri.https(
+        urlConstant.apiUrl, '/GSS_Backend/public/api/admin/site-edit');
+    Map<String, String> requestHeader = {
+      'Authorization': 'Bearer $jwt',
+      'Content-Type': 'application/json',
+    };
+
+    var bodySend = """
+    {
+        "OldSiteId" : "${site.oldSiteId}",
+        "SiteId" : "${site.siteId}",
+        "SiteName" : "${site.siteName}",
+        "SiteArea" : ${site.siteArea},
+        "MonthlyBudget" : ${site.monthlyBudget},
+        "AdditionalBudget" : ${site.additionalBudget}
+    }
+    """;
+
+    try {
+      var response =
+          await http.put(url, headers: requestHeader, body: bodySend);
+
+      var data = json.decode(response.body);
+
+      return data;
+    } on Error catch (e) {
+      return e;
+    }
+  }
+
+  Future deleteSite(String siteId) async {
+    // print(bookingId);
+    var box = await Hive.openBox('userLogin');
+    var jwt = box.get('jwTtoken') != "" ? box.get('jwtToken') : "";
+
+    // jwt = jwtToken;
+
+    var url = Uri.https(urlConstant.apiUrl,
+        '/GSS_Backend/public/api/admin/site-delete/$siteId');
+    Map<String, String> requestHeader = {
+      'Authorization': 'Bearer $jwt',
+      'Content-Type': 'application/json',
+    };
+
+    try {
+      var response = await http.delete(url, headers: requestHeader);
+
+      var data = json.decode(response.body);
+
+      return data;
+    } on Error catch (e) {
+      return e;
+    }
+  }
+
+  Future getSiteListDropdown(String keywords) async {
+    // print(bookingId);
+    var box = await Hive.openBox('userLogin');
+    var jwt = box.get('jwTtoken') != "" ? box.get('jwtToken') : "";
+
+    // jwt = jwtToken;
+
+    var url = Uri.https(
+        urlConstant.apiUrl, '/GSS_Backend/public/api/admin/site-dropdown');
+    Map<String, String> requestHeader = {
+      'Authorization': 'Bearer $jwt',
+      'Content-Type': 'application/json',
+    };
+
+    var bodySend = """
+        "Keywords" : "$keywords"
+    """;
+
+    try {
+      var response =
+          await http.post(url, headers: requestHeader, body: bodySend);
+
+      var data = json.decode(response.body);
+
+      return data;
+    } on Error catch (e) {
+      return e;
+    }
+  }
+
+  Future getRoleListDropdown() async {
+    // print(bookingId);
+    var box = await Hive.openBox('userLogin');
+    var jwt = box.get('jwTtoken') != "" ? box.get('jwtToken') : "";
+
+    // jwt = jwtToken;
+
+    var url = Uri.https(
+        urlConstant.apiUrl, '/GSS_Backend/public/api/admin/role-list');
+    Map<String, String> requestHeader = {
+      'Authorization': 'Bearer $jwt',
+      'Content-Type': 'application/json',
+    };
+
+    try {
+      var response = await http.get(url, headers: requestHeader);
+
+      var data = json.decode(response.body);
+
+      return data;
+    } on Error catch (e) {
+      return e;
+    }
+  }
+
+  Future addUser(User user) async {
+    // print(bookingId);
+    var box = await Hive.openBox('userLogin');
+    var jwt = box.get('jwTtoken') != "" ? box.get('jwtToken') : "";
+
+    // jwt = jwtToken;
+
+    var url =
+        Uri.https(urlConstant.apiUrl, '/GSS_Backend/public/api/admin/user-add');
+    Map<String, String> requestHeader = {
+      'Authorization': 'Bearer $jwt',
+      'Content-Type': 'application/json',
+    };
+
+    var bodySend = """
+    {
+        "UserNIP" : "${user.nip}",
+        "Fullname" : "${user.name}",
+        "SiteId" : "${user.siteId}",
+        "Role" : "${user.role}"
+    }
+    """;
+
+    try {
+      var response =
+          await http.post(url, headers: requestHeader, body: bodySend);
+
+      var data = json.decode(response.body);
+
+      return data;
+    } on Error catch (e) {
+      return e;
+    }
+  }
+
+  Future updateUser(User user) async {
+    // print(bookingId);
+    var box = await Hive.openBox('userLogin');
+    var jwt = box.get('jwTtoken') != "" ? box.get('jwtToken') : "";
+
+    // jwt = jwtToken;
+
+    var url = Uri.https(
+        urlConstant.apiUrl, '/GSS_Backend/public/api/admin/user-update');
+    Map<String, String> requestHeader = {
+      'Authorization': 'Bearer $jwt',
+      'Content-Type': 'application/json',
+    };
+
+    var bodySend = """
+    {
+        "OldUserNIP" : "${user.oldNip}",
+        "UserNIP" : "${user.nip}",
+        "Fullname" : "${user.name}",
+        "SiteId" : "${user.siteId}",
+        "Role" : "${user.role}"
+    }
+    """;
+
+    try {
+      var response =
+          await http.put(url, headers: requestHeader, body: bodySend);
+
+      var data = json.decode(response.body);
+
+      return data;
+    } on Error catch (e) {
+      return e;
+    }
+  }
+
+  Future deleteUser(String empNip) async {
+    // print(bookingId);
+    var box = await Hive.openBox('userLogin');
+    var jwt = box.get('jwTtoken') != "" ? box.get('jwtToken') : "";
+
+    // jwt = jwtToken;
+
+    var url = Uri.https(urlConstant.apiUrl,
+        '/GSS_Backend/public/api/admin/user-delete/$empNip');
+    Map<String, String> requestHeader = {
+      'Authorization': 'Bearer $jwt',
+      'Content-Type': 'application/json',
+    };
+
+    try {
+      var response = await http.delete(url, headers: requestHeader);
+
+      var data = json.decode(response.body);
+
+      return data;
+    } on Error catch (e) {
+      return e;
+    }
+  }
+
+  Future addItem(Item item) async {
+    // print(bookingId);
+    var box = await Hive.openBox('userLogin');
+    var jwt = box.get('jwTtoken') != "" ? box.get('jwtToken') : "";
+
+    // jwt = jwtToken;
+
+    var url =
+        Uri.https(urlConstant.apiUrl, '/GSS_Backend/public/api/admin/add-item');
+    Map<String, String> requestHeader = {
+      'Authorization': 'Bearer $jwt',
+      'Content-Type': 'application/json',
+    };
+
+    var bodySend = """
+    {
+        "ItemName" : "${item.itemName}",
+        "ItemPrice" : ${item.basePrice},
+        "ItemUnit" : "${item.unit}"
+    }
+    """;
+
+    try {
+      var response =
+          await http.post(url, headers: requestHeader, body: bodySend);
+
+      var data = json.decode(response.body);
+
+      return data;
+    } on Error catch (e) {
+      return e;
+    }
+  }
+
+  Future updateItem(Item item) async {
+    // print(bookingId);
+    var box = await Hive.openBox('userLogin');
+    var jwt = box.get('jwTtoken') != "" ? box.get('jwtToken') : "";
+
+    // jwt = jwtToken;
+
+    var url = Uri.https(
+        urlConstant.apiUrl, '/GSS_Backend/public/api/admin/edit-item');
+    Map<String, String> requestHeader = {
+      'Authorization': 'Bearer $jwt',
+      'Content-Type': 'application/json',
+    };
+
+    var bodySend = """
+    {
+        "ItemID" : "${item.itemId}",
+        "ItemName" : "${item.itemName}",
+        "ItemPrice" : ${item.basePrice},
+        "ItemUnit" : "${item.unit}"
+    }
+    """;
+
+    try {
+      var response =
+          await http.put(url, headers: requestHeader, body: bodySend);
+
+      var data = json.decode(response.body);
+
+      return data;
+    } on Error catch (e) {
+      return e;
+    }
+  }
+
+  Future deleteItem(String itemId) async {
+    // print(bookingId);
+    var box = await Hive.openBox('userLogin');
+    var jwt = box.get('jwTtoken') != "" ? box.get('jwtToken') : "";
+
+    // jwt = jwtToken;
+
+    var url = Uri.https(urlConstant.apiUrl,
+        '/GSS_Backend/public/api/admin/delete-item/$itemId');
+    Map<String, String> requestHeader = {
+      'Authorization': 'Bearer $jwt',
+      'Content-Type': 'application/json',
+    };
+
+    try {
+      var response = await http.delete(url, headers: requestHeader);
+
+      var data = json.decode(response.body);
+
+      return data;
+    } on Error catch (e) {
+      return e;
+    }
+  }
+
+  Future getUnitList() async {
+    // print(bookingId);
+    var box = await Hive.openBox('userLogin');
+    var jwt = box.get('jwTtoken') != "" ? box.get('jwtToken') : "";
+
+    // jwt = jwtToken;
+
+    var url = Uri.https(
+        urlConstant.apiUrl, '/GSS_Backend/public/api/admin/unit-list');
+    Map<String, String> requestHeader = {
+      'Authorization': 'Bearer $jwt',
+      'Content-Type': 'application/json',
+    };
+
+    try {
+      var response = await http.get(url, headers: requestHeader);
 
       var data = json.decode(response.body);
 

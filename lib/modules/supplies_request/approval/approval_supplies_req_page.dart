@@ -345,7 +345,7 @@ class _ApprovalSuppliesReqPageState extends State<ApprovalSuppliesReqPage> {
                               transaction: transaction,
                             ),
                           ).then((value) {
-                            if (value) {
+                            if (value == 1) {
                               context.goNamed('request_order_detail', params: {
                                 "formId": widget.formId,
                               });
@@ -367,7 +367,7 @@ class _ApprovalSuppliesReqPageState extends State<ApprovalSuppliesReqPage> {
                               transaction: transaction,
                             ),
                           ).then((value) {
-                            if (value) {
+                            if (value == 1) {
                               // context.goNamed('home');
                               context.goNamed('request_order_detail', params: {
                                 "formId": widget.formId,

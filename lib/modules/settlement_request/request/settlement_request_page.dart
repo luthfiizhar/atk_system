@@ -367,7 +367,7 @@ class _SettlementRequestPageState extends State<SettlementRequestPage> {
                             transaction: transaction,
                           ),
                         ).then((value) {
-                          if (value) {
+                          if (value == 1) {
                             // context.goNamed('home');
                             context.goNamed('settlement_detail', params: {
                               "formId": widget.formId,

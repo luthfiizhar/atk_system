@@ -45,14 +45,14 @@ class _NavigationBarWebState extends State<NavigationBarWeb> {
     // TODO: implement initState
     super.initState();
     index = widget.index;
-    apiService.getUserData().then((value) {
-      if (value['Status'].toString() == "200") {
-        isSysAdmin = value['Data']['SystemAdmin'];
-        setState(() {});
-      } else {}
-    }).onError((error, stackTrace) {
-      print(error);
-    });
+    // apiService.getUserData().then((value) {
+    //   if (value['Status'].toString() == "200") {
+    //     isSysAdmin = value['Data']['SystemAdmin'];
+    //     setState(() {});
+    //   } else {}
+    // }).onError((error, stackTrace) {
+    //   print(error);
+    // });
   }
 
   @override
@@ -119,7 +119,7 @@ class _NavigationBarWebState extends State<NavigationBarWeb> {
                 ),
               ),
               Visibility(
-                visible: isSysAdmin,
+                visible: isSystemAdmin,
                 child: Padding(
                   padding: const EdgeInsets.only(
                     right: 50,
