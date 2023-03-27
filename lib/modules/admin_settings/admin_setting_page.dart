@@ -138,7 +138,7 @@ class _AdminSettingPageState extends State<AdminSettingPage> {
                 siteId: element["SiteID"],
                 siteName: element['SiteName'],
                 monthlyBudget: element['Budget'],
-                siteArea: element['SiteArea'],
+                siteArea: double.parse(element['SiteArea'].toString()),
                 additionalBudget: element['AdditionalBudget'] ?? 0,
               ));
             }
@@ -268,7 +268,7 @@ class _AdminSettingPageState extends State<AdminSettingPage> {
                 siteId: element["SiteID"],
                 siteName: element['SiteName'],
                 monthlyBudget: element['Budget'],
-                siteArea: element['SiteArea'],
+                siteArea: double.parse(element['SiteArea'].toString()),
                 additionalBudget: element['AdditionalBudget'] ?? 0,
               ));
             }

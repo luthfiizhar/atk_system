@@ -34,7 +34,7 @@ class Transaction {
   String settlementId;
   String settlementStatus;
 
-  int siteArea;
+  double siteArea;
   int budget;
   int totalCost;
   int actualTotalCost;

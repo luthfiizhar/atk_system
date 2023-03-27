@@ -39,7 +39,7 @@ class _AddSiteDialogState extends State<AddSiteDialog> {
 
   String siteId = "";
   String siteName = "";
-  int siteArea = 0;
+  double siteArea = 0;
   int monthlyBudget = 0;
   int additionalBudget = 0;
 
@@ -232,7 +232,7 @@ class _AddSiteDialogState extends State<AddSiteDialog> {
                         validator: (value) =>
                             value == "0" ? "This field is required." : null,
                         onSaved: (newValue) {
-                          siteArea = int.parse(
+                          siteArea = double.parse(
                               newValue.toString().replaceAll(".", ""));
                         },
                       ),
