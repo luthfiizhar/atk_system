@@ -137,7 +137,8 @@ class _DetailApprovalSettlementRequestPageState
 
         transaction.formId = value["Data"]["FormID"];
         transaction.siteName = value["Data"]["SiteName"];
-        transaction.siteArea = value["Data"]["SiteArea"];
+        transaction.siteArea =
+            double.parse(value["Data"]["SiteArea"].toString());
         transaction.budget = value["Data"]["Budget"];
         transaction.orderPeriod = value["Data"]["OrderPeriod"];
         transaction.month = value["Data"]["Month"];
@@ -443,7 +444,7 @@ class _DetailApprovalSettlementRequestPageState
               width: 135,
               child: InkWell(
                 onTap: () {
-                  onTapHeader("reqQty");
+                  onTapHeader("Quantity");
                 },
                 child: Row(
                   children: [
@@ -453,7 +454,7 @@ class _DetailApprovalSettlementRequestPageState
                         style: headerTableTextStyle,
                       ),
                     ),
-                    iconSort("Req. Qty"),
+                    iconSort("Quantity"),
                     const SizedBox(
                       width: 20,
                     ),
@@ -464,7 +465,7 @@ class _DetailApprovalSettlementRequestPageState
             Expanded(
               child: InkWell(
                 onTap: () {
-                  onTapHeader("reqPrice");
+                  onTapHeader("Price");
                 },
                 child: Row(
                   children: [
@@ -474,7 +475,7 @@ class _DetailApprovalSettlementRequestPageState
                         style: headerTableTextStyle,
                       ),
                     ),
-                    iconSort("reqPrice"),
+                    iconSort("Price"),
                     const SizedBox(
                       width: 20,
                     ),
@@ -486,7 +487,7 @@ class _DetailApprovalSettlementRequestPageState
               width: 150,
               child: InkWell(
                 onTap: () {
-                  onTapHeader("actualQty");
+                  onTapHeader("ActualQuantity");
                 },
                 child: Row(
                   children: [
@@ -496,7 +497,7 @@ class _DetailApprovalSettlementRequestPageState
                         style: headerTableTextStyle,
                       ),
                     ),
-                    iconSort("actualQty"),
+                    iconSort("ActualQuantity"),
                     const SizedBox(
                       width: 20,
                     ),

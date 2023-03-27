@@ -26,7 +26,7 @@ class SuppliesRequest {
   String? orderPeriod;
   String? month;
 
-  int? siteArea;
+  double? siteArea;
   int? budget;
 
   List<Item>? items;

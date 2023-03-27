@@ -14,7 +14,7 @@ class Site {
   String siteName;
   int monthlyBudget;
   int additionalBudget;
-  int siteArea;
+  double siteArea;
   bool isExpanded;
 
   Map<String, String> toJson() => {

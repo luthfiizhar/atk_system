@@ -6,7 +6,7 @@ final formatCurrency =
     NumberFormat.currency(locale: "ID", decimalDigits: 0, symbol: "Rp ");
 
 final formatThousand =
-    NumberFormat.currency(locale: "ID", decimalDigits: 0, symbol: "");
+    NumberFormat.currency(locale: "ID", decimalDigits: 2, symbol: "");
 
 const TextStyle helveticaText = TextStyle(
   fontFamily: 'Helvetica',

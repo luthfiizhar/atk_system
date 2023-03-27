@@ -205,7 +205,8 @@ class _SuppliesRequestPageState extends State<SuppliesRequestPage> {
 
         transaction.formId = value["Data"]["FormID"];
         transaction.siteName = value["Data"]["SiteName"];
-        transaction.siteArea = value["Data"]["SiteArea"];
+        transaction.siteArea =
+            double.parse(value["Data"]["SiteArea"].toString());
         transaction.budget = value["Data"]["Budget"];
         transaction.orderPeriod = value["Data"]["OrderPeriod"];
         transaction.month = value["Data"]["Month"];
