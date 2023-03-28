@@ -2,6 +2,8 @@ import 'dart:math';
 
 import 'package:atk_system_ga/constant/colors.dart';
 import 'package:atk_system_ga/constant/text_style.dart';
+import 'package:atk_system_ga/modules/transaction_list/export_excel_dialog.dart';
+import 'package:atk_system_ga/widgets/buttons.dart';
 import 'package:atk_system_ga/widgets/search_input_field.dart';
 import 'package:flutter/material.dart';
 
@@ -144,24 +146,63 @@ class _FilterSearchBarTransactionListState
                       // ],
                     ),
                   ),
-                  Container(
-                    width: 200,
-                    // color: Colors.green,
-                    // child: Text('haha'),
-                    child: SearchInputField(
-                      controller: widget.searchController!,
-                      obsecureText: false,
-                      enabled: true,
-                      maxLines: 1,
-                      hintText: 'Search here...',
-                      onFieldSubmitted: (value) => widget.search!(),
-                      prefixIcon: const ImageIcon(
-                        AssetImage(
-                          'assets/icons/search_icon.png',
-                        ),
-                        color: davysGray,
+                  Row(
+                    children: [
+                      documentType != "Settlement"
+                          ? const SizedBox()
+                          : CustomRegularButton(
+                              // text: "Export Excel",
+                              disabled: false,
+                              onTap: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) => ExportExcelDialog(),
+                                );
+                              },
+                              padding: ButtonSize().tableButton(),
+                              // text: "Export Excel",
+                              child: Wrap(
+                                spacing: 10,
+                                // runAlignment: WrapAlignment.center,
+                                crossAxisAlignment: WrapCrossAlignment.center,
+                                children: [
+                                  const Icon(
+                                    Icons.file_download_outlined,
+                                    size: 16,
+                                  ),
+                                  Text(
+                                    'Export Data',
+                                    style: helveticaText.copyWith(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ),
+                      const SizedBox(
+                        width: 15,
                       ),
-                    ),
+                      Container(
+                        width: 200,
+                        // color: Colors.green,
+                        // child: Text('haha'),
+                        child: SearchInputField(
+                          controller: widget.searchController!,
+                          obsecureText: false,
+                          enabled: true,
+                          maxLines: 1,
+                          hintText: 'Search here...',
+                          onFieldSubmitted: (value) => widget.search!(),
+                          prefixIcon: const ImageIcon(
+                            AssetImage(
+                              'assets/icons/search_icon.png',
+                            ),
+                            color: davysGray,
+                          ),
+                        ),
+                      ),
+                    ],
                   )
                   // Expanded(
                   //   child: Container(

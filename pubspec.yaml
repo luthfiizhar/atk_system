@@ -48,6 +48,7 @@ dependencies:
   # dropdown_button2: ^1.8.2
   file_picker: ^5.2.5
   cached_network_image: ^3.2.3
+  calendar_date_picker2: ^0.4.9
 
 dev_dependencies:
   flutter_test:
