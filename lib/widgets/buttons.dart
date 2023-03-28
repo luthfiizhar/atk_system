@@ -103,11 +103,8 @@ class RegularButton extends StatelessWidget {
           },
         ),
       ),
-      child: SizedBox(
-        height: 16,
-        child: Text(
-          text!,
-        ),
+      child: Text(
+        text!,
       ),
     );
   }
