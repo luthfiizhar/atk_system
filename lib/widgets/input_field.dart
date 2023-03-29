@@ -323,8 +323,8 @@ class _CustomInputFieldState extends State<CustomInputField> {
               ? widget.focusNode!.hasFocus
                   ? culturedWhite
                   : Colors.transparent
-              : platinum,
-          filled: true,
+              : culturedWhite,
+          filled: false,
           // isDense: true,
           isCollapsed: true,
           enabled: widget.enabled!,
