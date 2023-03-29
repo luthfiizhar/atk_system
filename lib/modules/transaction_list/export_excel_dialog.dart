@@ -64,8 +64,18 @@ class _ExportExcelDialogState extends State<ExportExcelDialog> {
 
   onDatePicked(List<DateTime?> value) {
     if (value.length > 1) {
-      _date.text =
-          "${DateFormat('dd MMM yyyy').format(DateTime.parse(value.first.toString()))} - ${DateFormat('dd MMM yyyy').format(DateTime.parse(value.last.toString()))}";
+      if (value.first!.year == value.last!.year) {
+        if (value.first!.month == value.last!.month) {
+          _date.text =
+              "${DateFormat('dd').format(DateTime.parse(value.first.toString()))} - ${DateFormat('dd MMM yyyy').format(DateTime.parse(value.last.toString()))}";
+        } else {
+          _date.text =
+              "${DateFormat('dd MMM').format(DateTime.parse(value.first.toString()))} - ${DateFormat('dd MMM yyyy').format(DateTime.parse(value.last.toString()))}";
+        }
+      } else {
+        _date.text =
+            "${DateFormat('dd MMM yyyy').format(DateTime.parse(value.first.toString()))} - ${DateFormat('dd MMM yyyy').format(DateTime.parse(value.last.toString()))}";
+      }
       if (value.first == value.last) {
         _date.text = DateFormat('dd MMM yyyy')
             .format(DateTime.parse(value.first.toString()));
@@ -133,13 +143,24 @@ class _ExportExcelDialogState extends State<ExportExcelDialog> {
                   Text(
                     "Export Data",
                     style: helveticaText.copyWith(
-                      fontSize: 24,
+                      fontSize: 20,
                       fontWeight: FontWeight.w700,
                       color: eerieBlack,
                     ),
                   ),
                   const SizedBox(
-                    height: 20,
+                    height: 25,
+                  ),
+                  Text(
+                    "Select Date",
+                    style: helveticaText.copyWith(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w300,
+                      color: davysGray,
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 10,
                   ),
                   Container(
                     key: datePickerKey,
@@ -164,7 +185,9 @@ class _ExportExcelDialogState extends State<ExportExcelDialog> {
                         child: CustomInputField(
                           controller: _date,
                           enabled: false,
-                          hintText: 'Click here to pick date',
+                          hintText: 'Choose',
+                          suffixIcon:
+                              const Icon(Icons.keyboard_arrow_down_sharp),
                         ),
                       ),
                     ),
