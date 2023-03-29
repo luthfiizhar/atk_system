@@ -2,8 +2,10 @@ import 'dart:math';
 
 import 'package:atk_system_ga/constant/colors.dart';
 import 'package:atk_system_ga/constant/text_style.dart';
+import 'package:atk_system_ga/functions/api_request.dart';
 import 'package:atk_system_ga/modules/transaction_list/export_excel_dialog.dart';
 import 'package:atk_system_ga/widgets/buttons.dart';
+import 'package:atk_system_ga/widgets/dialogs.dart';
 import 'package:atk_system_ga/widgets/search_input_field.dart';
 import 'package:flutter/material.dart';
 
@@ -30,9 +32,11 @@ class FilterSearchBarTransactionList extends StatefulWidget {
 
 class _FilterSearchBarTransactionListState
     extends State<FilterSearchBarTransactionList> {
+  ApiService apiService = ApiService();
   bool onSelected = false;
   String? documentType;
   TextEditingController? _search = TextEditingController();
+  bool exportButtonVisible = false;
 
   List<Color> color = [blueAccent, greenAcent, orangeAccent, violetAccent];
   late int indexColor;
@@ -65,6 +69,23 @@ class _FilterSearchBarTransactionListState
     documentType = widget.type;
     indexColor = _random.nextInt(color.length);
     selectedColor = color[indexColor];
+    apiService.getUserData().then((value) {
+      if (value['Status'].toString() == "200") {
+        if (value['Data']['Role'] == "Operation HO") {
+          exportButtonVisible = true;
+          setState(() {});
+        }
+      } else {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialogBlack(
+            title: value["Title"],
+            contentText: value["Message"],
+            isSuccess: false,
+          ),
+        );
+      }
+    });
   }
 
   @override
@@ -148,7 +169,7 @@ class _FilterSearchBarTransactionListState
                   ),
                   Row(
                     children: [
-                      documentType != "Settlement"
+                      documentType != "Settlement" || !exportButtonVisible
                           ? const SizedBox()
                           : CustomRegularButton(
                               // text: "Export Excel",
