@@ -87,7 +87,9 @@ class _ItemListContainerState extends State<ItemListContainer> {
                         ),
                       ),
                     ),
-                    const Expanded(child: SizedBox()),
+                    const SizedBox(
+                      width: 175,
+                    ),
                     SizedBox(
                       width: 20,
                       child: !widget.item.isExpanded
