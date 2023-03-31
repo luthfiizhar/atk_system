@@ -231,8 +231,9 @@ class _ConfirmDialogSettlementRequestState
                               onSaved: (newValue) {
                                 comment = newValue.toString();
                               },
-                              // validator: (value) =>
-                              //     value == "" ? "Comment is required." : null,
+                              validator: (value) => value == ""
+                                  ? "Please input your invoice numbere here."
+                                  : null,
                             ),
                           ],
                         ),
