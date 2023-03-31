@@ -148,8 +148,9 @@ class _ApproveSettlementDialogState extends State<ApproveSettlementDialog> {
                           formKey.currentState!.save();
                           widget.transaction.activity
                               .add(TransactionActivity());
-                          widget.transaction.activity.first.comment =
-                              comment.replaceAll("\n", "\\n");
+                          widget.transaction.activity.first.comment = comment
+                              .replaceAll("\n", "\\n")
+                              .replaceAll('"', '\\"');
 
                           for (var element in attachment) {
                             widget.transaction.activity.first.submitAttachment

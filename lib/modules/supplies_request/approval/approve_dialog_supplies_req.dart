@@ -157,7 +157,9 @@ class _ApproveDialogSuppliesReqState extends State<ApproveDialogSuppliesReq> {
                                 widget.transaction.activity
                                     .add(TransactionActivity());
                                 widget.transaction.activity.first.comment =
-                                    comment.replaceAll("\n", "\\n");
+                                    comment
+                                        .replaceAll("\n", "\\n")
+                                        .replaceAll('"', '\\"');
 
                                 for (var element in attachment) {
                                   widget.transaction.activity.first
