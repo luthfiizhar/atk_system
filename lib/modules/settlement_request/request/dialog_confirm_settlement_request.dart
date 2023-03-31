@@ -284,60 +284,65 @@ class _ConfirmDialogSettlementRequestState
                               ),
                             );
                           } else {
-                            formKey.currentState!.save();
-                            widget.transaction.activity
-                                .add(TransactionActivity());
-                            widget.transaction.activity.first.comment = comment;
+                            if (formKey.currentState!.validate()) {
+                              formKey.currentState!.save();
+                              widget.transaction.activity
+                                  .add(TransactionActivity());
+                              widget.transaction.activity.first.comment =
+                                  comment;
 
-                            for (var element in attachment) {
-                              widget.transaction.activity.first.submitAttachment
-                                  .add('"${element.file}"');
-                            }
-
-                            print(widget.transaction);
-                            apiService
-                                .submitSettlementRequest(widget.transaction)
-                                .then((value) {
-                              if (value["Status"].toString() == "200") {
-                                showDialog(
-                                  context: context,
-                                  builder: (context) => AlertDialogBlack(
-                                    title: value['Title'],
-                                    contentText: value['Message'],
-                                    isSuccess: true,
-                                  ),
-                                ).then((value) {
-                                  Navigator.of(context).pop(1);
-                                });
-                              } else if (value["Status"].toString() == "401") {
-                                showDialog(
-                                  context: context,
-                                  builder: (context) => AlertDialogBlack(
-                                    title: value['Title'],
-                                    contentText: value['Message'],
-                                    isSuccess: false,
-                                  ),
-                                );
-                              } else {
-                                showDialog(
-                                  context: context,
-                                  builder: (context) => AlertDialogBlack(
-                                    title: value['Title'],
-                                    contentText: value['Message'],
-                                    isSuccess: false,
-                                  ),
-                                );
+                              for (var element in attachment) {
+                                widget
+                                    .transaction.activity.first.submitAttachment
+                                    .add('"${element.file}"');
                               }
-                            }).onError((error, stackTrace) {
-                              showDialog(
-                                context: context,
-                                builder: (context) => const AlertDialogBlack(
-                                  title: "Error submitSuppliesRequest",
-                                  contentText: "No internet connection",
-                                  isSuccess: false,
-                                ),
-                              );
-                            });
+
+                              print(widget.transaction);
+                              apiService
+                                  .submitSettlementRequest(widget.transaction)
+                                  .then((value) {
+                                if (value["Status"].toString() == "200") {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) => AlertDialogBlack(
+                                      title: value['Title'],
+                                      contentText: value['Message'],
+                                      isSuccess: true,
+                                    ),
+                                  ).then((value) {
+                                    Navigator.of(context).pop(1);
+                                  });
+                                } else if (value["Status"].toString() ==
+                                    "401") {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) => AlertDialogBlack(
+                                      title: value['Title'],
+                                      contentText: value['Message'],
+                                      isSuccess: false,
+                                    ),
+                                  );
+                                } else {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) => AlertDialogBlack(
+                                      title: value['Title'],
+                                      contentText: value['Message'],
+                                      isSuccess: false,
+                                    ),
+                                  );
+                                }
+                              }).onError((error, stackTrace) {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) => const AlertDialogBlack(
+                                    title: "Error submitSuppliesRequest",
+                                    contentText: "No internet connection",
+                                    isSuccess: false,
+                                  ),
+                                );
+                              });
+                            }
                           }
                         },
                       )
