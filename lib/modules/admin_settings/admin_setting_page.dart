@@ -295,7 +295,8 @@ class _AdminSettingPageState extends State<AdminSettingPage> {
 
   searchList(String menu) {
     searchTerm.keywords = _search.text;
-
+    currentPaginatedPage = 1;
+    searchTerm.pageNumber = currentPaginatedPage.toString();
     updateList(menu).then((value) {
       countPagination(resultRows);
       setState(() {});
