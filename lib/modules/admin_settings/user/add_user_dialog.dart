@@ -377,7 +377,7 @@ class _AddUserDialogState extends State<AddUserDialog> {
                             if (formKey.currentState!.validate()) {
                               formKey.currentState!.save();
                               User userSave = User();
-                              userSave.name = name;
+                              userSave.name = name.replaceAll('"', '\\"');
                               userSave.nip = nip;
                               userSave.siteId = selectedSite;
                               userSave.role = selectedRole;

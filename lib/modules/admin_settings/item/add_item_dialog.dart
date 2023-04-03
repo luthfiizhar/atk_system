@@ -300,7 +300,7 @@ class _AddItemDialogState extends State<AddItemDialog> {
                           if (formKey.currentState!.validate()) {
                             formKey.currentState!.save();
                             Item itemSave = Item();
-                            itemSave.itemName = itemName;
+                            itemSave.itemName = itemName.replaceAll('"', '\\"');
                             itemSave.basePrice = price;
                             itemSave.unit = selectedUnit;
                             if (widget.isEdit) {

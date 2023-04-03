@@ -357,7 +357,8 @@ class _AddSiteDialogState extends State<AddSiteDialog> {
                               if (value == 1) {
                                 Site saveSite = Site();
                                 saveSite.siteId = siteId;
-                                saveSite.siteName = siteName;
+                                saveSite.siteName =
+                                    siteName.replaceAll('"', '\\"');
                                 saveSite.siteArea = siteArea;
                                 saveSite.monthlyBudget = monthlyBudget;
                                 saveSite.additionalBudget = additionalBudget;
