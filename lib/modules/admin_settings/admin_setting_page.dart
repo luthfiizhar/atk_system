@@ -1133,7 +1133,7 @@ class _AdminSettingPageState extends State<AdminSettingPage> {
               ),
             ),
             const SizedBox(
-              width: 175,
+              width: 75,
             ),
             const SizedBox(
               width: 20,

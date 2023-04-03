@@ -88,7 +88,7 @@ class _ItemListContainerState extends State<ItemListContainer> {
                       ),
                     ),
                     const SizedBox(
-                      width: 175,
+                      width: 75,
                     ),
                     SizedBox(
                       width: 20,
