@@ -191,6 +191,8 @@ class _TransactionListPageState extends State<TransactionListPage> {
 
   searchTransaction() {
     searchTerm.keywords = _search.text;
+    currentPaginatedPage = 1;
+    searchTerm.pageNumber = currentPaginatedPage.toString();
 
     updateList().then((value) {
       countPagination(resultRows);
