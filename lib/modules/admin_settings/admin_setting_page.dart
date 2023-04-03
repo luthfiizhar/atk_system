@@ -572,8 +572,15 @@ class _AdminSettingPageState extends State<AdminSettingPage> {
                     value: searchTerm.max,
                     items: showPerPageList.map((e) {
                       return DropdownMenuItem(
-                        child: Text(e),
                         value: e,
+                        child: Text(
+                          e,
+                          style: helveticaText.copyWith(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w300,
+                            color: eerieBlack,
+                          ),
+                        ),
                       );
                     }).toList(),
                     // DropdownMenuItem(
@@ -1126,7 +1133,7 @@ class _AdminSettingPageState extends State<AdminSettingPage> {
               ),
             ),
             const SizedBox(
-              width: 175,
+              width: 75,
             ),
             const SizedBox(
               width: 20,
