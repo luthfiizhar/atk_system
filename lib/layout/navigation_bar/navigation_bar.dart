@@ -63,7 +63,7 @@ class _NavigationBarWebState extends State<NavigationBarWeb> {
         left: 16,
         right: 40,
       ),
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         color: white,
       ),
       child: Row(
@@ -91,6 +91,7 @@ class _NavigationBarWebState extends State<NavigationBarWeb> {
                     height: 32,
                     child: VerticalDivider(
                       color: davysGray,
+                      thickness: 1.5,
                     ),
                   ),
                 ),
