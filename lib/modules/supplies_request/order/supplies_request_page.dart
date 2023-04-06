@@ -318,17 +318,10 @@ class _SuppliesRequestPageState extends State<SuppliesRequestPage> {
   }
 
   saveItem(Item item) {
-    apiService.saveItemReq(transaction, item).then((value) {
-      if (value['Status'].toString() != "200") {
-        showDialog(
-          context: context,
-          builder: (context) => AlertDialogBlack(
-            title: "Error saveItem",
-            contentText: value['Message'],
-          ),
-        );
-      }
-    }).onError((error, stackTrace) {
+    apiService
+        .saveItemReq(transaction, item)
+        .then((value) {})
+        .onError((error, stackTrace) {
       showDialog(
         context: context,
         builder: (context) => AlertDialogBlack(
@@ -384,28 +377,23 @@ class _SuppliesRequestPageState extends State<SuppliesRequestPage> {
                     ? const CircularProgressIndicator(
                         color: eerieBlack,
                       )
-                    : transaction.status != "Draft"
+                    : items.isEmpty
                         ? EmptyTable(
-                            text:
-                                "This order already submitted. Please check detail page.",
+                            text: 'No item in database',
                           )
-                        : items.isEmpty
-                            ? EmptyTable(
-                                text: 'No item in database',
-                              )
-                            : ListView.builder(
-                                itemCount: items.length,
-                                shrinkWrap: true,
-                                physics: const NeverScrollableScrollPhysics(),
-                                itemBuilder: (context, index) {
-                                  return SuppliesItemListContainer(
-                                    index: index,
-                                    item: items[index],
-                                    countTotal: countTotal,
-                                    saveItem: saveItem,
-                                  );
-                                },
-                              ),
+                        : ListView.builder(
+                            itemCount: items.length,
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemBuilder: (context, index) {
+                              return SuppliesItemListContainer(
+                                index: index,
+                                item: items[index],
+                                countTotal: countTotal,
+                                saveItem: saveItem,
+                              );
+                            },
+                          ),
                 const SizedBox(
                   height: 50,
                 ),
@@ -433,48 +421,42 @@ class _SuppliesRequestPageState extends State<SuppliesRequestPage> {
                     thickness: 1,
                   ),
                 ),
-                transaction.status != "Draft"
-                    ? const SizedBox()
-                    : Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          TransparentButtonBlack(
-                            text: 'Cancel',
-                            disabled: false,
-                            padding: ButtonSize().mediumSize(),
-                            onTap: () {
-                              context.goNamed('home');
-                            },
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TransparentButtonBlack(
+                      text: 'Cancel',
+                      disabled: false,
+                      padding: ButtonSize().mediumSize(),
+                      onTap: () {
+                        context.goNamed('home');
+                      },
+                    ),
+                    const SizedBox(
+                      width: 20,
+                    ),
+                    RegularButton(
+                      text: isSendBack ? 'Submit Revise' : 'Submit Request',
+                      disabled: false,
+                      padding: ButtonSize().mediumSize(),
+                      onTap: () async {
+                        await calculateItems();
+                        showDialog(
+                          context: context,
+                          builder: (context) => ConfirmDialogSuppliesRequest(
+                            transaction: transaction,
                           ),
-                          const SizedBox(
-                            width: 20,
-                          ),
-                          RegularButton(
-                            text:
-                                isSendBack ? 'Submit Revise' : 'Submit Request',
-                            disabled: false,
-                            padding: ButtonSize().mediumSize(),
-                            onTap: () async {
-                              await calculateItems();
-                              showDialog(
-                                context: context,
-                                builder: (context) =>
-                                    ConfirmDialogSuppliesRequest(
-                                  transaction: transaction,
-                                  formId: widget.formId,
-                                ),
-                              ).then((value) {
-                                if (value == 1) {
-                                  context.replaceNamed('request_order_detail',
-                                      params: {
-                                        "formId": widget.formId,
-                                      });
-                                }
-                              });
-                            },
-                          ),
-                        ],
-                      ),
+                        ).then((value) {
+                          if (value == 1) {
+                            context.goNamed('request_order_detail', params: {
+                              "formId": widget.formId,
+                            });
+                          }
+                        });
+                      },
+                    ),
+                  ],
+                ),
                 const SizedBox(
                   height: 100,
                 )

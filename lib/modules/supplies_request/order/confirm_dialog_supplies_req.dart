@@ -17,11 +17,9 @@ class ConfirmDialogSuppliesRequest extends StatefulWidget {
   ConfirmDialogSuppliesRequest({
     super.key,
     Transaction? transaction,
-    this.formId = "",
   }) : transaction = transaction ?? Transaction();
 
   Transaction transaction;
-  String formId;
 
   @override
   State<ConfirmDialogSuppliesRequest> createState() =>
@@ -134,56 +132,10 @@ class _ConfirmDialogSuppliesRequestState
     });
   }
 
-  initFilledDetail() {
-    apiService.getFormDetailFilled(widget.formId, searchTerm).then((value) {
-      setState(() {});
-      print(value);
-      if (value['Status'].toString() == "200") {
-        List resultItems = value["Data"]["Items"];
-        List resultActivity = value["Data"]["Comments"];
-        totalBudget = value['Data']["Budget"];
-        totalCost = value['Data']['TotalCost'];
-
-        for (var element in resultItems) {
-          itemList.add(
-            Item(
-              itemId: element['ItemID'].toString(),
-              itemName: element['ItemName'],
-              unit: element['Unit'],
-              basePrice: element['BasePrice'],
-              qty: element['Quantity'],
-              totalPrice: element['TotalPrice'],
-              estimatedPrice: element['EstimatedPrice'],
-            ),
-          );
-        }
-        setState(() {});
-      } else {
-        showDialog(
-          context: context,
-          builder: (context) => AlertDialogBlack(
-            title: value['Title'],
-            contentText: value['Message'],
-          ),
-        );
-      }
-    }).onError((error, stackTrace) {
-      showDialog(
-        context: context,
-        builder: (context) => const AlertDialogBlack(
-          title: "Error initDetailFilled",
-          contentText: "No internet connection",
-          isSuccess: false,
-        ),
-      );
-    });
-  }
-
   @override
   void initState() {
     super.initState();
-    // initDetail();
-    initFilledDetail();
+    initDetail();
   }
 
   @override
@@ -650,7 +602,7 @@ class DialogConfirmItemListContainer extends StatelessWidget {
             SizedBox(
               width: 175,
               child: Text(
-                formatCurrency.format(item.estimatedPrice),
+                formatCurrency.format(item.basePrice),
                 style: bodyTableLightText,
               ),
             ),
