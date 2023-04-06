@@ -83,7 +83,6 @@ class _SuppliesItemListContainerState extends State<SuppliesItemListContainer> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        widget.index == 0 ? const SizedBox() : const DividerTable(),
         Row(
           children: [
             Expanded(

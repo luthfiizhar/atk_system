@@ -10,6 +10,7 @@ import 'package:atk_system_ga/modules/supplies_request/order/confirm_dialog_supp
 import 'package:atk_system_ga/modules/supplies_request/order/supplies_item_list_container.dart';
 import 'package:atk_system_ga/widgets/buttons.dart';
 import 'package:atk_system_ga/widgets/dialogs.dart';
+import 'package:atk_system_ga/widgets/divider_table.dart';
 import 'package:atk_system_ga/widgets/empty_table.dart';
 import 'package:atk_system_ga/widgets/search_input_field.dart';
 import 'package:atk_system_ga/widgets/total.dart';
@@ -40,6 +41,7 @@ class _SuppliesRequestPageState extends State<SuppliesRequestPage> {
   GlobalKey totalCostKey = GlobalKey();
 
   List<Item> items = [];
+  List<SuppliesItemListContainer> itemsContainer = [];
   List<Item> tempItems = [];
 
   bool isLoadingGetDetail = true;
@@ -233,6 +235,15 @@ class _SuppliesRequestPageState extends State<SuppliesRequestPage> {
               (int.parse(element['Quantity'].toString()) *
                   int.parse(element['EstimatedPrice'].toString()));
         }
+
+        for (var i = 0; i < items.length; i++) {
+          itemsContainer.add(SuppliesItemListContainer(
+            index: i,
+            item: items[i],
+            countTotal: countTotal,
+            saveItem: saveItem,
+          ));
+        }
         totalCost = tempTotalCost;
 
         if (resultActivity.isNotEmpty) {
@@ -349,8 +360,9 @@ class _SuppliesRequestPageState extends State<SuppliesRequestPage> {
   }
 
   searchItem() {
-    searchTerm.keywords = _search.text;
-    updateTable().then((value) {});
+    // searchTerm.keywords = _search.text;
+    setState(() {});
+    // updateTable().then((value) {});
   }
 
   @override
@@ -402,19 +414,58 @@ class _SuppliesRequestPageState extends State<SuppliesRequestPage> {
                             ? EmptyTable(
                                 text: 'No item in database',
                               )
-                            : ListView.builder(
-                                itemCount: items.length,
-                                shrinkWrap: true,
-                                physics: const NeverScrollableScrollPhysics(),
-                                itemBuilder: (context, index) {
-                                  return SuppliesItemListContainer(
-                                    index: index,
-                                    item: items[index],
-                                    countTotal: countTotal,
-                                    saveItem: saveItem,
-                                  );
-                                },
+                            : Column(
+                                // shrinkWrap: true,
+                                // physics: const NeverScrollableScrollPhysics(),
+                                children: _search.text == ""
+                                    ? itemsContainer
+                                        .asMap()
+                                        .map((index, e) => MapEntry(
+                                            index,
+                                            Column(
+                                              children: [
+                                                index == 0
+                                                    ? const SizedBox()
+                                                    : const DividerTable(),
+                                                e,
+                                              ],
+                                            )))
+                                        .values
+                                        .toList()
+                                    : itemsContainer
+                                        .where((element) => element
+                                            .item.itemName
+                                            .toLowerCase()
+                                            .contains(
+                                                _search.text.toLowerCase()))
+                                        .toList()
+                                        .asMap()
+                                        .map((index, e) => MapEntry(
+                                            index,
+                                            Column(
+                                              children: [
+                                                index == 0
+                                                    ? const SizedBox()
+                                                    : const DividerTable(),
+                                                e,
+                                              ],
+                                            )))
+                                        .values
+                                        .toList(),
                               ),
+                // ListView.builder(
+                //     itemCount: items.length,
+                //     shrinkWrap: true,
+                //     physics: const NeverScrollableScrollPhysics(),
+                //     itemBuilder: (context, index) {
+                //       return SuppliesItemListContainer(
+                //         index: index,
+                //         item: items[index],
+                //         countTotal: countTotal,
+                //         saveItem: saveItem,
+                //       );
+                //     },
+                //   ),
                 const SizedBox(
                   height: 50,
                 ),
