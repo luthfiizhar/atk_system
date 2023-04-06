@@ -145,8 +145,8 @@ class _DetailApprovalSettlementRequestPageState
         transaction.status = value["Data"]["Status"];
         totalBudget = value['Data']["Budget"];
         totalReqCost = value['Data']['TotalCost'];
-        totalActualCost = value['Data']['TotalActualCost'];
-
+        // totalActualCost = value['Data']['TotalActualCost'];
+        // totalActualCost = 0;
         for (var element in resultItems) {
           items.add(
             Item(
