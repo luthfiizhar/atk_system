@@ -145,7 +145,7 @@ class _SuppliesReqDetailPageState extends State<SuppliesReqDetailPage> {
         transaction.month = value["Data"]["Month"];
         transaction.status = value["Data"]["Status"];
         totalBudget = value['Data']["Budget"];
-        // totalCost = value['Data']['TotalCost'];
+        totalCost = value['Data']['TotalCost'];
 
         settlementId = value['Data']['SettlementID'];
         settlementStatus = value['Data']['SettlementStatus'];
@@ -166,9 +166,9 @@ class _SuppliesReqDetailPageState extends State<SuppliesReqDetailPage> {
             ),
           );
 
-          totalCost = totalCost +
-              (int.parse(element['EstimatedPrice'].toString()) *
-                  int.parse(element['Quantity'].toString()));
+          // totalCost = totalCost +
+          //     (int.parse(element['EstimatedPrice'].toString()) *
+          //         int.parse(element['Quantity'].toString()));
         }
 
         if (resultActivity.isNotEmpty) {

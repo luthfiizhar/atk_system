@@ -52,6 +52,7 @@ class _SuppliesRequestPageState extends State<SuppliesRequestPage> {
 
   int totalBudget = 0;
   int totalCost = 0;
+  int tempTotalCost = 0;
 
   bool isSendBack = false;
 
@@ -228,8 +229,11 @@ class _SuppliesRequestPageState extends State<SuppliesRequestPage> {
               unit: element['Unit'],
             ),
           );
-          totalCost = totalCost + int.parse(element['TotalPrice'].toString());
+          tempTotalCost = tempTotalCost +
+              (int.parse(element['Quantity'].toString()) *
+                  int.parse(element['EstimatedPrice'].toString()));
         }
+        totalCost = tempTotalCost;
 
         if (resultActivity.isNotEmpty) {
           for (var element in resultActivity) {
@@ -267,6 +271,7 @@ class _SuppliesRequestPageState extends State<SuppliesRequestPage> {
         print("not success");
       }
     }).onError((error, stackTrace) {
+      print(error);
       showDialog(
         context: context,
         builder: (context) => const AlertDialogBlack(
@@ -279,12 +284,12 @@ class _SuppliesRequestPageState extends State<SuppliesRequestPage> {
   }
 
   countTotal() {
-    totalCost = 0;
+    tempTotalCost = 0;
 
     for (var element in items) {
-      totalCost = totalCost + element.totalPrice;
-      tempItems.add(element);
+      tempTotalCost = tempTotalCost + element.totalPrice;
     }
+    totalCost = tempTotalCost;
     totalCostKey.currentState!.setState(() {});
     transaction.totalCost = totalCost;
 
@@ -337,6 +342,10 @@ class _SuppliesRequestPageState extends State<SuppliesRequestPage> {
         ),
       );
     });
+    totalCost = 0;
+    for (var element in items) {
+      totalCost = totalCost + (element.basePrice * element.qty);
+    }
   }
 
   searchItem() {
