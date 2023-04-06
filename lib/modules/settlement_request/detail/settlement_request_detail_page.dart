@@ -159,11 +159,10 @@ class _DetailApprovalSettlementRequestPageState
               actualQty: element['ActualQuantity'],
             ),
           );
-          if (totalActualCost == 0) {
-            totalActualCost = totalActualCost +
-                (int.parse(element['ActualPrice'].toString()) *
-                    int.parse(element['ActualQuantity'].toString()));
-          }
+
+          totalActualCost = totalActualCost +
+              (int.parse(element['ActualPrice'].toString()) *
+                  int.parse(element['ActualQuantity'].toString()));
         }
         if (resultActivity.isNotEmpty) {
           for (var element in resultActivity) {
