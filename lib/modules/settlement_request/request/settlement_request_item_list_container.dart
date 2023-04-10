@@ -101,7 +101,7 @@ class _SettlementRequestItemListContainerState
       }
       widget._qty.selection = TextSelection.fromPosition(
           TextPosition(offset: widget._qty.text.length));
-      setState(() {});
+      // setState(() {});
     });
     widget._actualPrice.addListener(() {
       if (widget._qty.text == "") {
@@ -109,105 +109,105 @@ class _SettlementRequestItemListContainerState
       }
       widget._qty.selection = TextSelection.fromPosition(
           TextPosition(offset: widget._qty.text.length));
-      setState(() {});
+      // setState(() {});
     });
     setState(() {});
   }
 
   @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Column(
+    return Row(
       children: [
-        widget.index == 0 ? const SizedBox() : const DividerTable(),
-        Row(
-          children: [
-            Expanded(
-              flex: 2,
-              child: Text(
-                widget.item.itemName,
-                style: bodyTableNormalText,
-                textAlign: TextAlign.left,
-              ),
-            ),
-            SizedBox(
-              width: 135,
-              child: Text(
-                widget.item.qty.toString(),
-                style: bodyTableLightText,
-                textAlign: TextAlign.left,
-              ),
-            ),
-            Expanded(
-              child: Text(
-                formatCurrency.format(widget.item.basePrice),
-                style: bodyTableLightText,
-                textAlign: TextAlign.left,
-              ),
-            ),
-            SizedBox(
-              width: 150,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  SizedBox(
-                    width: 75,
-                    child: Focus(
-                      onFocusChange: (value) async {
-                        if (!widget.qtyNode.hasFocus &&
-                            !widget.actualPriceNode.hasFocus) {
-                          await widget.onChangedValue!(widget.index,
-                              widget._qty.text, widget._actualPrice.text);
-                          onChangeQty(widget._qty.text);
-                        }
-                      },
-                      child: BlackInputField(
-                        controller: widget._qty,
-                        focusNode: widget.qtyNode,
-                        enabled: true,
-                        inputFormatters: [
-                          FilteringTextInputFormatter.digitsOnly,
-                          FilteringTextInputFormatter.deny(RegExp(r'^0+')),
-                        ],
-                        // onFieldSubmitted: (value) async {},
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Expanded(
-              // child: Text(
-              //   formatCurrency.format(widget.item.totalPrice),
-              //   style: bodyTableLightText,
-              //   textAlign: TextAlign.left,
-              // ),
-              child: SizedBox(
-                width: 150,
+        Expanded(
+          flex: 2,
+          child: Text(
+            widget.item.itemName,
+            style: bodyTableNormalText,
+            textAlign: TextAlign.left,
+          ),
+        ),
+        SizedBox(
+          width: 135,
+          child: Text(
+            widget.item.qty.toString(),
+            style: bodyTableLightText,
+            textAlign: TextAlign.left,
+          ),
+        ),
+        Expanded(
+          child: Text(
+            formatCurrency.format(widget.item.basePrice),
+            style: bodyTableLightText,
+            textAlign: TextAlign.left,
+          ),
+        ),
+        SizedBox(
+          width: 150,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              SizedBox(
+                width: 75,
                 child: Focus(
                   onFocusChange: (value) async {
                     if (!widget.qtyNode.hasFocus &&
                         !widget.actualPriceNode.hasFocus) {
                       await widget.onChangedValue!(widget.index,
                           widget._qty.text, widget._actualPrice.text);
-
-                      onChangePrice(widget._actualPrice.text);
+                      onChangeQty(widget._qty.text);
                     }
                   },
                   child: BlackInputField(
-                    controller: widget._actualPrice,
+                    controller: widget._qty,
+                    focusNode: widget.qtyNode,
                     enabled: true,
-                    focusNode: widget.actualPriceNode,
                     inputFormatters: [
                       FilteringTextInputFormatter.digitsOnly,
                       FilteringTextInputFormatter.deny(RegExp(r'^0+')),
-                      ThousandsSeparatorInputFormatter(),
                     ],
                     // onFieldSubmitted: (value) async {},
                   ),
                 ),
               ),
+            ],
+          ),
+        ),
+        Expanded(
+          // child: Text(
+          //   formatCurrency.format(widget.item.totalPrice),
+          //   style: bodyTableLightText,
+          //   textAlign: TextAlign.left,
+          // ),
+          child: SizedBox(
+            width: 150,
+            child: Focus(
+              onFocusChange: (value) async {
+                if (!widget.qtyNode.hasFocus &&
+                    !widget.actualPriceNode.hasFocus) {
+                  await widget.onChangedValue!(
+                      widget.index, widget._qty.text, widget._actualPrice.text);
+
+                  onChangePrice(widget._actualPrice.text);
+                }
+              },
+              child: BlackInputField(
+                controller: widget._actualPrice,
+                enabled: true,
+                focusNode: widget.actualPriceNode,
+                inputFormatters: [
+                  FilteringTextInputFormatter.digitsOnly,
+                  FilteringTextInputFormatter.deny(RegExp(r'^0+')),
+                  ThousandsSeparatorInputFormatter(),
+                ],
+                // onFieldSubmitted: (value) async {},
+              ),
             ),
-          ],
+          ),
         ),
       ],
     );

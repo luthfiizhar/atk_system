@@ -10,6 +10,7 @@ import 'package:atk_system_ga/modules/settlement_request/request/dialog_confirm_
 import 'package:atk_system_ga/modules/settlement_request/request/settlement_request_item_list_container.dart';
 import 'package:atk_system_ga/widgets/buttons.dart';
 import 'package:atk_system_ga/widgets/dialogs.dart';
+import 'package:atk_system_ga/widgets/divider_table.dart';
 import 'package:atk_system_ga/widgets/empty_table.dart';
 import 'package:atk_system_ga/widgets/search_input_field.dart';
 import 'package:atk_system_ga/widgets/total.dart';
@@ -43,12 +44,14 @@ class _SettlementRequestPageState extends State<SettlementRequestPage> {
 
   List<TransactionActivity> transactionActivity = [];
   List<Item> items = [];
+  List<SettlementRequestItemListContainer> itemsContainer = [];
 
   GlobalKey actualCostKey = GlobalKey();
 
   int totalBudget = 0;
   int totalReqCost = 0;
   int totalActualCost = 0;
+  int tempTotalActualCost = 0;
 
   bool isLoadingDetail = true;
   bool isLoadingItems = true;
@@ -116,6 +119,7 @@ class _SettlementRequestPageState extends State<SettlementRequestPage> {
           totalActualCost + (element.actualQty * element.actualPrice);
     }
     // setState(() {});
+    // totalActualCost = totalActualCost + tempTotalActualCost;
     transaction.actualTotalCost = totalActualCost;
     actualCostKey.currentState!.setState(() {});
   }
@@ -139,8 +143,9 @@ class _SettlementRequestPageState extends State<SettlementRequestPage> {
   }
 
   searchItem() {
-    searchTerm.keywords = _search.text;
-    updateList().then((value) {});
+    // searchTerm.keywords = _search.text;
+    // updateList().then((value) {});
+    setState(() {});
   }
 
   Future initDetailSettlement() {
@@ -185,6 +190,17 @@ class _SettlementRequestPageState extends State<SettlementRequestPage> {
           totalActualCost = totalActualCost +
               (int.parse(element['ActualPrice'].toString()) *
                   int.parse(element['ActualQuantity'].toString()));
+        }
+
+        for (var i = 0; i < items.length; i++) {
+          itemsContainer.add(
+            SettlementRequestItemListContainer(
+              index: i,
+              item: items[i],
+              onChangedValue: onChangeQtyAndPrice,
+              transaction: transaction,
+            ),
+          );
         }
 
         // for (var element in resultActivity) {
@@ -257,6 +273,11 @@ class _SettlementRequestPageState extends State<SettlementRequestPage> {
   }
 
   @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return LayoutPageWeb(
       index: 0,
@@ -303,19 +324,54 @@ class _SettlementRequestPageState extends State<SettlementRequestPage> {
                         ? EmptyTable(
                             text: 'No item in database',
                           )
-                        : ListView.builder(
-                            itemCount: transaction.items.length,
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            itemBuilder: (context, index) {
-                              return SettlementRequestItemListContainer(
-                                index: index,
-                                item: transaction.items[index],
-                                onChangedValue: onChangeQtyAndPrice,
-                                transaction: transaction,
-                              );
-                            },
+                        : Column(
+                            children: _search.text == ""
+                                ? itemsContainer
+                                    .asMap()
+                                    .map((index, value) => MapEntry(
+                                        index,
+                                        Column(
+                                          children: [
+                                            index == 0
+                                                ? const SizedBox()
+                                                : const DividerTable(),
+                                            value,
+                                          ],
+                                        )))
+                                    .values
+                                    .toList()
+                                : itemsContainer
+                                    .where((element) => element.item.itemName
+                                        .toLowerCase()
+                                        .contains(_search.text.toLowerCase()))
+                                    .toList()
+                                    .asMap()
+                                    .map((index, value) => MapEntry(
+                                        index,
+                                        Column(
+                                          children: [
+                                            index == 0
+                                                ? const SizedBox()
+                                                : const DividerTable(),
+                                            value,
+                                          ],
+                                        )))
+                                    .values
+                                    .toList(),
                           ),
+                // : ListView.builder(
+                //     itemCount: transaction.items.length,
+                //     shrinkWrap: true,
+                //     physics: const NeverScrollableScrollPhysics(),
+                //     itemBuilder: (context, index) {
+                //       return SettlementRequestItemListContainer(
+                //         index: index,
+                //         item: transaction.items[index],
+                //         onChangedValue: onChangeQtyAndPrice,
+                //         transaction: transaction,
+                //       );
+                //     },
+                //   ),
                 const SizedBox(
                   height: 50,
                 ),
@@ -366,6 +422,7 @@ class _SettlementRequestPageState extends State<SettlementRequestPage> {
                           context: context,
                           builder: (context) => ConfirmDialogSettlementRequest(
                             transaction: transaction,
+                            formId: widget.formId,
                           ),
                         ).then((value) {
                           if (value == 1) {

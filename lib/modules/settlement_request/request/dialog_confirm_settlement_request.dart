@@ -17,9 +17,11 @@ class ConfirmDialogSettlementRequest extends StatefulWidget {
   ConfirmDialogSettlementRequest({
     super.key,
     Transaction? transaction,
+    this.formId = "",
   }) : transaction = transaction ?? Transaction();
 
   Transaction transaction;
+  String formId;
 
   @override
   State<ConfirmDialogSettlementRequest> createState() =>
@@ -58,6 +60,68 @@ class _ConfirmDialogSettlementRequestState
     itemList = widget.transaction.items;
 
     setState(() {});
+  }
+
+  Future initDetailSettlement() {
+    return apiService
+        .getSettlementDetail(widget.formId, searchTerm)
+        .then((value) {
+      setState(() {});
+      if (value['Status'].toString() == "200") {
+        List resultItems = value["Data"]["Items"];
+        List resultActivity = value["Data"]["Comments"];
+        List attachmentResult = [];
+
+        // transaction.formId = value["Data"]["FormID"];
+        // transaction.siteName = value["Data"]["SiteName"];
+        // transaction.siteArea =
+        //     double.parse(value["Data"]["SiteArea"].toString());
+        // transaction.budget = value["Data"]["Budget"];
+        // transaction.orderPeriod = value["Data"]["OrderPeriod"];
+        // transaction.month = value["Data"]["Month"];
+        // transaction.status = value["Data"]["Status"];
+        totalBudget = value['Data']["Budget"];
+        totalCost = value['Data']['TotalCost'];
+        totalActualCost = value['Data']['TotalActualCost'];
+        // totalActualCost = 0;
+        for (var element in resultItems) {
+          itemList.add(
+            Item(
+              itemId: element['ItemID'].toString(),
+              itemName: element['ItemName'],
+              basePrice: element['ItemPrice'],
+              qty: element['Quantity'],
+              totalPrice: element['TotalPrice'],
+              actualPrice: element['ActualPrice'],
+              actualQty: element['ActualQuantity'],
+            ),
+          );
+
+          totalActualCost = totalActualCost +
+              (int.parse(element['ActualPrice'].toString()) *
+                  int.parse(element['ActualQuantity'].toString()));
+        }
+        setState(() {});
+      } else {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialogBlack(
+            title: value['Title'],
+            contentText: value['Message'],
+            isSuccess: false,
+          ),
+        );
+      }
+    }).onError((error, stackTrace) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialogBlack(
+          title: "Error getSettlementDetail",
+          contentText: error.toString(),
+          isSuccess: false,
+        ),
+      );
+    });
   }
 
   onTapHeader(String orderBy) {
@@ -142,7 +206,8 @@ class _ConfirmDialogSettlementRequestState
   @override
   void initState() {
     super.initState();
-    initDetail();
+    // initDetail();
+    initDetailSettlement();
   }
 
   @override
