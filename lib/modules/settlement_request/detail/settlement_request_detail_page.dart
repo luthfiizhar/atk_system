@@ -145,7 +145,7 @@ class _DetailApprovalSettlementRequestPageState
         transaction.status = value["Data"]["Status"];
         totalBudget = value['Data']["Budget"];
         totalReqCost = value['Data']['TotalCost'];
-        // totalActualCost = value['Data']['TotalActualCost'];
+        totalActualCost = value['Data']['TotalActualCost'];
         // totalActualCost = 0;
         for (var element in resultItems) {
           items.add(
@@ -160,9 +160,9 @@ class _DetailApprovalSettlementRequestPageState
             ),
           );
 
-          totalActualCost = totalActualCost +
-              (int.parse(element['ActualPrice'].toString()) *
-                  int.parse(element['ActualQuantity'].toString()));
+          // totalActualCost = totalActualCost +
+          //     (int.parse(element['ActualPrice'].toString()) *
+          //         int.parse(element['ActualQuantity'].toString()));
         }
         if (resultActivity.isNotEmpty) {
           for (var element in resultActivity) {
