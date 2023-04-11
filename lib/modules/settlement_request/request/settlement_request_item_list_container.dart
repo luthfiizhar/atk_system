@@ -16,6 +16,7 @@ class SettlementRequestItemListContainer extends StatefulWidget {
     Item? item,
     this.onChangedValue,
     Transaction? transaction,
+    this.removeItem,
   })  : item = item ?? Item(),
         transaction = transaction ?? Transaction();
 
@@ -27,6 +28,7 @@ class SettlementRequestItemListContainer extends StatefulWidget {
   final TextEditingController _actualPrice = TextEditingController();
   final FocusNode qtyNode = FocusNode();
   final FocusNode actualPriceNode = FocusNode();
+  Function? removeItem;
 
   @override
   State<SettlementRequestItemListContainer> createState() =>
@@ -96,27 +98,28 @@ class _SettlementRequestItemListContainerState
               text: widget.item.actualPrice.toString(),
             ));
     widget._qty.addListener(() {
-      if (widget._qty.text == "") {
-        widget._qty.text = "0";
+      if (mounted) {
+        if (widget._qty.text == "") {
+          widget._qty.text = "0";
+        }
+        widget._qty.selection = TextSelection.fromPosition(
+            TextPosition(offset: widget._qty.text.length));
+        // setState(() {});
       }
-      widget._qty.selection = TextSelection.fromPosition(
-          TextPosition(offset: widget._qty.text.length));
-      // setState(() {});
     });
     widget._actualPrice.addListener(() {
-      if (widget._qty.text == "") {
-        widget._actualPrice.text = "0";
+      if (mounted) {
+        if (widget._qty.text == "") {
+          widget._actualPrice.text = "0";
+        }
+        widget._qty.selection = TextSelection.fromPosition(
+            TextPosition(offset: widget._qty.text.length));
+        // setState(() {});
       }
-      widget._qty.selection = TextSelection.fromPosition(
-          TextPosition(offset: widget._qty.text.length));
-      // setState(() {});
     });
-    setState(() {});
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   @override
@@ -125,10 +128,26 @@ class _SettlementRequestItemListContainerState
       children: [
         Expanded(
           flex: 2,
-          child: Text(
-            widget.item.itemName,
-            style: bodyTableNormalText,
-            textAlign: TextAlign.left,
+          child: Wrap(
+            crossAxisAlignment: WrapCrossAlignment.center,
+            spacing: 10,
+            children: [
+              widget.item.itemInfo == "Default"
+                  ? const SizedBox()
+                  : Container(
+                      width: 10,
+                      height: 10,
+                      decoration: const BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: orangeAccent,
+                      ),
+                    ),
+              Text(
+                widget.item.itemName,
+                style: bodyTableNormalText,
+                textAlign: TextAlign.left,
+              ),
+            ],
           ),
         ),
         SizedBox(
@@ -177,37 +196,44 @@ class _SettlementRequestItemListContainerState
             ],
           ),
         ),
-        Expanded(
-          // child: Text(
-          //   formatCurrency.format(widget.item.totalPrice),
-          //   style: bodyTableLightText,
-          //   textAlign: TextAlign.left,
-          // ),
-          child: SizedBox(
-            width: 150,
-            child: Focus(
-              onFocusChange: (value) async {
-                if (!widget.qtyNode.hasFocus &&
-                    !widget.actualPriceNode.hasFocus) {
-                  await widget.onChangedValue!(
-                      widget.index, widget._qty.text, widget._actualPrice.text);
+        SizedBox(
+          width: 150,
+          child: Focus(
+            onFocusChange: (value) async {
+              if (!widget.qtyNode.hasFocus &&
+                  !widget.actualPriceNode.hasFocus) {
+                await widget.onChangedValue!(
+                    widget.index, widget._qty.text, widget._actualPrice.text);
 
-                  onChangePrice(widget._actualPrice.text);
-                }
-              },
-              child: BlackInputField(
-                controller: widget._actualPrice,
-                enabled: true,
-                focusNode: widget.actualPriceNode,
-                inputFormatters: [
-                  FilteringTextInputFormatter.digitsOnly,
-                  FilteringTextInputFormatter.deny(RegExp(r'^0+')),
-                  ThousandsSeparatorInputFormatter(),
-                ],
-                // onFieldSubmitted: (value) async {},
-              ),
+                onChangePrice(widget._actualPrice.text);
+              }
+            },
+            child: BlackInputField(
+              controller: widget._actualPrice,
+              enabled: true,
+              focusNode: widget.actualPriceNode,
+              inputFormatters: [
+                FilteringTextInputFormatter.digitsOnly,
+                FilteringTextInputFormatter.deny(RegExp(r'^0+')),
+                ThousandsSeparatorInputFormatter(),
+              ],
+              // onFieldSubmitted: (value) async {},
             ),
           ),
+        ),
+        SizedBox(
+          width: 40,
+          child: widget.item.itemInfo == "Default"
+              ? const SizedBox()
+              : IconButton(
+                  splashColor: Colors.transparent,
+                  hoverColor: Colors.transparent,
+                  highlightColor: Colors.transparent,
+                  onPressed: () {
+                    widget.removeItem!(widget.item.itemId);
+                  },
+                  icon: const Icon(Icons.close_sharp),
+                ),
         ),
       ],
     );

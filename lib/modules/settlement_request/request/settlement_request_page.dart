@@ -6,6 +6,8 @@ import 'package:atk_system_ga/layout/layout_page.dart';
 import 'package:atk_system_ga/models/item_class.dart';
 import 'package:atk_system_ga/models/search_term.dart';
 import 'package:atk_system_ga/models/transaction_class.dart';
+import 'package:atk_system_ga/modules/admin_settings/item/add_item_dialog.dart';
+import 'package:atk_system_ga/modules/settlement_request/request/add_new_items_dialog.dart';
 import 'package:atk_system_ga/modules/settlement_request/request/dialog_confirm_settlement_request.dart';
 import 'package:atk_system_ga/modules/settlement_request/request/settlement_request_item_list_container.dart';
 import 'package:atk_system_ga/widgets/buttons.dart';
@@ -57,9 +59,24 @@ class _SettlementRequestPageState extends State<SettlementRequestPage> {
   bool isLoadingItems = true;
   bool isSendBack = false;
 
+  assignItemToTable() {
+    for (var i = 0; i < items.length; i++) {
+      itemsContainer.add(
+        SettlementRequestItemListContainer(
+          index: i,
+          item: items[i],
+          onChangedValue: onChangeQtyAndPrice,
+          transaction: transaction,
+          removeItem: removeItem,
+        ),
+      );
+    }
+  }
+
   Future updateList() {
     isLoadingItems = true;
     items.clear();
+    itemsContainer.clear();
     setState(() {});
     return apiService
         .getSettlementDetail(widget.formId, searchTerm)
@@ -79,6 +96,7 @@ class _SettlementRequestPageState extends State<SettlementRequestPage> {
               totalPrice: element['TotalPrice'],
               actualPrice: element['ActualPrice'],
               actualQty: element['ActualQuantity'],
+              itemInfo: element['ItemInformation'],
             ),
           );
           transaction.items = items;
@@ -88,6 +106,8 @@ class _SettlementRequestPageState extends State<SettlementRequestPage> {
           //     (int.parse(element['ActualPrice'].toString()) *
           //         int.parse(element['ActualQuantity'].toString()));
         }
+
+        assignItemToTable();
       } else {}
     }).onError((error, stackTrace) {
       isLoadingItems = false;
@@ -95,12 +115,40 @@ class _SettlementRequestPageState extends State<SettlementRequestPage> {
       showDialog(
         context: context,
         builder: (context) => const AlertDialogBlack(
-          title: "Error getSettlementDetail",
+          title: "Error saveItem",
           contentText: "No internet connection",
           isSuccess: false,
         ),
       );
     });
+  }
+
+  removeItem(String itemId) {
+    // itemsContainer.removeAt(index);
+    apiService.deleteAdditionalItemSettle(widget.formId, itemId).then((value) {
+      if (value["Status"].toString() == "200") {
+        updateList().then((value) {});
+      } else {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialogBlack(
+            title: value["Title"],
+            contentText: value["Message"],
+            isSuccess: false,
+          ),
+        );
+      }
+    }).onError((error, stackTrace) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialogBlack(
+          title: "Error deleteAdditionalItem",
+          contentText: error.toString(),
+          isSuccess: false,
+        ),
+      );
+    });
+    setState(() {});
   }
 
   onChangeQtyAndPrice(int index, String qtyValue, String priceValue) {
@@ -177,31 +225,32 @@ class _SettlementRequestPageState extends State<SettlementRequestPage> {
         for (var element in resultItems) {
           items.add(
             Item(
-              itemId: element['ItemID'].toString(),
-              itemName: element['ItemName'],
-              basePrice: element['ItemPrice'],
-              qty: element['Quantity'],
-              totalPrice: element['TotalPrice'],
-              actualPrice: element['ActualPrice'],
-              actualQty: element['ActualQuantity'],
-            ),
+                itemId: element['ItemID'].toString(),
+                itemName: element['ItemName'],
+                basePrice: element['ItemPrice'],
+                qty: element['Quantity'],
+                totalPrice: element['TotalPrice'],
+                actualPrice: element['ActualPrice'],
+                actualQty: element['ActualQuantity'],
+                itemInfo: element['ItemInformation']),
           );
 
           totalActualCost = totalActualCost +
               (int.parse(element['ActualPrice'].toString()) *
                   int.parse(element['ActualQuantity'].toString()));
         }
-
-        for (var i = 0; i < items.length; i++) {
-          itemsContainer.add(
-            SettlementRequestItemListContainer(
-              index: i,
-              item: items[i],
-              onChangedValue: onChangeQtyAndPrice,
-              transaction: transaction,
-            ),
-          );
-        }
+        assignItemToTable();
+        // for (var i = 0; i < items.length; i++) {
+        //   itemsContainer.add(
+        //     SettlementRequestItemListContainer(
+        //       index: i,
+        //       item: items[i],
+        //       onChangedValue: onChangeQtyAndPrice,
+        //       transaction: transaction,
+        //       removeItem: removeItem,
+        //     ),
+        //   );
+        // }
 
         // for (var element in resultActivity) {
         //   transactionActivity.add(
@@ -456,22 +505,66 @@ class _SettlementRequestPageState extends State<SettlementRequestPage> {
           title: "Create Settlement",
           transaction: transaction,
         ),
-        SizedBox(
-          width: 220,
-          child: SearchInputField(
-            controller: _search,
-            enabled: true,
-            obsecureText: false,
-            hintText: 'Search here ...',
-            maxLines: 1,
-            onFieldSubmitted: (value) {
-              searchItem();
-            },
-            prefixIcon: const Icon(
-              Icons.search,
-              color: davysGray,
+        Row(
+          children: [
+            CustomRegularButton(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 20,
+                vertical: 18,
+              ),
+              onTap: () {
+                showDialog(
+                  context: context,
+                  builder: (context) => AddNewItemDialog(
+                    formId: widget.formId,
+                  ),
+                ).then((value) {
+                  if (value == 1) {
+                    updateList().then((value) {});
+                  }
+                });
+              },
+              child: Wrap(
+                runAlignment: WrapAlignment.center,
+                children: [
+                  const Icon(
+                    Icons.add,
+                    size: 14,
+                  ),
+                  const SizedBox(
+                    width: 10,
+                  ),
+                  Text(
+                    'Add Item',
+                    style: helveticaText.copyWith(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  )
+                ],
+              ),
             ),
-          ),
+            const SizedBox(
+              width: 15,
+            ),
+            SizedBox(
+              width: 220,
+              child: SearchInputField(
+                controller: _search,
+                enabled: true,
+                obsecureText: false,
+                hintText: 'Search here ...',
+                maxLines: 1,
+                onFieldSubmitted: (value) {
+                  searchItem();
+                },
+                prefixIcon: const Icon(
+                  Icons.search,
+                  color: davysGray,
+                ),
+              ),
+            ),
+          ],
         )
       ],
     );
@@ -569,7 +662,8 @@ class _SettlementRequestPageState extends State<SettlementRequestPage> {
                 ),
               ),
             ),
-            Expanded(
+            SizedBox(
+              width: 150,
               child: InkWell(
                 onTap: () {
                   onTapHeader("ActualPrice");
@@ -583,13 +677,13 @@ class _SettlementRequestPageState extends State<SettlementRequestPage> {
                       ),
                     ),
                     iconSort("ActualPrice"),
-                    const SizedBox(
-                      width: 20,
-                    ),
                   ],
                 ),
               ),
             ),
+            const SizedBox(
+              width: 40,
+            )
           ],
         ),
         const SizedBox(

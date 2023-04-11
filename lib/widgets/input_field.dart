@@ -59,7 +59,9 @@ class _BlackInputFieldState extends State<BlackInputField> {
   void initState() {
     super.initState();
     widget.focusNode!.addListener(() {
-      setState(() {});
+      if (mounted) {
+        setState(() {});
+      }
     });
   }
 

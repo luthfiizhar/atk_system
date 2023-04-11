@@ -14,12 +14,16 @@ class Item {
     this.actualTotalPrice = 0,
     this.isExpanded = false,
     this.category = "",
+    this.isChecked = false,
+    this.isDefault = false,
+    this.itemInfo = "",
   });
 
   String itemId;
   String itemName;
   String unit;
   String category;
+  String itemInfo;
   int basePrice;
   int estimatedPrice;
   int qty;
@@ -30,6 +34,8 @@ class Item {
   int actualQty;
   int actualTotalPrice;
   bool isExpanded;
+  bool isChecked;
+  bool isDefault;
 
   Map<String, dynamic> toJson() => {
         '"ItemID"': '"$itemId"',
