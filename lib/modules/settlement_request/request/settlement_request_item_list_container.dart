@@ -128,24 +128,31 @@ class _SettlementRequestItemListContainerState
       children: [
         Expanded(
           flex: 2,
-          child: Wrap(
-            crossAxisAlignment: WrapCrossAlignment.center,
-            spacing: 10,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            // spacing: 10,
             children: [
               widget.item.itemInfo == "Default"
                   ? const SizedBox()
-                  : Container(
-                      width: 10,
-                      height: 10,
-                      decoration: const BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: orangeAccent,
+                  : Padding(
+                      padding: const EdgeInsets.only(
+                        right: 10,
+                      ),
+                      child: Container(
+                        width: 10,
+                        height: 10,
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: orangeAccent,
+                        ),
                       ),
                     ),
-              Text(
-                widget.item.itemName,
-                style: bodyTableNormalText,
-                textAlign: TextAlign.left,
+              Expanded(
+                child: Text(
+                  widget.item.itemName,
+                  style: bodyTableNormalText,
+                  textAlign: TextAlign.left,
+                ),
               ),
             ],
           ),
