@@ -1175,4 +1175,114 @@ class ApiService {
       return e;
     }
   }
+
+  Future newItemSettleList(String formId, SearchTerm searchTerm) async {
+    // print(bookingId);
+    var box = await Hive.openBox('userLogin');
+    var jwt = box.get('jwTtoken') != "" ? box.get('jwtToken') : "";
+
+    // jwt = jwtToken;
+
+    var url = Uri.https(urlConstant.apiUrl,
+        '/GSS_Backend/public/api/form/settlement/item-list');
+    Map<String, String> requestHeader = {
+      'Authorization': 'Bearer $jwt',
+      'Content-Type': 'application/json',
+    };
+
+    var bodySend = """
+    {
+        "FormID" : "$formId",
+        "Keywords" : "",
+        "OrderBy" : "",
+        "OrderDir" : ""
+    }
+    """;
+
+    try {
+      var response = await http.post(
+        url,
+        headers: requestHeader,
+        body: bodySend,
+      );
+
+      var data = json.decode(response.body);
+
+      return data;
+    } on Error catch (e) {
+      return e;
+    }
+  }
+
+  Future addSettlementItem(String formId, List item) async {
+    // print(bookingId);
+    var box = await Hive.openBox('userLogin');
+    var jwt = box.get('jwTtoken') != "" ? box.get('jwtToken') : "";
+
+    // jwt = jwtToken;
+
+    var url = Uri.https(
+        urlConstant.apiUrl, '/GSS_Backend/public/api/form/settlement/add-item');
+    Map<String, String> requestHeader = {
+      'Authorization': 'Bearer $jwt',
+      'Content-Type': 'application/json',
+    };
+
+    var bodySend = """
+    {
+        "FormID" : "$formId",
+        "Items" : $item
+    }
+    """;
+
+    try {
+      var response = await http.post(
+        url,
+        headers: requestHeader,
+        body: bodySend,
+      );
+
+      var data = json.decode(response.body);
+
+      return data;
+    } on Error catch (e) {
+      return e;
+    }
+  }
+
+  Future deleteAdditionalItemSettle(String formId, String itemId) async {
+    // print(bookingId);
+    var box = await Hive.openBox('userLogin');
+    var jwt = box.get('jwTtoken') != "" ? box.get('jwtToken') : "";
+
+    // jwt = jwtToken;
+
+    var url = Uri.https(urlConstant.apiUrl,
+        '/GSS_Backend/public/api/form/settlement/delete-item');
+    Map<String, String> requestHeader = {
+      'Authorization': 'Bearer $jwt',
+      'Content-Type': 'application/json',
+    };
+
+    var bodySend = """
+    {
+        "FormID" : "$formId",
+        "ItemID" : $itemId
+    }
+    """;
+
+    try {
+      var response = await http.post(
+        url,
+        headers: requestHeader,
+        body: bodySend,
+      );
+
+      var data = json.decode(response.body);
+
+      return data;
+    } on Error catch (e) {
+      return e;
+    }
+  }
 }
