@@ -17,6 +17,7 @@ class SearchInputField extends StatefulWidget {
     this.prefixIcon,
     this.onFieldSubmitted,
     this.fontSize = 16,
+    this.onChanged,
   });
 
   final TextEditingController controller;
@@ -29,6 +30,7 @@ class SearchInputField extends StatefulWidget {
   final bool? enabled;
   final VoidCallback? onTap;
   ValueChanged<String>? onFieldSubmitted;
+  ValueChanged<String>? onChanged;
   int? maxLines;
   Widget? prefixIcon;
   double fontSize;
@@ -75,6 +77,7 @@ class _SearchInputFieldState extends State<SearchInputField> {
         obscureText: widget.obsecureText!,
         cursorColor: eerieBlack,
         maxLines: widget.maxLines,
+        onChanged: widget.onChanged,
         onTap: widget.onTap,
         decoration: InputDecoration(
           border: OutlineInputBorder(
