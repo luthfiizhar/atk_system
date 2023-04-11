@@ -19,6 +19,7 @@ import 'package:atk_system_ga/widgets/buttons.dart';
 import 'package:atk_system_ga/widgets/dialogs.dart';
 import 'package:atk_system_ga/widgets/dropdown.dart';
 import 'package:atk_system_ga/widgets/empty_table.dart';
+import 'package:atk_system_ga/widgets/search_input_field.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -140,6 +141,8 @@ class _AdminSettingPageState extends State<AdminSettingPage> {
                 monthlyBudget: element['Budget'],
                 siteArea: double.parse(element['SiteArea'].toString()),
                 additionalBudget: element['AdditionalBudget'] ?? 0,
+                latitude: double.parse(element["Latitude"]),
+                longitude: double.parse(element["Longitude"]),
               ));
             }
           } else {}
@@ -168,7 +171,8 @@ class _AdminSettingPageState extends State<AdminSettingPage> {
                 name: element['EmpName'],
                 nip: element['EmpNIP'],
                 siteId: element['SiteID'],
-                role: element['Role'],
+                role: element['RoleString'],
+                roleList: element['Role'],
                 siteName: element['SiteName'],
               ));
             }
@@ -263,6 +267,7 @@ class _AdminSettingPageState extends State<AdminSettingPage> {
           if (value['Status'].toString() == "200") {
             resultRows = value['Data']['TotalRows'];
             List siteResult = value['Data']['List'];
+            print(siteResult);
             for (var element in siteResult) {
               siteList.add(Site(
                 siteId: element["SiteID"],
@@ -270,6 +275,8 @@ class _AdminSettingPageState extends State<AdminSettingPage> {
                 monthlyBudget: element['Budget'],
                 siteArea: double.parse(element['SiteArea'].toString()),
                 additionalBudget: element['AdditionalBudget'] ?? 0,
+                latitude: double.parse(element["Latitude"]),
+                longitude: double.parse(element["Longitude"]),
               ));
             }
             countPagination(resultRows);
@@ -354,11 +361,11 @@ class _AdminSettingPageState extends State<AdminSettingPage> {
                       builder: (context) {
                         switch (menu) {
                           case "Site":
-                            return addButtonSite(context);
+                            return Expanded(child: addButtonSite(context));
                           case "User":
-                            return addButtonUser(context);
+                            return Expanded(child: addButtonUser(context));
                           case "Item":
-                            return addButtonItem(context);
+                            return Expanded(child: addButtonItem(context));
                           default:
                             return SizedBox();
                         }
@@ -405,7 +412,8 @@ class _AdminSettingPageState extends State<AdminSettingPage> {
   }
 
   Widget addButtonSite(BuildContext context) {
-    return Column(
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         CustomRegularButton(
           padding: const EdgeInsets.symmetric(
@@ -443,86 +451,147 @@ class _AdminSettingPageState extends State<AdminSettingPage> {
             ],
           ),
         ),
+        SizedBox(
+          width: 200,
+          child: SearchInputField(
+            controller: _search,
+            obsecureText: false,
+            enabled: true,
+            maxLines: 1,
+            hintText: 'Search here...',
+            onFieldSubmitted: (value) => searchList(menu),
+            prefixIcon: const ImageIcon(
+              AssetImage(
+                'assets/icons/search_icon.png',
+              ),
+              color: davysGray,
+            ),
+          ),
+        )
       ],
     );
   }
 
   Widget addButtonUser(BuildContext context) {
-    return CustomRegularButton(
-      padding: const EdgeInsets.symmetric(
-        vertical: 18,
-        horizontal: 20,
-      ),
-      onTap: () {
-        showDialog(
-          context: context,
-          builder: (context) => AddUserDialog(),
-        ).then((value) {
-          if (value == 1) {
-            updateList(menu).then((value) {});
-          }
-        });
-      },
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          const Icon(
-            Icons.add,
-            size: 25,
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        CustomRegularButton(
+          padding: const EdgeInsets.symmetric(
+            vertical: 18,
+            horizontal: 20,
           ),
-          const SizedBox(
-            width: 10,
+          onTap: () {
+            showDialog(
+              context: context,
+              builder: (context) => AddUserDialog(),
+            ).then((value) {
+              if (value == 1) {
+                updateList(menu).then((value) {});
+              }
+            });
+          },
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const Icon(
+                Icons.add,
+                size: 25,
+              ),
+              const SizedBox(
+                width: 10,
+              ),
+              Text(
+                'Add User',
+                style: helveticaText.copyWith(
+                  fontSize: 16,
+                  height: 1.3,
+                  fontWeight: FontWeight.w700,
+                ),
+              )
+            ],
           ),
-          Text(
-            'Add User',
-            style: helveticaText.copyWith(
-              fontSize: 16,
-              height: 1.3,
-              fontWeight: FontWeight.w700,
+        ),
+        SizedBox(
+          width: 200,
+          child: SearchInputField(
+            controller: _search,
+            obsecureText: false,
+            enabled: true,
+            maxLines: 1,
+            hintText: 'Search here...',
+            onFieldSubmitted: (value) => searchList(menu),
+            prefixIcon: const ImageIcon(
+              AssetImage(
+                'assets/icons/search_icon.png',
+              ),
+              color: davysGray,
             ),
-          )
-        ],
-      ),
+          ),
+        )
+      ],
     );
     ;
   }
 
   Widget addButtonItem(BuildContext context) {
-    return CustomRegularButton(
-      padding: const EdgeInsets.symmetric(
-        vertical: 18,
-        horizontal: 20,
-      ),
-      onTap: () {
-        showDialog(
-          context: context,
-          builder: (context) => AddItemDialog(),
-        ).then((value) {
-          if (value == 1) {
-            updateList(menu).then((value) {});
-          }
-        });
-      },
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          const Icon(
-            Icons.add,
-            size: 25,
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        CustomRegularButton(
+          padding: const EdgeInsets.symmetric(
+            vertical: 18,
+            horizontal: 20,
           ),
-          const SizedBox(
-            width: 10,
+          onTap: () {
+            showDialog(
+              context: context,
+              builder: (context) => AddItemDialog(),
+            ).then((value) {
+              if (value == 1) {
+                updateList(menu).then((value) {});
+              }
+            });
+          },
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const Icon(
+                Icons.add,
+                size: 25,
+              ),
+              const SizedBox(
+                width: 10,
+              ),
+              Text(
+                'Add Item',
+                style: helveticaText.copyWith(
+                  fontSize: 16,
+                  height: 1.3,
+                  fontWeight: FontWeight.w700,
+                ),
+              )
+            ],
           ),
-          Text(
-            'Add Item',
-            style: helveticaText.copyWith(
-              fontSize: 16,
-              height: 1.3,
-              fontWeight: FontWeight.w700,
+        ),
+        SizedBox(
+          width: 200,
+          child: SearchInputField(
+            controller: _search,
+            obsecureText: false,
+            enabled: true,
+            maxLines: 1,
+            hintText: 'Search here...',
+            onFieldSubmitted: (value) => searchList(menu),
+            prefixIcon: const ImageIcon(
+              AssetImage(
+                'assets/icons/search_icon.png',
+              ),
+              color: davysGray,
             ),
-          )
-        ],
-      ),
+          ),
+        )
+      ],
     );
   }
 

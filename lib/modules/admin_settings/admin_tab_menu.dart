@@ -146,23 +146,23 @@ class _AdminMenuSearchBarState extends State<AdminMenuSearchBar> {
                       // ],
                     ),
                   ),
-                  SizedBox(
-                    width: 200,
-                    child: SearchInputField(
-                      controller: widget.searchController!,
-                      obsecureText: false,
-                      enabled: true,
-                      maxLines: 1,
-                      hintText: 'Search here...',
-                      onFieldSubmitted: (value) => widget.search!(widget.type),
-                      prefixIcon: const ImageIcon(
-                        AssetImage(
-                          'assets/icons/search_icon.png',
-                        ),
-                        color: davysGray,
-                      ),
-                    ),
-                  )
+                  // SizedBox(
+                  //   width: 200,
+                  //   child: SearchInputField(
+                  //     controller: widget.searchController!,
+                  //     obsecureText: false,
+                  //     enabled: true,
+                  //     maxLines: 1,
+                  //     hintText: 'Search here...',
+                  //     onFieldSubmitted: (value) => widget.search!(widget.type),
+                  //     prefixIcon: const ImageIcon(
+                  //       AssetImage(
+                  //         'assets/icons/search_icon.png',
+                  //       ),
+                  //       color: davysGray,
+                  //     ),
+                  //   ),
+                  // )
                   // Expanded(
                   //   child: Container(
                   //     //   child: WhiteInputField(

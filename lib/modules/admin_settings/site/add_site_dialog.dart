@@ -30,16 +30,22 @@ class _AddSiteDialogState extends State<AddSiteDialog> {
   TextEditingController _siteArea = TextEditingController();
   TextEditingController _monthlyBudget = TextEditingController();
   TextEditingController _additionalBudget = TextEditingController();
+  TextEditingController _latitude = TextEditingController();
+  TextEditingController _longitude = TextEditingController();
 
   FocusNode siteIdNode = FocusNode();
   FocusNode siteNameNode = FocusNode();
   FocusNode siteAreaNode = FocusNode();
+  FocusNode latitudeNode = FocusNode();
+  FocusNode longitudeNode = FocusNode();
   FocusNode monthlyBudgetNode = FocusNode();
   FocusNode additionalBudgetNode = FocusNode();
 
   String siteId = "";
   String siteName = "";
   double siteArea = 0;
+  double latitude = 0.0;
+  double longitude = 0.0;
   int monthlyBudget = 0;
   int additionalBudget = 0;
 
@@ -50,6 +56,8 @@ class _AddSiteDialogState extends State<AddSiteDialog> {
       widget.site.oldSiteId = widget.site.siteId;
       _siteId.text = widget.site.siteId;
       _siteName.text = widget.site.siteName;
+      _latitude.text = widget.site.latitude.toString();
+      _longitude.text = widget.site.longitude.toString();
       // _siteArea.text = widget.site.siteArea.toString();
       // _monthlyBudget.text = widget.site.monthlyBudget.toString();
       // _additionalBudget.text = widget.site.additionalBudget.toString();
@@ -242,6 +250,48 @@ class _AddSiteDialogState extends State<AddSiteDialog> {
                     height: 20,
                   ),
                   inputField(
+                    'Maps Latitude',
+                    widget: SizedBox(
+                      width: 300,
+                      child: BlackInputField(
+                        controller: _latitude,
+                        focusNode: latitudeNode,
+                        enabled: true,
+                        hintText: 'Latitude here...',
+                        maxLines: 1,
+                        validator: (value) =>
+                            value == "" ? "This field is required." : null,
+                        onSaved: (newValue) {
+                          latitude = double.parse(newValue.toString());
+                        },
+                      ),
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  inputField(
+                    'Maps Longitude',
+                    widget: SizedBox(
+                      width: 300,
+                      child: BlackInputField(
+                        controller: _longitude,
+                        focusNode: longitudeNode,
+                        enabled: true,
+                        hintText: 'Longitude here...',
+                        maxLines: 1,
+                        validator: (value) =>
+                            value == "" ? "This field is required." : null,
+                        onSaved: (newValue) {
+                          longitude = double.parse(newValue.toString());
+                        },
+                      ),
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  inputField(
                     'Monthly Budget',
                     widget: SizedBox(
                       width: 300,
@@ -362,6 +412,8 @@ class _AddSiteDialogState extends State<AddSiteDialog> {
                                 saveSite.siteArea = siteArea;
                                 saveSite.monthlyBudget = monthlyBudget;
                                 saveSite.additionalBudget = additionalBudget;
+                                saveSite.latitude = latitude;
+                                saveSite.longitude = longitude;
                                 if (widget.isEdit) {
                                   saveSite.oldSiteId = widget.site.oldSiteId;
                                   apiService.updateSite(saveSite).then((value) {

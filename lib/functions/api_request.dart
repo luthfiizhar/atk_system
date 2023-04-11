@@ -789,6 +789,8 @@ class ApiService {
         "SiteId" : "${site.siteId}",
         "SiteName" : "${site.siteName}",
         "SiteArea" : ${site.siteArea},
+        "Latitude" : ${site.latitude},
+        "Longitude" : ${site.longitude},
         "MonthlyBudget" : ${site.monthlyBudget},
         "AdditionalBudget" : ${site.additionalBudget}
     }
@@ -826,6 +828,8 @@ class ApiService {
         "SiteId" : "${site.siteId}",
         "SiteName" : "${site.siteName}",
         "SiteArea" : ${site.siteArea},
+        "Latitude" : ${site.latitude},
+        "Longitude" : ${site.longitude},
         "MonthlyBudget" : ${site.monthlyBudget},
         "AdditionalBudget" : ${site.additionalBudget}
     }
@@ -944,7 +948,7 @@ class ApiService {
         "UserNIP" : "${user.nip}",
         "Fullname" : "${user.name}",
         "SiteId" : "${user.siteId}",
-        "Role" : "${user.role}"
+        "Role" : ${user.roleList.toList()}
     }
     """;
 
@@ -980,7 +984,7 @@ class ApiService {
         "UserNIP" : "${user.nip}",
         "Fullname" : "${user.name}",
         "SiteId" : "${user.siteId}",
-        "Role" : "${user.role}"
+        "Role" : ${user.roleList.toList()}
     }
     """;
 
