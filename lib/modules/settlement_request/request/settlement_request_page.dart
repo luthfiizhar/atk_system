@@ -76,6 +76,7 @@ class _SettlementRequestPageState extends State<SettlementRequestPage> {
   Future updateList() {
     isLoadingItems = true;
     items.clear();
+    totalActualCost = 0;
     itemsContainer.clear();
     setState(() {});
     return apiService
@@ -102,9 +103,9 @@ class _SettlementRequestPageState extends State<SettlementRequestPage> {
           transaction.items = items;
           setState(() {});
 
-          // totalActualCost = totalActualCost +
-          //     (int.parse(element['ActualPrice'].toString()) *
-          //         int.parse(element['ActualQuantity'].toString()));
+          totalActualCost = totalActualCost +
+              (int.parse(element['ActualPrice'].toString()) *
+                  int.parse(element['ActualQuantity'].toString()));
         }
 
         assignItemToTable();
