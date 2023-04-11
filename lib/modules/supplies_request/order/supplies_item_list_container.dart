@@ -38,6 +38,8 @@ class _SuppliesItemListContainerState extends State<SuppliesItemListContainer> {
     // if (widget._estimatedPrice.text.contains(".")) {
     widget.item.estimatedPrice =
         int.parse(widget._estimatedPrice.text.replaceAll(".", ""));
+    widget.item.basePrice =
+        int.parse(widget._estimatedPrice.text.replaceAll(".", ""));
     // }
 
     widget.item.totalPrice =
@@ -66,7 +68,7 @@ class _SuppliesItemListContainerState extends State<SuppliesItemListContainer> {
         widget._qty.selection = TextSelection.fromPosition(
             TextPosition(offset: widget._qty.text.length));
       }
-      setState(() {});
+      // setState(() {});
     });
     widget._estimatedPrice.addListener(() {
       if (widget._estimatedPrice.text == "") {
@@ -74,7 +76,7 @@ class _SuppliesItemListContainerState extends State<SuppliesItemListContainer> {
         widget._estimatedPrice.selection = TextSelection.fromPosition(
             TextPosition(offset: widget._estimatedPrice.text.length));
       }
-      setState(() {});
+      // setState(() {});
     });
     setState(() {});
   }

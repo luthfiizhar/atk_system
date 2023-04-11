@@ -42,6 +42,7 @@ class _SuppliesRequestPageState extends State<SuppliesRequestPage> {
 
   List<Item> items = [];
   List<SuppliesItemListContainer> itemsContainer = [];
+  List<SuppliesItemListContainer> filterItemsContainer = [];
   List<Item> tempItems = [];
 
   bool isLoadingGetDetail = true;
@@ -244,6 +245,7 @@ class _SuppliesRequestPageState extends State<SuppliesRequestPage> {
             saveItem: saveItem,
           ));
         }
+        filterItemsContainer = itemsContainer;
         totalCost = tempTotalCost;
 
         if (resultActivity.isNotEmpty) {
@@ -361,6 +363,16 @@ class _SuppliesRequestPageState extends State<SuppliesRequestPage> {
 
   searchItem() {
     // searchTerm.keywords = _search.text;
+    if (_search.text != "") {
+      filterItemsContainer = itemsContainer
+          .where((element) => element.item.itemName
+              .toLowerCase()
+              .contains(_search.text.toLowerCase()))
+          .toList();
+    } else {
+      filterItemsContainer = itemsContainer;
+    }
+
     setState(() {});
     // updateTable().then((value) {});
   }
@@ -414,58 +426,59 @@ class _SuppliesRequestPageState extends State<SuppliesRequestPage> {
                             ? EmptyTable(
                                 text: 'No item in database',
                               )
-                            : Column(
-                                // shrinkWrap: true,
-                                // physics: const NeverScrollableScrollPhysics(),
-                                children: _search.text == ""
-                                    ? itemsContainer
-                                        .asMap()
-                                        .map((index, e) => MapEntry(
-                                            index,
-                                            Column(
-                                              children: [
-                                                index == 0
-                                                    ? const SizedBox()
-                                                    : const DividerTable(),
-                                                e,
-                                              ],
-                                            )))
-                                        .values
-                                        .toList()
-                                    : itemsContainer
-                                        .where((element) => element
-                                            .item.itemName
-                                            .toLowerCase()
-                                            .contains(
-                                                _search.text.toLowerCase()))
-                                        .toList()
-                                        .asMap()
-                                        .map((index, e) => MapEntry(
-                                            index,
-                                            Column(
-                                              children: [
-                                                index == 0
-                                                    ? const SizedBox()
-                                                    : const DividerTable(),
-                                                e,
-                                              ],
-                                            )))
-                                        .values
-                                        .toList(),
-                              ),
-                // ListView.builder(
-                //     itemCount: items.length,
-                //     shrinkWrap: true,
-                //     physics: const NeverScrollableScrollPhysics(),
-                //     itemBuilder: (context, index) {
-                //       return SuppliesItemListContainer(
-                //         index: index,
-                //         item: items[index],
-                //         countTotal: countTotal,
-                //         saveItem: saveItem,
-                //       );
-                //     },
-                //   ),
+                            // : Column(
+                            //     // shrinkWrap: true,
+                            //     // physics: const NeverScrollableScrollPhysics(),
+                            //     children: _search.text == ""
+                            //         ? itemsContainer
+                            //             .asMap()
+                            //             .map((index, e) => MapEntry(
+                            //                 index,
+                            //                 Column(
+                            //                   children: [
+                            //                     index == 0
+                            //                         ? const SizedBox()
+                            //                         : const DividerTable(),
+                            //                     e,
+                            //                   ],
+                            //                 )))
+                            //             .values
+                            //             .toList()
+                            //         : itemsContainer
+                            //             .where((element) => element
+                            //                 .item.itemName
+                            //                 .toLowerCase()
+                            //                 .contains(
+                            //                     _search.text.toLowerCase()))
+                            //             .toList()
+                            //             .asMap()
+                            //             .map((index, e) => MapEntry(
+                            //                 index,
+                            //                 Column(
+                            //                   children: [
+                            //                     index == 0
+                            //                         ? const SizedBox()
+                            //                         : const DividerTable(),
+                            //                     e,
+                            //                   ],
+                            //                 )))
+                            //             .values
+                            //             .toList(),
+                            //   ),
+                            : ListView.builder(
+                                itemCount: filterItemsContainer.length,
+                                shrinkWrap: true,
+                                physics: const NeverScrollableScrollPhysics(),
+                                itemBuilder: (context, index) {
+                                  return Column(
+                                    children: [
+                                      index == 0
+                                          ? const SizedBox()
+                                          : const DividerTable(),
+                                      filterItemsContainer[index],
+                                    ],
+                                  );
+                                }),
                 const SizedBox(
                   height: 50,
                 ),
