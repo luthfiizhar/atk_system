@@ -3,6 +3,8 @@ class Site {
     this.siteId = "",
     this.siteName = "",
     this.oldSiteId = "",
+    this.latitude = 0.0,
+    this.longitude = 0.0,
     this.siteArea = 0,
     this.monthlyBudget = 0,
     this.additionalBudget = 0,
@@ -12,6 +14,8 @@ class Site {
   String siteId;
   String oldSiteId;
   String siteName;
+  double latitude;
+  double longitude;
   int monthlyBudget;
   int additionalBudget;
   double siteArea;
@@ -41,7 +45,8 @@ class User {
     this.oldNip = "",
     this.siteName = "",
     this.isExpanded = false,
-  });
+    List? roleList,
+  }) : roleList = roleList ?? [];
 
   String nip;
   String name;
@@ -50,6 +55,7 @@ class User {
   String oldNip;
   String siteName;
   bool isExpanded;
+  List roleList;
 
   Map<String, String> toJson() => {
         '"EmpNIP"': '"$nip"',
@@ -58,6 +64,25 @@ class User {
         '"Role"': '"$role"',
         '"isExpanded"': isExpanded.toString(),
       };
+
+  @override
+  String toString() {
+    return toJson().toString();
+  }
+}
+
+class Role {
+  Role({
+    this.name = "",
+    this.value = "",
+    this.isChecked = false,
+  });
+  String name;
+  String value;
+  bool isChecked;
+
+  Map<String, String> toJson() =>
+      {'"Name"': '"$name"', '"Value"': '"$value"', '"IsChecked"': '$isChecked'};
 
   @override
   String toString() {
