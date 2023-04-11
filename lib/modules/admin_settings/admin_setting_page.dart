@@ -141,6 +141,8 @@ class _AdminSettingPageState extends State<AdminSettingPage> {
                 monthlyBudget: element['Budget'],
                 siteArea: double.parse(element['SiteArea'].toString()),
                 additionalBudget: element['AdditionalBudget'] ?? 0,
+                latitude: double.parse(element["Latitude"]),
+                longitude: double.parse(element["Longitude"]),
               ));
             }
           } else {}
@@ -169,7 +171,8 @@ class _AdminSettingPageState extends State<AdminSettingPage> {
                 name: element['EmpName'],
                 nip: element['EmpNIP'],
                 siteId: element['SiteID'],
-                role: element['Role'],
+                role: element['RoleString'],
+                roleList: element['Role'],
                 siteName: element['SiteName'],
               ));
             }
@@ -264,6 +267,7 @@ class _AdminSettingPageState extends State<AdminSettingPage> {
           if (value['Status'].toString() == "200") {
             resultRows = value['Data']['TotalRows'];
             List siteResult = value['Data']['List'];
+            print(siteResult);
             for (var element in siteResult) {
               siteList.add(Site(
                 siteId: element["SiteID"],
@@ -271,6 +275,8 @@ class _AdminSettingPageState extends State<AdminSettingPage> {
                 monthlyBudget: element['Budget'],
                 siteArea: double.parse(element['SiteArea'].toString()),
                 additionalBudget: element['AdditionalBudget'] ?? 0,
+                latitude: double.parse(element["Latitude"]),
+                longitude: double.parse(element["Longitude"]),
               ));
             }
             countPagination(resultRows);
