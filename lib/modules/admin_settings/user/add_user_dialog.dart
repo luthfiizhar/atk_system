@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:atk_system_ga/constant/colors.dart';
 import 'package:atk_system_ga/constant/text_style.dart';
 import 'package:atk_system_ga/functions/api_request.dart';
@@ -31,6 +33,7 @@ class _AddUserDialogState extends State<AddUserDialog> {
   TextEditingController _nip = TextEditingController();
   TextEditingController _fullName = TextEditingController();
   TextEditingController _site = TextEditingController();
+  TextEditingController _role = TextEditingController();
 
   FocusNode nipNode = FocusNode();
   FocusNode fullNameNode = FocusNode();
@@ -48,28 +51,16 @@ class _AddUserDialogState extends State<AddUserDialog> {
   LayerLink siteLayerLink = LayerLink();
   bool isOverlaySiteOpen = false;
 
-  final List<String> siteList = [
-    'A_Item1',
-    'A_Item2',
-    'A_Item3',
-    'A_Item4',
-    'B_Item1',
-    'B_Item2',
-    'B_Item3',
-    'luthfi',
-    'luthfi',
-    'luthfi',
-    'luthfi',
-    'luthfi',
-    'luthfi',
-    'luthfi',
-    'luthfi',
-    'luthfi',
-    'luthfi',
-    'luthfi',
-  ];
+  OverlayEntry? roleOverlayEntry;
+  GlobalKey roleKey = GlobalKey();
+  LayerLink roleLayerLink = LayerLink();
+  bool isOverlayRoleOpen = false;
+
+  final List<String> siteList = [];
 
   List roleList = [];
+  List<Role> role = [];
+  List selectedRoleList = [];
 
   String? selectedValue;
 
@@ -101,6 +92,36 @@ class _AddUserDialogState extends State<AddUserDialog> {
             )));
   }
 
+  OverlayEntry roleOverlay() {
+    RenderBox? renderBox =
+        roleKey.currentContext!.findRenderObject() as RenderBox?;
+    var size = renderBox!.size;
+    var offset = renderBox.localToGlobal(Offset.zero);
+
+    return OverlayEntry(
+        builder: (context) => Positioned(
+            // left: offset.dx,
+            // top: offset.dy + size.height + 10,
+            width: size.width,
+            child: CompositedTransformFollower(
+              showWhenUnlinked: false,
+              offset: Offset(0.0, size.height - 20.0),
+              link: roleLayerLink,
+              child: Material(
+                elevation: 4.0,
+                color: white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: RolePickerContainer(
+                  roleList: role,
+                  addRole: addRoleSelected,
+                  removeRole: removeRoleSelected,
+                ),
+              ),
+            )));
+  }
+
   onClickSite(String id, String name) {
     _site.text = "$id - $name";
     selectedSite = id;
@@ -113,12 +134,54 @@ class _AddUserDialogState extends State<AddUserDialog> {
     setState(() {});
   }
 
-  initListSite() {}
-  initListRole() {
-    apiService.getRoleListDropdown().then((value) {
+  changeFieldRole() {
+    if (selectedRoleList.length > 1) {
+      for (var i = 0; i < selectedRoleList.length; i++) {
+        if (i == selectedRole.length - 1) {
+          _role.text += selectedRoleList[i].toString().replaceAll('"', "");
+        } else {
+          _role.text +=
+              "${selectedRoleList[i].toString().replaceAll('"', "")}, ";
+        }
+      }
+    } else {
+      _role.text = selectedRoleList
+          .toString()
+          .replaceAll('"', "")
+          .replaceAll("[", "")
+          .replaceAll("]", "");
+    }
+  }
+
+  addRoleSelected(Role role) {
+    _role.text = "";
+    selectedRoleList.add('"${role.name}"');
+    changeFieldRole();
+
+    print(selectedRoleList);
+  }
+
+  removeRoleSelected(Role role) {
+    _role.text = "";
+    selectedRoleList.remove('"${role.name}"');
+    changeFieldRole();
+    print(selectedRoleList);
+  }
+
+  Future initListRole() {
+    return apiService.getRoleListDropdown().then((value) {
       if (value['Status'].toString() == "200") {
         roleList = value['Data'];
-        setState(() {});
+        for (var element in roleList) {
+          role.add(
+            Role(
+              name: element["Name"],
+              value: element["Value"],
+              isChecked: false,
+            ),
+          );
+        }
+        // setState(() {});
       } else {
         showDialog(
           context: context,
@@ -144,14 +207,24 @@ class _AddUserDialogState extends State<AddUserDialog> {
   @override
   void initState() {
     super.initState();
-    initListRole();
-    if (widget.isEdit) {
-      _nip.text = widget.user.nip;
-      _fullName.text = widget.user.name;
-      _site.text = "${widget.user.siteId} - ${widget.user.siteName}";
-      selectedSite = widget.user.siteId;
-      selectedRole = widget.user.role;
-    } else {}
+    initListRole().then((value) {
+      if (widget.isEdit) {
+        _nip.text = widget.user.nip;
+        _fullName.text = widget.user.name;
+        _site.text = "${widget.user.siteId} - ${widget.user.siteName}";
+        selectedSite = widget.user.siteId;
+        selectedRole = widget.user.role;
+        _role.text = widget.user.role;
+        for (var element in role) {
+          for (var roleSel in widget.user.roleList) {
+            if (element.name == roleSel["Role"]) {
+              element.isChecked = true;
+              addRoleSelected(element);
+            }
+          }
+        }
+      } else {}
+    });
   }
 
   @override
@@ -174,6 +247,14 @@ class _AddUserDialogState extends State<AddUserDialog> {
               }
               siteNode.unfocus();
               isOverlaySiteOpen = false;
+            }
+
+            if (isOverlayRoleOpen) {
+              if (roleOverlayEntry!.mounted) {
+                roleOverlayEntry!.remove();
+              }
+              roleNode.unfocus();
+              isOverlayRoleOpen = false;
             }
           },
           child: SingleChildScrollView(
@@ -323,31 +404,35 @@ class _AddUserDialogState extends State<AddUserDialog> {
                       'Role',
                       widget: SizedBox(
                         width: 250,
-                        child: BlackDropdown(
-                          items: roleList
-                              .map((item) => DropdownMenuItem(
-                                    value: item['Value'],
-                                    child: Text(
-                                      item['Name'],
-                                      style: helveticaText.copyWith(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w300,
-                                        color: davysGray,
-                                      ),
-                                    ),
-                                  ))
-                              .toList(),
-                          enabled: true,
-                          hintText: 'Choose',
-                          value: widget.isEdit ? selectedRole : null,
-                          onChanged: (value) {
-                            selectedRole = value;
-                          },
-                          validator: (value) =>
-                              value == "" ? "This field is required" : null,
-                          suffixIcon: const Icon(
-                            Icons.keyboard_arrow_down_outlined,
-                            color: eerieBlack,
+                        child: Container(
+                          key: roleKey,
+                          // onTap: () {},
+                          child: CompositedTransformTarget(
+                            link: roleLayerLink,
+                            child: CustomInputField(
+                              controller: _role,
+                              focusNode: roleNode,
+                              enabled: true,
+                              hintText: 'Choose Role',
+                              suffixIcon: const Icon(
+                                Icons.keyboard_arrow_down_outlined,
+                                color: eerieBlack,
+                              ),
+                              onTap: () {
+                                if (isOverlayRoleOpen) {
+                                  isOverlayRoleOpen = false;
+                                  if (roleOverlayEntry!.mounted) {
+                                    roleOverlayEntry!.remove();
+                                  }
+                                } else {
+                                  roleOverlayEntry = roleOverlay();
+                                  Overlay.of(context)!
+                                      .insert(roleOverlayEntry!);
+                                  isOverlayRoleOpen = true;
+                                }
+                                setState(() {});
+                              },
+                            ),
                           ),
                         ),
                       ),
@@ -381,6 +466,7 @@ class _AddUserDialogState extends State<AddUserDialog> {
                               userSave.nip = nip;
                               userSave.siteId = selectedSite;
                               userSave.role = selectedRole;
+                              userSave.roleList = selectedRoleList;
                               if (widget.isEdit) {
                                 userSave.oldNip = widget.user.nip;
                                 apiService.updateUser(userSave).then((value) {
@@ -622,6 +708,111 @@ class _SiteSearchContainerState extends State<SiteSearchContainer> {
           ],
         ),
       ),
+    );
+  }
+}
+
+class RolePickerContainer extends StatefulWidget {
+  RolePickerContainer({
+    super.key,
+    List<Role>? roleList,
+    this.addRole,
+    this.removeRole,
+  }) : roleList = roleList ?? [];
+
+  List<Role> roleList;
+  Function? addRole;
+  Function? removeRole;
+
+  @override
+  State<RolePickerContainer> createState() => _RolePickerContainerState();
+}
+
+class _RolePickerContainerState extends State<RolePickerContainer> {
+  List<CheckRoleContainer> checkBoxList = [];
+  @override
+  void initState() {
+    super.initState();
+    for (var element in widget.roleList) {
+      checkBoxList.add(
+        CheckRoleContainer(
+          role: element,
+          addRole: widget.addRole,
+          removeRole: widget.removeRole,
+        ),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: 25,
+        vertical: 20,
+      ),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        color: white,
+      ),
+      child: Wrap(
+        spacing: 15,
+        direction: Axis.vertical,
+        children: checkBoxList.map((e) => e).toList(),
+      ),
+    );
+  }
+}
+
+class CheckRoleContainer extends StatefulWidget {
+  CheckRoleContainer({
+    super.key,
+    Role? role,
+    this.addRole,
+    this.removeRole,
+  }) : role = role ?? Role();
+
+  Role role;
+  Function? addRole;
+  Function? removeRole;
+
+  @override
+  State<CheckRoleContainer> createState() => _CheckRoleContainerState();
+}
+
+class _CheckRoleContainerState extends State<CheckRoleContainer> {
+  @override
+  Widget build(BuildContext context) {
+    return Wrap(
+      runAlignment: WrapAlignment.center,
+      crossAxisAlignment: WrapCrossAlignment.center,
+      spacing: 10,
+      children: [
+        Checkbox(
+          value: widget.role.isChecked,
+          onChanged: (value) {
+            if (widget.role.isChecked) {
+              widget.role.isChecked = false;
+              widget.removeRole!(widget.role);
+            } else {
+              widget.role.isChecked = true;
+              widget.addRole!(widget.role);
+            }
+            setState(() {});
+          },
+          activeColor: eerieBlack,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(2.5)),
+        ),
+        Text(
+          widget.role.name,
+          style: helveticaText.copyWith(
+            fontSize: 14,
+            fontWeight: FontWeight.w300,
+            color: davysGray,
+          ),
+        )
+      ],
     );
   }
 }
