@@ -315,3 +315,131 @@ class SearchDropDown extends StatelessWidget {
     );
   }
 }
+
+class TransparentDropdown extends StatelessWidget {
+  TransparentDropdown({
+    required this.items,
+    this.hintText,
+    FocusNode? focusNode,
+    this.validator,
+    this.onChanged,
+    this.suffixIcon,
+    this.enabled = true,
+    this.onTap,
+    this.value,
+    this.customHeights,
+  }) : focusNode = focusNode ?? FocusNode();
+
+  final List<DropdownMenuItem<dynamic>>? items;
+  final String? hintText;
+  final FocusNode? focusNode;
+  final ValueChanged? onChanged;
+  final FormFieldValidator? validator;
+  Widget? suffixIcon = Icon(Icons.keyboard_arrow_down_sharp);
+  bool? enabled;
+  final VoidCallback? onTap;
+  final dynamic value;
+  final List<double>? customHeights;
+
+  @override
+  Widget build(BuildContext context) {
+    return DropdownButtonFormField2(
+      buttonStyleData: const ButtonStyleData(
+        width: 50,
+        height: 39,
+      ),
+      value: value,
+      focusNode: focusNode,
+      items: items,
+      dropdownStyleData: DropdownStyleData(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(
+            color: sonicSilver,
+            width: 1,
+          ),
+          color: culturedWhite,
+        ),
+      ),
+      menuItemStyleData: MenuItemStyleData(
+        customHeights: customHeights,
+        padding: const EdgeInsets.only(
+          left: 20,
+          right: 20,
+        ),
+        // icon: suffixIcon,
+      ),
+      customButton: Wrap(
+        spacing: 5,
+        crossAxisAlignment: WrapCrossAlignment.center,
+        runAlignment: WrapAlignment.center,
+        children: [
+          Text(
+            value,
+            style: helveticaText.copyWith(
+              fontSize: 16,
+              fontWeight: FontWeight.w300,
+              color: sonicSilver,
+            ),
+          ),
+          suffixIcon!,
+        ],
+      ),
+      iconStyleData: IconStyleData(
+        icon: suffixIcon!,
+      ),
+      onChanged: onChanged,
+      decoration: InputDecoration(
+        border: const OutlineInputBorder(
+          borderSide: BorderSide.none,
+        ),
+        enabledBorder: const OutlineInputBorder(
+          borderSide: BorderSide.none,
+        ),
+        focusedBorder: const OutlineInputBorder(
+          borderSide: BorderSide.none,
+        ),
+        disabledBorder: const OutlineInputBorder(
+          borderSide: BorderSide.none,
+        ),
+        fillColor: enabled!
+            ? focusNode!.hasFocus
+                ? culturedWhite
+                : Colors.transparent
+            : platinum,
+        filled: true,
+        isDense: true,
+        // isCollapsed: true,
+        focusColor: culturedWhite,
+        hintText: hintText,
+        hintStyle: helveticaText.copyWith(
+          fontSize: 16,
+          fontWeight: FontWeight.w300,
+          color: lightGray,
+        ),
+        contentPadding: const EdgeInsets.only(
+          right: 15,
+          left: 15,
+          top: 0,
+          bottom: 12,
+        ),
+        // suffixIcon: suffixIcon,
+        suffixIconColor: eerieBlack,
+        enabled: enabled!,
+      ),
+      hint: Text(
+        hintText!,
+        style: helveticaText.copyWith(
+          fontSize: 16,
+          fontWeight: FontWeight.w300,
+          color: sonicSilver,
+        ),
+      ),
+      style: helveticaText.copyWith(
+        fontSize: 16,
+        fontWeight: FontWeight.w300,
+      ),
+      validator: validator,
+    );
+  }
+}

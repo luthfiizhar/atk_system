@@ -4,7 +4,7 @@ import 'package:atk_system_ga/constant/text_style.dart';
 import 'package:atk_system_ga/layout/footer.dart';
 import 'package:atk_system_ga/layout/navigation_bar/navigation_bar.dart';
 import 'package:atk_system_ga/models/main_model.dart';
-import 'package:atk_system_ga/modules/admin_settings/admin_setting_page.dart';
+import 'package:atk_system_ga/view/admin_settings/admin_setting_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
