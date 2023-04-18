@@ -5,6 +5,9 @@ import 'package:intl/intl.dart';
 final formatCurrency =
     NumberFormat.currency(locale: "ID", decimalDigits: 0, symbol: "Rp ");
 
+final compactFormatNumber =
+    NumberFormat.compactCurrency(decimalDigits: 0, symbol: "");
+
 final formatThousand =
     NumberFormat.currency(locale: "ID", decimalDigits: 2, symbol: "");
 
@@ -95,4 +98,10 @@ const TextStyle bodyTextAlertDialog = TextStyle(
   fontSize: 18,
   fontWeight: FontWeight.w300,
   height: 1.15,
+);
+
+TextStyle cardTitle = helveticaText.copyWith(
+  fontSize: 22,
+  color: eerieBlack,
+  fontWeight: FontWeight.w700,
 );
