@@ -97,9 +97,9 @@ class _ConfirmDialogSettlementRequestState
             ),
           );
 
-          totalActualCost = totalActualCost +
-              (int.parse(element['ActualPrice'].toString()) *
-                  int.parse(element['ActualQuantity'].toString()));
+          // totalActualCost = totalActualCost +
+          //     (int.parse(element['ActualPrice'].toString()) *
+          //         int.parse(element['ActualQuantity'].toString()));
         }
         setState(() {});
       } else {
