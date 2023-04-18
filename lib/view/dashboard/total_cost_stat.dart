@@ -53,10 +53,7 @@ class _TotalCostStatisticState extends State<TotalCostStatistic> {
           minWidth: 350,
         ),
         decoration: cardDecoration,
-        padding: const EdgeInsets.symmetric(
-          horizontal: 45,
-          vertical: 35,
-        ),
+        padding: cardPadding,
         child: Consumer<TotalCostStatModel>(builder: (context, model, child) {
           return model.costSummaryList.isEmpty
               ? const Center(

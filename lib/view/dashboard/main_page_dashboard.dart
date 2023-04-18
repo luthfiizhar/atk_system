@@ -1,7 +1,10 @@
 import 'package:atk_system_ga/constant/constraints.dart';
 import 'package:atk_system_ga/layout/layout_page.dart';
+import 'package:atk_system_ga/view/dashboard/actual_pricing_items_widget.dart';
 import 'package:atk_system_ga/view/dashboard/main_page_header.dart';
+import 'package:atk_system_ga/view/dashboard/recent_transaction.dart';
 import 'package:atk_system_ga/view/dashboard/summary_cost_bar_chart.dart';
+import 'package:atk_system_ga/view/dashboard/top_requested_items_widget.dart';
 import 'package:atk_system_ga/view/dashboard/total_cost_stat.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -92,7 +95,14 @@ class _DashboardPageState extends State<DashboardPage> {
                 ),
                 Wrap(
                   spacing: 30,
-                  children: const [TotalCostStatistic(), SummCostBarChart()],
+                  runSpacing: 30,
+                  children: const [
+                    TotalCostStatistic(),
+                    SummCostBarChart(),
+                    // RecentTransactionWidget(),
+                    TopReqItemsWidget(),
+                    ActualPricingItemWidget()
+                  ],
                 ),
                 const SizedBox(
                   height: 50,

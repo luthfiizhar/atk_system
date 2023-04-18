@@ -89,14 +89,10 @@ class _SuppliesItemListContainerState extends State<SuppliesItemListContainer> {
           children: [
             Expanded(
               flex: 2,
-              child: Row(
-                children: [
-                  Text(
-                    widget.item.itemName,
-                    style: bodyTableNormalText,
-                    textAlign: TextAlign.left,
-                  ),
-                ],
+              child: Text(
+                widget.item.itemName,
+                style: bodyTableNormalText,
+                textAlign: TextAlign.left,
               ),
             ),
             SizedBox(

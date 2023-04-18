@@ -13,3 +13,8 @@ BoxDecoration cardDecoration = BoxDecoration(
     width: 1,
   ),
 );
+
+const EdgeInsets cardPadding = EdgeInsets.symmetric(
+  vertical: 30,
+  horizontal: 35,
+);

@@ -99,3 +99,9 @@ const TextStyle bodyTextAlertDialog = TextStyle(
   fontWeight: FontWeight.w300,
   height: 1.15,
 );
+
+TextStyle cardTitle = helveticaText.copyWith(
+  fontSize: 22,
+  color: eerieBlack,
+  fontWeight: FontWeight.w700,
+);

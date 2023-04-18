@@ -158,10 +158,7 @@ class _SummCostBarChartState extends State<SummCostBarChart> {
             minWidth: 780,
             maxWidth: 800,
           ),
-          padding: const EdgeInsets.symmetric(
-            vertical: 30,
-            horizontal: 35,
-          ),
+          padding: cardPadding,
           decoration: cardDecoration,
           child: Column(
             children: [
