@@ -136,7 +136,9 @@ class _ApproveDialogSuppliesReqState extends State<ApproveDialogSuppliesReq> {
                         disabled: false,
                         padding: ButtonSize().mediumSize(),
                         onTap: () {
-                          Navigator.of(context).pop(0);
+                          if (!isLoading) {
+                            Navigator.of(context).pop(0);
+                          }
                         },
                       ),
                       const SizedBox(
