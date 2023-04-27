@@ -48,6 +48,9 @@ class _ConfirmDialogSettlementRequestState
   List<Attachment> attachment = [];
   List<TransactionActivity> activity = [];
 
+  bool isLoading = false;
+  bool isGetData = true;
+
   initDetail() {
     totalBudget = widget.transaction.budget;
 
@@ -66,6 +69,7 @@ class _ConfirmDialogSettlementRequestState
     return apiService
         .getSettlementDetail(widget.formId, searchTerm)
         .then((value) {
+      isGetData = false;
       setState(() {});
       if (value['Status'].toString() == "200") {
         List resultItems = value["Data"]["Items"];
@@ -113,6 +117,8 @@ class _ConfirmDialogSettlementRequestState
         );
       }
     }).onError((error, stackTrace) {
+      isGetData = false;
+      setState(() {});
       showDialog(
         context: context,
         builder: (context) => AlertDialogBlack(
@@ -246,20 +252,26 @@ class _ConfirmDialogSettlementRequestState
                     height: 30,
                   ),
                   headerTable(),
-                  itemList.isEmpty
-                      ? EmptyTable(
-                          text: 'No item chosen by user',
-                        )
-                      : ListView.builder(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemCount: itemList.length,
-                          itemBuilder: (context, index) =>
-                              DialogConfirmItemListContainerSettlementRequest(
-                            index: index,
-                            item: itemList[index],
+                  isGetData
+                      ? const Center(
+                          child: CircularProgressIndicator(
+                            color: eerieBlack,
                           ),
-                        ),
+                        )
+                      : itemList.isEmpty
+                          ? EmptyTable(
+                              text: 'No item chosen by user',
+                            )
+                          : ListView.builder(
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemCount: itemList.length,
+                              itemBuilder: (context, index) =>
+                                  DialogConfirmItemListContainerSettlementRequest(
+                                index: index,
+                                item: itemList[index],
+                              ),
+                            ),
                   const Padding(
                     padding: EdgeInsets.symmetric(vertical: 23),
                     child: Divider(
@@ -327,92 +339,110 @@ class _ConfirmDialogSettlementRequestState
                         disabled: false,
                         padding: ButtonSize().mediumSize(),
                         onTap: () {
-                          Navigator.of(context).pop(0);
+                          if (!isLoading) {
+                            Navigator.of(context).pop(0);
+                          }
                         },
                       ),
                       const SizedBox(
                         width: 10,
                       ),
-                      RegularButton(
-                        text: 'Confirm',
-                        disabled: false,
-                        padding: ButtonSize().mediumSize(),
-                        onTap: () {
-                          if (attachment.isEmpty) {
-                            showDialog(
-                              context: context,
-                              builder: (context) => const AlertDialogBlack(
-                                title: "Failed",
-                                contentText:
-                                    "Please attach your transaction bills.",
-                                isSuccess: false,
-                              ),
-                            );
-                          } else {
-                            if (formKey.currentState!.validate()) {
-                              formKey.currentState!.save();
-                              widget.transaction.activity
-                                  .add(TransactionActivity());
-                              widget.transaction.activity.first.comment =
-                                  comment
-                                      .replaceAll("\n", "\\n")
-                                      .replaceAll('"', '\\"');
-
-                              for (var element in attachment) {
-                                widget
-                                    .transaction.activity.first.submitAttachment
-                                    .add('"${element.file}"');
-                              }
-
-                              print(widget.transaction);
-                              apiService
-                                  .submitSettlementRequest(widget.transaction)
-                                  .then((value) {
-                                if (value["Status"].toString() == "200") {
+                      isLoading
+                          ? const CircularProgressIndicator(
+                              color: eerieBlack,
+                            )
+                          : RegularButton(
+                              text: 'Confirm',
+                              disabled: false,
+                              padding: ButtonSize().mediumSize(),
+                              onTap: () {
+                                if (attachment.isEmpty) {
                                   showDialog(
                                     context: context,
-                                    builder: (context) => AlertDialogBlack(
-                                      title: value['Title'],
-                                      contentText: value['Message'],
-                                      isSuccess: true,
-                                    ),
-                                  ).then((value) {
-                                    Navigator.of(context).pop(1);
-                                  });
-                                } else if (value["Status"].toString() ==
-                                    "401") {
-                                  showDialog(
-                                    context: context,
-                                    builder: (context) => AlertDialogBlack(
-                                      title: value['Title'],
-                                      contentText: value['Message'],
+                                    builder: (context) =>
+                                        const AlertDialogBlack(
+                                      title: "Failed",
+                                      contentText:
+                                          "Please attach your transaction bills.",
                                       isSuccess: false,
                                     ),
                                   );
                                 } else {
-                                  showDialog(
-                                    context: context,
-                                    builder: (context) => AlertDialogBlack(
-                                      title: value['Title'],
-                                      contentText: value['Message'],
-                                      isSuccess: false,
-                                    ),
-                                  );
+                                  if (formKey.currentState!.validate()) {
+                                    formKey.currentState!.save();
+                                    isLoading = true;
+                                    setState(() {});
+                                    widget.transaction.activity
+                                        .add(TransactionActivity());
+                                    widget.transaction.activity.first.comment =
+                                        comment
+                                            .replaceAll("\n", "\\n")
+                                            .replaceAll('"', '\\"');
+
+                                    for (var element in attachment) {
+                                      widget.transaction.activity.first
+                                          .submitAttachment
+                                          .add('"${element.file}"');
+                                    }
+
+                                    print(widget.transaction);
+                                    apiService
+                                        .submitSettlementRequest(
+                                            widget.transaction)
+                                        .then((value) {
+                                      isLoading = false;
+                                      setState(() {});
+                                      if (value["Status"].toString() == "200") {
+                                        showDialog(
+                                          context: context,
+                                          builder: (context) =>
+                                              AlertDialogBlack(
+                                            title: value['Title'],
+                                            contentText: value['Message'],
+                                            isSuccess: true,
+                                          ),
+                                        ).then((value) {
+                                          Navigator.of(context).pop(1);
+                                        });
+                                      } else if (value["Status"].toString() ==
+                                          "401") {
+                                        showDialog(
+                                          context: context,
+                                          builder: (context) =>
+                                              AlertDialogBlack(
+                                            title: value['Title'],
+                                            contentText: value['Message'],
+                                            isSuccess: false,
+                                          ),
+                                        );
+                                      } else {
+                                        showDialog(
+                                          context: context,
+                                          builder: (context) =>
+                                              AlertDialogBlack(
+                                            title: value['Title'],
+                                            contentText: value['Message'],
+                                            isSuccess: false,
+                                          ),
+                                        );
+                                      }
+                                    }).onError((error, stackTrace) {
+                                      isLoading = false;
+                                      setState(() {});
+                                      showDialog(
+                                        context: context,
+                                        builder: (context) =>
+                                            const AlertDialogBlack(
+                                          title: "Error submitSuppliesRequest",
+                                          contentText: "No internet connection",
+                                          isSuccess: false,
+                                        ),
+                                      );
+                                    });
+                                  }
                                 }
-                              }).onError((error, stackTrace) {
-                                showDialog(
-                                  context: context,
-                                  builder: (context) => const AlertDialogBlack(
-                                    title: "Error submitSuppliesRequest",
-                                    contentText: "No internet connection",
-                                    isSuccess: false,
-                                  ),
-                                );
-                              });
-                            }
-                          }
-                        },
-                      )
+                              },
+                            )
                     ],
                   )
                 ],

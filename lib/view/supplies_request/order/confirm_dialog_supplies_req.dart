@@ -65,6 +65,7 @@ class _ConfirmDialogSuppliesRequestState
   }
 
   bool isLoading = false;
+  bool isGetData = true;
 
   onTapHeader(String orderBy) {
     setState(() {
@@ -136,8 +137,8 @@ class _ConfirmDialogSuppliesRequestState
 
   initFilledDetail() {
     apiService.getFormDetailFilled(widget.formId, searchTerm).then((value) {
+      isGetData = false;
       setState(() {});
-      print(value);
       if (value['Status'].toString() == "200") {
         List resultItems = value["Data"]["Items"];
         List resultActivity = value["Data"]["Comments"];
@@ -168,6 +169,7 @@ class _ConfirmDialogSuppliesRequestState
         );
       }
     }).onError((error, stackTrace) {
+      isGetData = false;
       showDialog(
         context: context,
         builder: (context) => const AlertDialogBlack(
@@ -222,20 +224,26 @@ class _ConfirmDialogSuppliesRequestState
                     height: 30,
                   ),
                   headerTable(),
-                  itemList.isEmpty
-                      ? EmptyTable(
-                          text: 'No item chosen by user',
-                        )
-                      : ListView.builder(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemCount: itemList.length,
-                          itemBuilder: (context, index) =>
-                              DialogConfirmItemListContainer(
-                            index: index,
-                            item: itemList[index],
+                  isGetData
+                      ? const Center(
+                          child: CircularProgressIndicator(
+                            color: eerieBlack,
                           ),
-                        ),
+                        )
+                      : itemList.isEmpty
+                          ? EmptyTable(
+                              text: 'No item chosen by user',
+                            )
+                          : ListView.builder(
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemCount: itemList.length,
+                              itemBuilder: (context, index) =>
+                                  DialogConfirmItemListContainer(
+                                index: index,
+                                item: itemList[index],
+                              ),
+                            ),
                   const Padding(
                     padding: EdgeInsets.symmetric(vertical: 23),
                     child: Divider(
@@ -299,7 +307,10 @@ class _ConfirmDialogSuppliesRequestState
                         disabled: false,
                         padding: ButtonSize().mediumSize(),
                         onTap: () {
-                          Navigator.of(context).pop(0);
+                          if (!isLoading) {
+                            Navigator.of(context).pop(0);
+                          }
+                          // Navigator.of(context).pop(0);
                         },
                       ),
                       const SizedBox(

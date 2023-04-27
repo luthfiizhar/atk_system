@@ -32,6 +32,8 @@ class _ApproveSettlementDialogState extends State<ApproveSettlementDialog> {
 
   final formKey = GlobalKey<FormState>();
 
+  bool isLoading = false;
+
   @override
   void initState() {
     super.initState();
@@ -134,7 +136,9 @@ class _ApproveSettlementDialogState extends State<ApproveSettlementDialog> {
                         disabled: false,
                         padding: ButtonSize().mediumSize(),
                         onTap: () {
-                          Navigator.of(context).pop(0);
+                          if (!isLoading) {
+                            Navigator.of(context).pop(0);
+                          }
                         },
                       ),
                       const SizedBox(
@@ -146,6 +150,8 @@ class _ApproveSettlementDialogState extends State<ApproveSettlementDialog> {
                         padding: ButtonSize().mediumSize(),
                         onTap: () {
                           formKey.currentState!.save();
+                          isLoading = true;
+                          setState(() {});
                           widget.transaction.activity
                               .add(TransactionActivity());
                           widget.transaction.activity.first.comment = comment
@@ -161,6 +167,8 @@ class _ApproveSettlementDialogState extends State<ApproveSettlementDialog> {
                           apiService
                               .approveSettlementRequest(widget.transaction)
                               .then((value) {
+                            isLoading = false;
+                            setState(() {});
                             if (value["Status"].toString() == "200") {
                               showDialog(
                                 context: context,
@@ -192,6 +200,8 @@ class _ApproveSettlementDialogState extends State<ApproveSettlementDialog> {
                               );
                             }
                           }).onError((error, stackTrace) {
+                            isLoading = false;
+                            setState(() {});
                             showDialog(
                               context: context,
                               builder: (context) => const AlertDialogBlack(
