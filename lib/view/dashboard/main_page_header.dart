@@ -1,9 +1,22 @@
 import 'package:atk_system_ga/constant/colors.dart';
 import 'package:atk_system_ga/constant/text_style.dart';
+import 'package:atk_system_ga/view/dashboard/dashboard_options_widget.dart';
 import 'package:flutter/material.dart';
 
 class DashboardHeader extends StatefulWidget {
-  const DashboardHeader({super.key});
+  DashboardHeader({
+    super.key,
+    Function? showOverlay,
+    Function? closeOverlay,
+    required this.unitKey,
+    required this.optionLayerLink,
+  })  : showOverlay = showOverlay ?? (() {}),
+        closeOverlay = closeOverlay ?? (() {});
+
+  GlobalKey unitKey;
+  LayerLink optionLayerLink;
+  Function showOverlay;
+  Function closeOverlay;
 
   @override
   State<DashboardHeader> createState() => _DashboardHeaderState();
@@ -11,9 +24,14 @@ class DashboardHeader extends StatefulWidget {
 
 class _DashboardHeaderState extends State<DashboardHeader> {
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 35, vertical: 30),
+      padding: const EdgeInsets.symmetric(horizontal: 35, vertical: 33),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -84,12 +102,30 @@ class _DashboardHeaderState extends State<DashboardHeader> {
         const SizedBox(
           width: 20,
         ),
-        Container(
-          height: 65,
-          width: 65,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            color: platinum,
+        InkWell(
+          splashFactory: NoSplash.splashFactory,
+          hoverColor: Colors.transparent,
+          onTap: () {
+            // widget.showOverlay();
+            showDialog(
+              context: context,
+              builder: (context) => const DashboardOptionsWidget(),
+            );
+          },
+          child: Container(
+            height: 65,
+            width: 65,
+            key: widget.unitKey,
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                  color: platinum,
+                  width: 1,
+                )),
+            child: Image.asset(
+              'assets/ace_logo.png',
+              fit: BoxFit.contain,
+            ),
           ),
         )
       ],

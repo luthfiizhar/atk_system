@@ -3,9 +3,14 @@ import 'package:atk_system_ga/constant/constraints.dart';
 import 'package:atk_system_ga/constant/text_style.dart';
 import 'package:atk_system_ga/models/main_page_model.dart';
 import 'package:atk_system_ga/models/search_term.dart';
+import 'package:atk_system_ga/view/dashboard/popup_dialog/recent_transaction_popup.dart';
+import 'package:atk_system_ga/view/dashboard/show_more_icon.dart';
+import 'package:atk_system_ga/view/dashboard/widget_icon.dart';
+import 'package:atk_system_ga/view_model/global_model.dart';
 import 'package:atk_system_ga/view_model/main_page_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'dart:html' as html;
 
 class RecentTransactionWidget extends StatefulWidget {
   const RecentTransactionWidget({super.key});
@@ -19,26 +24,29 @@ class _RecentTransactionWidgetState extends State<RecentTransactionWidget> {
   SearchTerm searchTerm = SearchTerm();
   RecentTransactionViewModel recentTransactionViewModel =
       RecentTransactionViewModel();
+  late GlobalModel globalModel;
+
+  GlobalKey iconKey = GlobalKey();
 
   List<RecentTransactionTable> recTransList = [
     RecentTransactionTable(
       siteName: "ST INFORMA PURI MALL JKT",
       type: "Additional Settlement",
-      cost: 30000000,
+      cost: "30000000",
       date: "24 Sep 2023",
       time: "12:07",
     ),
     RecentTransactionTable(
       siteName: "ST INFORMA PURI MALL JKT",
       type: "Additional Settlement",
-      cost: 30000000,
+      cost: "30000000",
       date: "24 Sep 2023",
       time: "12:07",
     ),
     RecentTransactionTable(
       siteName: "ST INFORMA PURI MALL JKT",
       type: "Additional Settlement",
-      cost: 30000000,
+      cost: "30000000",
       date: "24 Sep 2023",
       time: "12:07",
     ),
@@ -122,6 +130,20 @@ class _RecentTransactionWidgetState extends State<RecentTransactionWidget> {
     });
   }
 
+  showMoreDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => RecentTransactionPopUp(),
+    );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    globalModel = Provider.of<GlobalModel>(context, listen: false);
+    recentTransactionViewModel.getRecentTransaction(globalModel);
+  }
+
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider.value(
@@ -141,43 +163,115 @@ class _RecentTransactionWidgetState extends State<RecentTransactionWidget> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    'Recent Transaction',
-                    style: helveticaText.copyWith(
-                      fontSize: 22,
-                      fontWeight: FontWeight.w700,
-                      color: eerieBlack,
-                    ),
+                  Wrap(
+                    spacing: 10,
+                    runAlignment: WrapAlignment.center,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    children: [
+                      TitleIcon(
+                        icon: "assets/icons/recent_transaction_icon.png",
+                      ),
+                      Text(
+                        "Recent Transaction",
+                        style: cardTitle,
+                      ),
+                    ],
                   ),
+                  // Text(
+                  //   'Recent Transaction',
+                  //   style: helveticaText.copyWith(
+                  //     fontSize: 22,
+                  //     fontWeight: FontWeight.w700,
+                  //     color: eerieBlack,
+                  //   ),
+                  // ),
+                  ShowMoreIcon(
+                    exportCallback: () {},
+                    showMoreCallback: showMoreDialog,
+                  ),
+                  // InkWell(
+                  //     onTap: () {
+                  //       RenderBox? renderBox = iconKey.currentContext!
+                  //           .findRenderObject() as RenderBox?;
+                  //       var size = renderBox!.size;
+                  //       var offset = renderBox.localToGlobal(Offset.zero);
+                  //       showMenu(
+                  //           context: context,
+                  //           shape: RoundedRectangleBorder(
+                  //             borderRadius: BorderRadius.circular(10),
+                  //           ),
+                  //           position: RelativeRect.fromLTRB(
+                  //               offset.dx, offset.dy + 30, offset.dx, 0),
+                  //           items: [
+                  //             PopupMenuItem(
+                  //               onTap: () {
+                  //                 Future.delayed(
+                  //                   const Duration(seconds: 0),
+                  //                   () => showDialog(
+                  //                     context: context,
+                  //                     builder: (context) =>
+                  //                         RecentTransactionPopUp(),
+                  //                   ),
+                  //                 );
+                  //               },
+                  //               child: Text(
+                  //                 'Show More',
+                  //                 style: helveticaText.copyWith(
+                  //                   fontSize: 14,
+                  //                   fontWeight: FontWeight.w300,
+                  //                   color: davysGray,
+                  //                 ),
+                  //               ),
+                  //             ),
+                  //             PopupMenuItem(
+                  //               onTap: () {},
+                  //               child: Text(
+                  //                 'Export',
+                  //                 style: helveticaText.copyWith(
+                  //                   fontSize: 14,
+                  //                   fontWeight: FontWeight.w300,
+                  //                   color: davysGray,
+                  //                 ),
+                  //               ),
+                  //             ),
+                  //           ]);
+                  //     },
+                  //     child: Icon(key: iconKey, Icons.more_vert_sharp)),
                 ],
               ),
               const SizedBox(
                 height: 30,
               ),
               headerTable(),
-              ListView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: recTransList.length,
-                itemBuilder: (context, index) {
-                  return Column(
-                    children: [
-                      index == 0
-                          ? const SizedBox()
-                          : const Divider(
-                              thickness: 0.5,
-                              color: grayx11,
-                            ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 28),
-                        child: RecentTransactionItems(
-                          recents: recTransList[index],
-                        ),
+              model.listRecTransaction.isEmpty
+                  ? const Center(
+                      child: CircularProgressIndicator(
+                        color: eerieBlack,
                       ),
-                    ],
-                  );
-                },
-              ),
+                    )
+                  : ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: model.listRecTransaction.take(5).length,
+                      itemBuilder: (context, index) {
+                        return Column(
+                          children: [
+                            index == 0
+                                ? const SizedBox()
+                                : const Divider(
+                                    thickness: 0.5,
+                                    color: grayx11,
+                                  ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              child: RecentTransactionItems(
+                                recents: model.listRecTransaction[index],
+                              ),
+                            ),
+                          ],
+                        );
+                      },
+                    ),
             ],
           ),
         );
@@ -361,51 +455,78 @@ class RecentTransactionItems extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Expanded(
+    return InkWell(
+      hoverColor: Colors.transparent,
+      splashFactory: NoSplash.splashFactory,
+      onTap: () {
+        final host = html.window.location.host;
+        final path = html.window.location.pathname;
+        print(host);
+        print(path);
+        html.WindowBase popUpWindow;
+        if (recents.type == "Monthly Supply Request" ||
+            recents.type == "Monthly Additional Request") {
+          popUpWindow = html.window.open(
+            'http://$host$path#/transaction_list/request_detail/${recents.formId}',
+            'TransactionDetail',
+          );
+        } else {
+          popUpWindow = html.window.open(
+            'http://$host$path#/transaction_list/settlement_detail/${recents.formId}',
+            'TransactionDetail',
+          );
+        }
+      },
+      child: Row(
+        children: [
+          Expanded(
             flex: 2,
             child: Text(
               recents.siteName,
               style: normal,
-            )),
-        SizedBox(
-          width: 250,
-          child: Text(
-            recents.type,
-            style: light,
+            ),
           ),
-        ),
-        Expanded(
-          child: Text(
-            formatCurrency.format(recents.cost),
-            style: light,
+          SizedBox(
+            width: 250,
+            child: Text(
+              recents.type,
+              style: light,
+            ),
           ),
-        ),
-        SizedBox(
-            width: 135,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  recents.date,
-                  style: normal,
-                ),
-                Text(
-                  recents.time,
-                  style: light.copyWith(
-                    color: sonicSilver,
+          Expanded(
+            child: Text(
+              formatCurrency.format(int.parse(recents.cost)),
+              style: light,
+            ),
+          ),
+          SizedBox(
+              width: 135,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    recents.date,
+                    style: normal,
                   ),
-                ),
-              ],
-            )),
-        const SizedBox(
-          width: 20,
-          child: Icon(
-            Icons.keyboard_arrow_right_sharp,
-          ),
-        )
-      ],
+                  const SizedBox(
+                    height: 7,
+                  ),
+                  Text(
+                    recents.time,
+                    style: light.copyWith(
+                      color: sonicSilver,
+                    ),
+                  ),
+                ],
+              )),
+          const SizedBox(
+            width: 20,
+            child: Icon(
+              Icons.keyboard_arrow_right_sharp,
+            ),
+          )
+        ],
+      ),
     );
   }
 }

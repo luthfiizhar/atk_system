@@ -2,6 +2,10 @@ import 'package:atk_system_ga/constant/colors.dart';
 import 'package:atk_system_ga/constant/constraints.dart';
 import 'package:atk_system_ga/constant/text_style.dart';
 import 'package:atk_system_ga/models/main_page_model.dart';
+import 'package:atk_system_ga/view/dashboard/popup_dialog/actual_price_item_popup.dart';
+import 'package:atk_system_ga/view/dashboard/show_more_icon.dart';
+import 'package:atk_system_ga/view/dashboard/widget_icon.dart';
+import 'package:atk_system_ga/view_model/global_model.dart';
 import 'package:atk_system_ga/view_model/main_page_view_model.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
@@ -21,11 +25,23 @@ class _ActualPricingItemWidgetState extends State<ActualPricingItemWidget> {
   ActualPriceItemViewModel actualPriceItemViewModel =
       ActualPriceItemViewModel();
   CarouselController carouselController = CarouselController();
+  late GlobalModel globalModel;
+
+  showMore() {
+    showDialog(
+      context: context,
+      builder: (context) => const ActualPriceItemPopup(),
+    );
+  }
 
   @override
   void initState() {
     super.initState();
-    actualPriceItemViewModel.getActualPriceItem();
+    globalModel = Provider.of<GlobalModel>(context, listen: false);
+    actualPriceItemViewModel.getActualPriceItem(globalModel);
+    // globalModel.addListener(() {
+    //   actualPriceItemViewModel.getActualPriceItem(globalModel);
+    // });
   }
 
   @override
@@ -44,9 +60,27 @@ class _ActualPricingItemWidgetState extends State<ActualPricingItemWidget> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'Item Actual Price',
-                style: cardTitle,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Wrap(
+                    spacing: 10,
+                    runAlignment: WrapAlignment.center,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    children: [
+                      TitleIcon(
+                        icon: "assets/icons/item_actual_icon.png",
+                      ),
+                      Text(
+                        "Item Actual Price",
+                        style: cardTitle,
+                      ),
+                    ],
+                  ),
+                  ShowMoreIcon(
+                    showMoreCallback: showMore,
+                  ),
+                ],
               ),
               const SizedBox(
                 height: 30,
@@ -77,15 +111,15 @@ class _ActualPricingItemWidgetState extends State<ActualPricingItemWidget> {
                         scrollPhysics: const NeverScrollableScrollPhysics(),
                         // autoPlayAnimationDuration: const Duration(seconds: 15),
                         autoPlayInterval: const Duration(
-                          seconds: 15,
+                          seconds: 10,
                         ),
                         autoPlay: true,
-                        height: 410,
+                        height: 375,
                       ),
                     ),
-              const SizedBox(
-                height: 25,
-              ),
+              // const SizedBox(
+              //   height: 25,
+              // ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -133,7 +167,7 @@ class ActualPriceItemContainer extends StatelessWidget {
                     index == 0
                         ? const SizedBox()
                         : const Padding(
-                            padding: EdgeInsets.symmetric(vertical: 23),
+                            padding: EdgeInsets.symmetric(vertical: 16),
                             child: Divider(
                               thickness: 0.5,
                               color: grayx11,
@@ -163,16 +197,18 @@ class ActualPriceItemContainer extends StatelessWidget {
                   ? const Icon(
                       Icons.arrow_drop_up_sharp,
                       color: orangeAccent,
+                      size: 36,
                     )
                   : const Icon(
                       Icons.arrow_drop_down_sharp,
                       color: greenAcent,
+                      size: 36,
                     ),
               Text(
                 "${content.percentage} %",
                 style: helveticaText.copyWith(
                   fontSize: 32,
-                  fontWeight: FontWeight.w700,
+                  fontWeight: FontWeight.w400,
                   color: content.dir == "up" ? orangeAccent : greenAcent,
                 ),
               ),
@@ -190,6 +226,7 @@ class ActualPriceItemContainer extends StatelessWidget {
                   fontSize: 16,
                   fontWeight: FontWeight.w700,
                   color: davysGray,
+                  height: 1.375,
                 ),
               ),
               const SizedBox(

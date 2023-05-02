@@ -1,6 +1,8 @@
 import 'package:atk_system_ga/constant/colors.dart';
 import 'package:atk_system_ga/constant/constraints.dart';
 import 'package:atk_system_ga/constant/text_style.dart';
+import 'package:atk_system_ga/view/dashboard/widget_icon.dart';
+import 'package:atk_system_ga/view_model/global_model.dart';
 import 'package:atk_system_ga/view_model/main_page_view_model.dart';
 import 'package:atk_system_ga/widgets/dropdown.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -16,6 +18,7 @@ class SummCostBarChart extends StatefulWidget {
 
 class _SummCostBarChartState extends State<SummCostBarChart> {
   CostSummaryBarChartModel barChartModel = CostSummaryBarChartModel();
+  late GlobalModel globalModel;
   List yearOptions = ["2023", "2022", "2021", "2020", "2019"];
   String selectedYear = "2023";
 
@@ -143,7 +146,8 @@ class _SummCostBarChartState extends State<SummCostBarChart> {
   @override
   void initState() {
     super.initState();
-    barChartModel.getSumCostBar();
+    globalModel = Provider.of<GlobalModel>(context, listen: false);
+    barChartModel.getSumCostBar(globalModel);
   }
 
   @override
@@ -166,13 +170,32 @@ class _SummCostBarChartState extends State<SummCostBarChart> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Expanded(
-                    child: Text(
-                      'Cost Summary',
-                      style: helveticaText.copyWith(
-                        fontSize: 22,
-                        fontWeight: FontWeight.w700,
-                        color: eerieBlack,
-                      ),
+                    child: Wrap(
+                      spacing: 10,
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      runAlignment: WrapAlignment.center,
+                      children: [
+                        // Container(
+                        //   height: 25,
+                        //   width: 25,
+                        //   margin: const EdgeInsets.all(3),
+                        //   child: const ImageIcon(
+                        //     AssetImage("assets/icons/cost_summary_icon.png"),
+                        //     color: orangeAccent,
+                        //   ),
+                        // ),
+                        TitleIcon(
+                          icon: "assets/icons/cost_summary_icon.png",
+                        ),
+                        Text(
+                          'Cost Summary',
+                          style: helveticaText.copyWith(
+                            fontSize: 22,
+                            fontWeight: FontWeight.w700,
+                            color: eerieBlack,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                   Row(
@@ -213,7 +236,10 @@ class _SummCostBarChartState extends State<SummCostBarChart> {
                           focusNode: yearOptionsNode,
                           suffixIcon:
                               const Icon(Icons.keyboard_arrow_down_sharp),
-                          onChanged: (value) {},
+                          onChanged: (value) {
+                            selectedYear = value;
+                            setState(() {});
+                          },
                           enabled: true,
                           value: selectedYear,
                         ),
@@ -254,7 +280,7 @@ class _SummCostBarChartState extends State<SummCostBarChart> {
                             enabled: true,
                             handleBuiltInTouches: false,
                             touchTooltipData: BarTouchTooltipData(
-                              maxContentWidth: 150,
+                              maxContentWidth: 170,
                               tooltipBgColor: white,
                               tooltipMargin: 10,
                               tooltipRoundedRadius: 10,
