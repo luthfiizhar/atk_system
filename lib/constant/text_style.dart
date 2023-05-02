@@ -11,6 +11,9 @@ final compactFormatNumber =
 final formatThousand =
     NumberFormat.currency(locale: "ID", decimalDigits: 2, symbol: "");
 
+final formatThousandNoDecimal =
+    NumberFormat.currency(locale: "ID", decimalDigits: 0, symbol: "");
+
 const TextStyle helveticaText = TextStyle(
   fontFamily: 'Helvetica',
   height: 1.15,
