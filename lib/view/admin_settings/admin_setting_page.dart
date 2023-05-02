@@ -331,7 +331,7 @@ class _AdminSettingPageState extends State<AdminSettingPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(
-                  height: 50,
+                  height: 40,
                 ),
                 Text(
                   'Setting',
@@ -342,7 +342,7 @@ class _AdminSettingPageState extends State<AdminSettingPage> {
                   ),
                 ),
                 const SizedBox(
-                  height: 45,
+                  height: 30,
                 ),
                 AdminMenuSearchBar(
                   search: searchList,
