@@ -15,6 +15,7 @@ class BlackDropdown extends StatelessWidget {
     this.onTap,
     this.value,
     this.customHeights,
+    this.width = 120,
   }) : focusNode = focusNode ?? FocusNode();
 
   final List<DropdownMenuItem<dynamic>>? items;
@@ -27,12 +28,13 @@ class BlackDropdown extends StatelessWidget {
   final VoidCallback? onTap;
   final dynamic value;
   final List<double>? customHeights;
+  double width;
 
   @override
   Widget build(BuildContext context) {
     return DropdownButtonFormField2(
-      buttonStyleData: const ButtonStyleData(
-        width: 120,
+      buttonStyleData: ButtonStyleData(
+        width: width,
         height: 39,
       ),
       // buttonWidth: 120,
@@ -369,21 +371,24 @@ class TransparentDropdown extends StatelessWidget {
         ),
         // icon: suffixIcon,
       ),
-      customButton: Wrap(
-        spacing: 5,
-        crossAxisAlignment: WrapCrossAlignment.center,
-        runAlignment: WrapAlignment.center,
-        children: [
-          Text(
-            value,
-            style: helveticaText.copyWith(
-              fontSize: 16,
-              fontWeight: FontWeight.w300,
-              color: sonicSilver,
+      customButton: Align(
+        alignment: Alignment.centerRight,
+        child: Wrap(
+          spacing: 5,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          runAlignment: WrapAlignment.center,
+          children: [
+            Text(
+              value,
+              style: helveticaText.copyWith(
+                fontSize: 16,
+                fontWeight: FontWeight.w300,
+                color: sonicSilver,
+              ),
             ),
-          ),
-          suffixIcon!,
-        ],
+            suffixIcon!,
+          ],
+        ),
       ),
       iconStyleData: IconStyleData(
         icon: suffixIcon!,
