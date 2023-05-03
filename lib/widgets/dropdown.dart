@@ -129,10 +129,10 @@ class BlackDropdown extends StatelessWidget {
           color: sonicSilver,
         ),
       ),
-      style: const TextStyle(
+      style: helveticaText.copyWith(
         fontSize: 16,
         fontWeight: FontWeight.w300,
-        fontFamily: 'Helvetica',
+        color: eerieBlack,
       ),
       validator: validator,
     );
