@@ -148,6 +148,10 @@ class _SummCostBarChartState extends State<SummCostBarChart> {
     super.initState();
     globalModel = Provider.of<GlobalModel>(context, listen: false);
     barChartModel.getSumCostBar(globalModel);
+    globalModel.addListener(() {
+      barChartModel.closeListener();
+      barChartModel.getSumCostBar(globalModel);
+    });
   }
 
   @override

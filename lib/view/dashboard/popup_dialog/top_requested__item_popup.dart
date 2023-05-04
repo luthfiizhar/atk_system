@@ -144,10 +144,13 @@ class _TopRequestedItemPopupState extends State<TopRequestedItemPopup> {
         resultRows = value["Data"]["TotalRows"];
         List<TopRequestedItems> itemResult = [];
         for (var element in listResult) {
-          itemResult.add(TopRequestedItems(
-            name: element["ItemName"],
-            qty: element["TotalRequested"].toString(),
-          ));
+          itemResult.add(
+            TopRequestedItems(
+              rank: element["Order"] ?? 1,
+              name: element["ItemName"],
+              qty: element["TotalRequested"].toString(),
+            ),
+          );
         }
         listItem = itemResult;
       } else {}
@@ -497,7 +500,7 @@ class _TopRequestedItemPopupState extends State<TopRequestedItemPopup> {
                 width: 10,
               ),
               SizedBox(
-                width: 120,
+                width: 110,
                 child: BlackDropdown(
                   focusNode: showPerRowsNode,
                   onChanged: (value) {

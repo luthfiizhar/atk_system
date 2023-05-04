@@ -152,6 +152,10 @@ class _RecentTransactionWidgetState extends State<RecentTransactionWidget> {
     super.initState();
     globalModel = Provider.of<GlobalModel>(context, listen: false);
     recentTransactionViewModel.getRecentTransaction(globalModel);
+    globalModel.addListener(() {
+      recentTransactionViewModel.closeListener();
+      recentTransactionViewModel.getRecentTransaction(globalModel);
+    });
   }
 
   @override

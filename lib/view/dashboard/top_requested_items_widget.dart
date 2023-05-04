@@ -50,6 +50,10 @@ class _TopReqItemsWidgetState extends State<TopReqItemsWidget> {
     // globalModel.addListener(() {
     //   topReqViewModel.getTopReqItems(globalModel);
     // });
+    globalModel.addListener(() {
+      topReqViewModel.closeListener();
+      topReqViewModel.getTopReqItems(globalModel);
+    });
   }
 
   @override

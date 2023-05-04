@@ -106,7 +106,6 @@ class TotalCostStatModel extends ChangeNotifier {
   }
 
   Future getSumCostValue(GlobalModel globalModel) async {
-    print("AREA ID --> ${globalModel.areaId}");
     _costSummaryList!.clear();
 
     _totalReqListener = databaseRef

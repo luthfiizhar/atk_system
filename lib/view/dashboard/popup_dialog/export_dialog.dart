@@ -1,8 +1,13 @@
 import 'package:atk_system_ga/constant/colors.dart';
 import 'package:atk_system_ga/constant/text_style.dart';
+import 'package:atk_system_ga/functions/api_request.dart';
+import 'package:atk_system_ga/view_model/global_model.dart';
 import 'package:atk_system_ga/widgets/buttons.dart';
+import 'package:atk_system_ga/widgets/dialogs.dart';
 import 'package:atk_system_ga/widgets/dropdown.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'dart:html' as html;
 
 class ExportDashboardPopup extends StatefulWidget {
   ExportDashboardPopup({super.key, this.dataType = "", s});
@@ -14,7 +19,10 @@ class ExportDashboardPopup extends StatefulWidget {
 }
 
 class _ExportDashboardPopupState extends State<ExportDashboardPopup> {
+  ApiService apiService = ApiService();
+  late GlobalModel globalModel;
   int selectedMonth = 1;
+  String selectedMonthString = "January";
   List monthOption = [
     {"value": 1, "name": "January"},
     {"value": 2, "name": "February"},
@@ -35,12 +43,33 @@ class _ExportDashboardPopupState extends State<ExportDashboardPopup> {
   ];
 
   int selectedYear = 1;
+  String selectedYearName = "2023";
   List yearOption = [
     {"value": 1, "name": "2023"},
     {"value": 2, "name": "2022"},
     {"value": 3, "name": "2021"},
     {"value": 4, "name": "2020"},
   ];
+
+  download(String string, String fileName) {
+    html.AnchorElement anchorElement =
+        html.document.createElement('a') as html.AnchorElement;
+
+    anchorElement.href = string;
+    anchorElement.download = string.split("/").last;
+    anchorElement.style.display = "none";
+    anchorElement.target = '_blank';
+    anchorElement.setAttribute("download", fileName);
+    html.document.body!.children.add(anchorElement);
+    anchorElement.click();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    globalModel = Provider.of<GlobalModel>(context, listen: false);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Dialog(
@@ -135,7 +164,14 @@ class _ExportDashboardPopupState extends State<ExportDashboardPopup> {
                     suffixIcon: const Icon(
                       Icons.keyboard_arrow_down_sharp,
                     ),
-                    onChanged: (value) {},
+                    onChanged: (value) {
+                      selectedMonth = value;
+                      for (var element in monthOption) {
+                        if (value == element["value"]) {
+                          selectedMonthString = element["name"];
+                        }
+                      }
+                    },
                     value: selectedMonth,
                   ),
                 ),
@@ -160,7 +196,14 @@ class _ExportDashboardPopupState extends State<ExportDashboardPopup> {
                     suffixIcon: const Icon(
                       Icons.keyboard_arrow_down_sharp,
                     ),
-                    onChanged: (value) {},
+                    onChanged: (value) {
+                      for (var element in yearOption) {
+                        if (value == element["value"]) {
+                          selectedYearName = element["name"];
+                        }
+                      }
+                      print(selectedYearName);
+                    },
                     value: selectedYear,
                   ),
                 ),
@@ -187,7 +230,33 @@ class _ExportDashboardPopupState extends State<ExportDashboardPopup> {
                   text: "Export",
                   disabled: false,
                   padding: ButtonSize().mediumSize(),
-                  onTap: () {},
+                  onTap: () {
+                    apiService
+                        .exportDashboard(
+                      widget.dataType,
+                      selectedMonth.toString(),
+                      selectedYearName,
+                      globalModel,
+                    )
+                        .then((value) {
+                      if (value["Status"].toString() == "200") {
+                        download(
+                            value["Data"]["File"], value["Data"]["FileName"]);
+                        Navigator.of(context).pop(1);
+                      } else {
+                        showDialog(
+                          context: context,
+                          builder: (context) => AlertDialogBlack(
+                            title: value["Title"],
+                            contentText: value["Message"],
+                            isSuccess: false,
+                          ),
+                        );
+                      }
+                    }).onError((error, stackTrace) {
+                      print(error);
+                    });
+                  },
                 ),
               ],
             )

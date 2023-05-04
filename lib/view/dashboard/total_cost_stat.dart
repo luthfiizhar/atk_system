@@ -27,11 +27,7 @@ class _TotalCostStatisticState extends State<TotalCostStatistic> {
     totalCostStatModel.getSumCostValue(globalModel);
     globalModel.addListener(() async {
       totalCostStatModel.closeListener();
-      totalCostStatModel
-          .getSumCostValue(globalModel)
-          .onError((error, stackTrace) {
-        print("Error $error");
-      });
+      totalCostStatModel.getSumCostValue(globalModel);
     });
   }
 
