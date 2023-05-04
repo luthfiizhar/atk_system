@@ -1443,4 +1443,49 @@ class ApiService {
       return e;
     }
   }
+
+  Future exportDashboard(
+    String dataType,
+    String month,
+    String year,
+    GlobalModel globalModel,
+  ) async {
+    var box = await Hive.openBox('userLogin');
+    var jwt = box.get('jwTtoken') != "" ? box.get('jwtToken') : "";
+
+    // jwt = jwtToken;
+
+    var url = Uri.https(
+        urlConstant.apiUrl, '/GSS_Backend/public/api/dashboard/export');
+    Map<String, String> requestHeader = {
+      'Authorization': 'Bearer $jwt',
+      'Content-Type': 'application/json',
+    };
+
+    var bodySend = """
+    {
+        "DataType": "$dataType",
+        "Role": "${globalModel.role}",
+        "CompName": "${globalModel.companyName}",
+        "CompID": "${globalModel.businessUnit}",
+        "Site": "${globalModel.areaId}",
+        "Month": $month,
+        "Year": "$year"
+    }
+    """;
+
+    try {
+      var response = await http.post(
+        url,
+        headers: requestHeader,
+        body: bodySend,
+      );
+
+      var data = json.decode(response.body);
+
+      return data;
+    } on Error catch (e) {
+      return e;
+    }
+  }
 }
