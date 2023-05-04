@@ -2,6 +2,7 @@ import 'package:atk_system_ga/constant/colors.dart';
 import 'package:atk_system_ga/constant/text_style.dart';
 import 'package:atk_system_ga/models/main_page_model.dart';
 import 'package:atk_system_ga/models/search_term.dart';
+import 'package:atk_system_ga/view/dashboard/popup_dialog/export_dialog.dart';
 import 'package:atk_system_ga/view/dashboard/widget_icon.dart';
 import 'package:atk_system_ga/view_model/global_model.dart';
 import 'package:atk_system_ga/widgets/buttons.dart';
@@ -270,7 +271,14 @@ class _ActualPriceItemPopupState extends State<ActualPriceItemPopup> {
                         RegularButton(
                           text: 'Export',
                           disabled: false,
-                          onTap: () {},
+                          onTap: () {
+                            showDialog(
+                              context: context,
+                              builder: (context) => ExportDashboardPopup(
+                                dataType: "Item Actual Pricing",
+                              ),
+                            );
+                          },
                           padding: ButtonSize().mediumSize(),
                         )
                       ],

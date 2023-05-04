@@ -1,7 +1,9 @@
 import 'package:atk_system_ga/constant/colors.dart';
 import 'package:atk_system_ga/constant/text_style.dart';
+import 'package:atk_system_ga/functions/api_request.dart';
 import 'package:atk_system_ga/models/main_page_model.dart';
 import 'package:atk_system_ga/models/search_term.dart';
+import 'package:atk_system_ga/view/dashboard/popup_dialog/export_dialog.dart';
 import 'package:atk_system_ga/view/dashboard/recent_transaction.dart';
 import 'package:atk_system_ga/view/dashboard/widget_icon.dart';
 import 'package:atk_system_ga/view_model/global_model.dart';
@@ -23,6 +25,8 @@ class _RecentTransactionPopUpState extends State<RecentTransactionPopUp> {
   SearchTerm searchTerm = SearchTerm();
   TextEditingController _search = TextEditingController();
 
+  ApiService apiService = ApiService();
+
   FocusNode showPerRowsNode = FocusNode();
 
   double rowPerPage = 10;
@@ -33,29 +37,7 @@ class _RecentTransactionPopUpState extends State<RecentTransactionPopUp> {
   List showPerPageList = ["5", "10", "20", "50", "100"];
   int resultRows = 0;
 
-  List<RecentTransactionTable> recTransList = [
-    RecentTransactionTable(
-      siteName: "ST INFORMA PURI MALL JKT",
-      type: "Additional Settlement",
-      cost: "30000000",
-      date: "24 Sep 2023",
-      time: "12:07",
-    ),
-    RecentTransactionTable(
-      siteName: "ST INFORMA PURI MALL JKT",
-      type: "Additional Settlement",
-      cost: "30000000",
-      date: "24 Sep 2023",
-      time: "12:07",
-    ),
-    RecentTransactionTable(
-      siteName: "ST INFORMA PURI MALL JKT",
-      type: "Additional Settlement",
-      cost: "30000000",
-      date: "24 Sep 2023",
-      time: "12:07",
-    ),
-  ];
+  List<RecentTransactionTable> recTransList = [];
 
   countPagination(int totalRow) {
     setState(() {
@@ -71,6 +53,32 @@ class _RecentTransactionPopUpState extends State<RecentTransactionPopUp> {
       }
       showedPage = availablePage.take(5).toList();
     });
+  }
+
+  Future getData() {
+    recTransList.clear();
+    return apiService
+        .dashboardRecentTransactionDetail(searchTerm, globalModel)
+        .then((value) {
+      print(value);
+      if (value["Status"].toString() == "200") {
+        List listResult = value["Data"]["List"];
+        resultRows = value["Data"]["TotalRows"];
+        for (var element in listResult) {
+          recTransList.add(
+            RecentTransactionTable(
+              formId: element["FormID"],
+              siteName: element["SiteName"],
+              type: element["Type"],
+              date: element["Date"],
+              time: element["Time"],
+              cost: element["Cost"],
+            ),
+          );
+        }
+      } else {}
+      setState(() {});
+    }).onError((error, stackTrace) {});
   }
 
   onTapHeader(String orderBy) {
@@ -147,7 +155,18 @@ class _RecentTransactionPopUpState extends State<RecentTransactionPopUp> {
       //   default:
       // }
       searchTerm.orderBy = orderBy;
+      getData().then((value) {});
       // updateTable().then((value) {});
+    });
+  }
+
+  search() {
+    searchTerm.keywords = _search.text;
+    currentPaginatedPage = 1;
+    searchTerm.pageNumber = currentPaginatedPage.toString();
+
+    getData().then((value) {
+      countPagination(resultRows);
     });
   }
 
@@ -156,6 +175,10 @@ class _RecentTransactionPopUpState extends State<RecentTransactionPopUp> {
     // TODO: implement initState
     super.initState();
     globalModel = Provider.of<GlobalModel>(context, listen: false);
+
+    getData().then((value) {
+      countPagination(resultRows);
+    });
   }
 
   @override
@@ -226,6 +249,10 @@ class _RecentTransactionPopUpState extends State<RecentTransactionPopUp> {
                       enabled: true,
                       prefixIcon: const Icon(Icons.search),
                       hintText: "Search here ...",
+                      maxLines: 1,
+                      onFieldSubmitted: (value) {
+                        search();
+                      },
                     ),
                   ),
                 ],
@@ -282,7 +309,14 @@ class _RecentTransactionPopUpState extends State<RecentTransactionPopUp> {
                         RegularButton(
                           text: 'Export',
                           disabled: false,
-                          onTap: () {},
+                          onTap: () {
+                            showDialog(
+                              context: context,
+                              builder: (context) => ExportDashboardPopup(
+                                dataType: "Recent Transaction",
+                              ),
+                            );
+                          },
                           padding: ButtonSize().mediumSize(),
                         )
                       ],
@@ -553,6 +587,10 @@ class _RecentTransactionPopUpState extends State<RecentTransactionPopUp> {
                           searchTerm.pageNumber =
                               currentPaginatedPage.toString();
 
+                          getData().then((value) {
+                            countPagination(resultRows);
+                          });
+
                           // apiReq
                           //     .getMyBookingList(searchTerm)
                           //     .then((value) {
@@ -623,19 +661,9 @@ class _RecentTransactionPopUpState extends State<RecentTransactionPopUp> {
                                     });
                                     searchTerm.pageNumber =
                                         currentPaginatedPage.toString();
-                                    // apiReq
-                                    //     .getMyBookingList(
-                                    //         searchTerm)
-                                    //     .then((value) {
-                                    //   setState(() {
-                                    //     myBookList =
-                                    //         value['Data']['List'];
-                                    //     countPagination(
-                                    //         value['Data']
-                                    //             ['TotalRows']);
-                                    //   });
-                                    // });
-                                    // updateList();
+                                    getData().then((value) {
+                                      setState(() {});
+                                    });
                                   },
                             child: Container(
                               width: 35,
@@ -714,15 +742,9 @@ class _RecentTransactionPopUpState extends State<RecentTransactionPopUp> {
                           }
                           searchTerm.pageNumber =
                               currentPaginatedPage.toString();
-
-                          // apiReq
-                          //     .getMyBookingList(searchTerm)
-                          //     .then((value) {
-                          //   myBookList = value['Data']['List'];
-                          //   countPagination(
-                          //       value['Data']['TotalRows']);
-                          // });
-                          // updateList();
+                          getData().then((value) {
+                            setState(() {});
+                          });
                         });
                       }
                     : null,

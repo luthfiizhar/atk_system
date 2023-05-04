@@ -3,6 +3,7 @@ import 'package:atk_system_ga/constant/constraints.dart';
 import 'package:atk_system_ga/constant/text_style.dart';
 import 'package:atk_system_ga/models/main_page_model.dart';
 import 'package:atk_system_ga/models/search_term.dart';
+import 'package:atk_system_ga/view/dashboard/popup_dialog/export_dialog.dart';
 import 'package:atk_system_ga/view/dashboard/popup_dialog/recent_transaction_popup.dart';
 import 'package:atk_system_ga/view/dashboard/show_more_icon.dart';
 import 'package:atk_system_ga/view/dashboard/widget_icon.dart';
@@ -137,6 +138,15 @@ class _RecentTransactionWidgetState extends State<RecentTransactionWidget> {
     );
   }
 
+  export() {
+    showDialog(
+      context: context,
+      builder: (context) => ExportDashboardPopup(
+        dataType: "Recent Transaction",
+      ),
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -186,7 +196,7 @@ class _RecentTransactionWidgetState extends State<RecentTransactionWidget> {
                   //   ),
                   // ),
                   ShowMoreIcon(
-                    exportCallback: () {},
+                    exportCallback: export,
                     showMoreCallback: showMoreDialog,
                   ),
                   // InkWell(

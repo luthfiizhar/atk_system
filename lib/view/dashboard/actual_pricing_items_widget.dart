@@ -3,6 +3,7 @@ import 'package:atk_system_ga/constant/constraints.dart';
 import 'package:atk_system_ga/constant/text_style.dart';
 import 'package:atk_system_ga/models/main_page_model.dart';
 import 'package:atk_system_ga/view/dashboard/popup_dialog/actual_price_item_popup.dart';
+import 'package:atk_system_ga/view/dashboard/popup_dialog/export_dialog.dart';
 import 'package:atk_system_ga/view/dashboard/show_more_icon.dart';
 import 'package:atk_system_ga/view/dashboard/widget_icon.dart';
 import 'package:atk_system_ga/view_model/global_model.dart';
@@ -34,6 +35,15 @@ class _ActualPricingItemWidgetState extends State<ActualPricingItemWidget> {
     );
   }
 
+  export() {
+    showDialog(
+      context: context,
+      builder: (context) => ExportDashboardPopup(
+        dataType: "Actual Price Item",
+      ),
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -54,8 +64,8 @@ class _ActualPricingItemWidgetState extends State<ActualPricingItemWidget> {
           padding: cardPadding,
           decoration: cardDecoration,
           constraints: const BoxConstraints(
-            minWidth: 500,
-            maxWidth: 550,
+            minWidth: 585,
+            maxWidth: 585,
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -79,6 +89,7 @@ class _ActualPricingItemWidgetState extends State<ActualPricingItemWidget> {
                   ),
                   ShowMoreIcon(
                     showMoreCallback: showMore,
+                    exportCallback: export,
                   ),
                 ],
               ),
@@ -185,89 +196,92 @@ class ActualPriceItemContainer extends StatelessWidget {
   }
 
   Widget content(ActualPriceItem content) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        SizedBox(
-          width: 200,
-          child: Row(
-            children: [
-              content.dir == "up"
-                  ? const Icon(
-                      Icons.arrow_drop_up_sharp,
-                      color: orangeAccent,
-                      size: 36,
-                    )
-                  : const Icon(
-                      Icons.arrow_drop_down_sharp,
-                      color: greenAcent,
-                      size: 36,
-                    ),
-              Text(
-                "${content.percentage} %",
-                style: helveticaText.copyWith(
-                  fontSize: 32,
-                  fontWeight: FontWeight.w400,
-                  color: content.dir == "up" ? orangeAccent : greenAcent,
+    return SizedBox(
+      height: 92,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 200,
+            child: Row(
+              children: [
+                content.dir == "up"
+                    ? const Icon(
+                        Icons.arrow_drop_up_sharp,
+                        color: orangeAccent,
+                        size: 36,
+                      )
+                    : const Icon(
+                        Icons.arrow_drop_down_sharp,
+                        color: greenAcent,
+                        size: 36,
+                      ),
+                Text(
+                  "${content.percentage} %",
+                  style: helveticaText.copyWith(
+                    fontSize: 32,
+                    fontWeight: FontWeight.w400,
+                    color: content.dir == "up" ? orangeAccent : greenAcent,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Text(
-                content.itemName,
-                style: helveticaText.copyWith(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                  color: davysGray,
-                  height: 1.375,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  content.itemName,
+                  style: helveticaText.copyWith(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    color: davysGray,
+                    height: 1.375,
+                  ),
                 ),
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              Text(
-                "Base Price: ${formatCurrency.format(content.basePrice)}",
-                style: helveticaText.copyWith(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w300,
-                  color: davysGray,
-                  fontStyle: FontStyle.italic,
+                const SizedBox(
+                  height: 10,
                 ),
-              ),
-              RichText(
-                text: TextSpan(
-                  text: "Avg. Actual Price: ",
+                Text(
+                  "Base Price: ${formatCurrency.format(content.basePrice)}",
                   style: helveticaText.copyWith(
                     fontSize: 14,
                     fontWeight: FontWeight.w300,
                     color: davysGray,
                     fontStyle: FontStyle.italic,
                   ),
-                  children: [
-                    TextSpan(
-                        text: formatCurrency.format(content.avgPrice),
-                        style: helveticaText.copyWith(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w300,
-                          color:
-                              content.dir == "up" ? orangeAccent : greenAcent,
-                          fontStyle: FontStyle.italic,
-                          height: 1.5,
-                        ))
-                  ],
                 ),
-              )
-            ],
-          ),
-        )
-      ],
+                RichText(
+                  text: TextSpan(
+                    text: "Avg. Actual Price: ",
+                    style: helveticaText.copyWith(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w300,
+                      color: davysGray,
+                      fontStyle: FontStyle.italic,
+                    ),
+                    children: [
+                      TextSpan(
+                          text: formatCurrency.format(content.avgPrice),
+                          style: helveticaText.copyWith(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w300,
+                            color:
+                                content.dir == "up" ? orangeAccent : greenAcent,
+                            fontStyle: FontStyle.italic,
+                            height: 1.5,
+                          ))
+                    ],
+                  ),
+                )
+              ],
+            ),
+          )
+        ],
+      ),
     );
   }
 }

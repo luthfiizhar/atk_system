@@ -20,10 +20,27 @@ class CostSummaryBarChartModel extends ChangeNotifier {
   List? _yearsList;
   int? _maxY;
 
+  bool _isTouched = false;
+  bool _showPercentage = true;
+
   List<CostSummBarChart> get summCostBarChart => _summCostBarChartResult ?? [];
   List get resultsData => _resultsData ?? [];
   List get yearsList => _yearsList ?? [];
   int get maxY => _maxY ?? 1000000;
+
+  bool get isTouched => _isTouched;
+  bool get showPercentage => _showPercentage;
+
+  void setIsTouched(bool value) {
+    _isTouched = value;
+    if (value) {
+      _showPercentage = false;
+    } else {
+      _showPercentage = true;
+    }
+
+    notifyListeners();
+  }
 
   void setResultsData(List<CostSummBarChart> value) {
     _summCostBarChartResult = value;
@@ -315,6 +332,21 @@ class SiteRankViewModel extends ChangeNotifier {
   void setRankList(List<SiteRanking> value) {
     _rankItem = value;
     notifyListeners();
+  }
+
+  Future getBudgetCostComparison(GlobalModel globalModel) async {
+    _rankSiteStream = databaseRef
+        .child(
+            '${globalModel.businessUnit}/${globalModel.role}/SiteRanking/BudgetCost/${globalModel.areaId}/${globalModel.year}/${globalModel.month}')
+        .onValue
+        .listen((event) {
+      final jsonString = event.snapshot.value;
+      dynamic result = List<dynamic>.from(jsonString as dynamic);
+      List<SiteRanking> list =
+          (result as List).map((e) => SiteRanking.fromJson(e)).toList();
+
+      setRankList(list);
+    });
   }
 
   Future getHighestCost(GlobalModel globalModel) async {

@@ -1,7 +1,9 @@
 import 'package:atk_system_ga/constant/colors.dart';
 import 'package:atk_system_ga/constant/text_style.dart';
+import 'package:atk_system_ga/functions/api_request.dart';
 import 'package:atk_system_ga/models/main_page_model.dart';
 import 'package:atk_system_ga/models/search_term.dart';
+import 'package:atk_system_ga/view/dashboard/popup_dialog/export_dialog.dart';
 import 'package:atk_system_ga/view/dashboard/widget_icon.dart';
 import 'package:atk_system_ga/view_model/global_model.dart';
 import 'package:atk_system_ga/widgets/buttons.dart';
@@ -19,6 +21,7 @@ class TopRequestedItemPopup extends StatefulWidget {
 
 class _TopRequestedItemPopupState extends State<TopRequestedItemPopup> {
   SearchTerm searchTerm = SearchTerm();
+  ApiService apiService = ApiService();
   TextEditingController _search = TextEditingController();
   late GlobalModel globalModel;
   FocusNode showPerRowsNode = FocusNode();
@@ -31,20 +34,9 @@ class _TopRequestedItemPopupState extends State<TopRequestedItemPopup> {
   List showPerPageList = ["5", "10", "20", "50", "100"];
   int resultRows = 0;
 
-  List<TopRequestedItems> listItem = [
-    TopRequestedItems(
-      name: "TINTA EPSON L100 / L 200 / L 210 / L 3110 MAGENTA",
-      qty: "8888",
-      rank: "1",
-      totalCost: "300000",
-    ),
-    TopRequestedItems(
-      name: "022122F0 ODNER A4",
-      qty: "8888",
-      rank: "2",
-      totalCost: "300000",
-    ),
-  ];
+  List<TopRequestedItems> listItem = [];
+
+  bool isLoading = true;
 
   onTapHeader(String orderBy) {
     setState(() {
@@ -124,10 +116,55 @@ class _TopRequestedItemPopupState extends State<TopRequestedItemPopup> {
     });
   }
 
+  countPagination(int totalRow) {
+    setState(() {
+      availablePage.clear();
+      if (totalRow == 0) {
+        currentPaginatedPage = 1;
+        showedPage = [1];
+        availablePage = [1];
+      }
+      var totalPage = totalRow / int.parse(searchTerm.max);
+      for (var i = 0; i < totalPage.ceil(); i++) {
+        availablePage.add(i + 1);
+      }
+      showedPage = availablePage.take(5).toList();
+    });
+  }
+
+  Future getData() {
+    isLoading = true;
+    setState(() {});
+    return apiService
+        .dashboardTopRequestedItemDetail(searchTerm, globalModel)
+        .then((value) {
+      isLoading = false;
+      if (value["Status"].toString() == "200") {
+        dynamic listResult = value["Data"]["List"];
+        resultRows = value["Data"]["TotalRows"];
+        List<TopRequestedItems> itemResult = [];
+        for (var element in listResult) {
+          itemResult.add(TopRequestedItems(
+            name: element["ItemName"],
+            qty: element["TotalRequested"].toString(),
+          ));
+        }
+        listItem = itemResult;
+      } else {}
+      setState(() {});
+    }).onError((error, stackTrace) {
+      print(error);
+    });
+  }
+
   @override
   void initState() {
     super.initState();
     globalModel = Provider.of<GlobalModel>(context, listen: false);
+
+    getData().then((value) {
+      countPagination(resultRows);
+    });
   }
 
   @override
@@ -198,6 +235,7 @@ class _TopRequestedItemPopupState extends State<TopRequestedItemPopup> {
                       enabled: true,
                       prefixIcon: const Icon(Icons.search),
                       hintText: "Search here ...",
+                      maxLines: 1,
                     ),
                   ),
                 ],
@@ -206,29 +244,35 @@ class _TopRequestedItemPopupState extends State<TopRequestedItemPopup> {
                 height: 30,
               ),
               headerTable(),
-              ListView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: listItem.length,
-                itemBuilder: (context, index) {
-                  return Column(
-                    children: [
-                      index == 0
-                          ? const SizedBox()
-                          : const Divider(
-                              thickness: 0.5,
-                              color: grayx11,
-                            ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 28),
-                        child: TopRequestedItemPopupContainer(
-                          item: listItem[index],
-                        ),
+              isLoading
+                  ? const Center(
+                      child: CircularProgressIndicator(
+                        color: eerieBlack,
                       ),
-                    ],
-                  );
-                },
-              ),
+                    )
+                  : ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: listItem.length,
+                      itemBuilder: (context, index) {
+                        return Column(
+                          children: [
+                            index == 0
+                                ? const SizedBox()
+                                : const Divider(
+                                    thickness: 0.5,
+                                    color: grayx11,
+                                  ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 20),
+                              child: TopRequestedItemPopupContainer(
+                                item: listItem[index],
+                              ),
+                            ),
+                          ],
+                        );
+                      },
+                    ),
               const SizedBox(
                 height: 50,
               ),
@@ -254,7 +298,14 @@ class _TopRequestedItemPopupState extends State<TopRequestedItemPopup> {
                         RegularButton(
                           text: 'Export',
                           disabled: false,
-                          onTap: () {},
+                          onTap: () {
+                            showDialog(
+                              context: context,
+                              builder: (context) => ExportDashboardPopup(
+                                dataType: "Top Requested Item",
+                              ),
+                            );
+                          },
                           padding: ButtonSize().mediumSize(),
                         )
                       ],
@@ -454,17 +505,9 @@ class _TopRequestedItemPopupState extends State<TopRequestedItemPopup> {
                       currentPaginatedPage = 1;
                       searchTerm.pageNumber = "1";
                       searchTerm.max = value!.toString();
-                      // apiReq
-                      //     .getMyBookingList(searchTerm)
-                      //     .then((value) {
-                      //   myBookList = value['Data']['List'];
-                      //   countPagination(value['Data']['TotalRows']);
-                      //   showedPage = availablePage.take(5).toList();
-                      // });
-                      // updateList().then((value) {
-                      //   countPagination(resultRows);
-                      //   showedPage = availablePage.take(5).toList();
-                      // });
+                      getData().then((value) {
+                        countPagination(resultRows);
+                      });
                     });
                   },
                   value: searchTerm.max,
@@ -481,18 +524,6 @@ class _TopRequestedItemPopupState extends State<TopRequestedItemPopup> {
                       ),
                     );
                   }).toList(),
-                  // DropdownMenuItem(
-                  //   child: Text('10'),
-                  //   value: 10,
-                  // ),
-                  // DropdownMenuItem(
-                  //   child: Text('50'),
-                  //   value: 50,
-                  // ),
-                  // DropdownMenuItem(
-                  //   child: Text('100'),
-                  //   value: 100,
-                  // ),
                   enabled: true,
                   hintText: 'Choose',
                   suffixIcon: const Icon(
@@ -524,14 +555,9 @@ class _TopRequestedItemPopupState extends State<TopRequestedItemPopup> {
                           searchTerm.pageNumber =
                               currentPaginatedPage.toString();
 
-                          // apiReq
-                          //     .getMyBookingList(searchTerm)
-                          //     .then((value) {
-                          //   myBookList = value['Data']['List'];
-                          //   countPagination(
-                          //       value['Data']['TotalRows']);
-                          // });
-                          // updateList();
+                          getData().then((value) {
+                            setState(() {});
+                          });
                         });
                       }
                     : null,
@@ -594,19 +620,9 @@ class _TopRequestedItemPopupState extends State<TopRequestedItemPopup> {
                                     });
                                     searchTerm.pageNumber =
                                         currentPaginatedPage.toString();
-                                    // apiReq
-                                    //     .getMyBookingList(
-                                    //         searchTerm)
-                                    //     .then((value) {
-                                    //   setState(() {
-                                    //     myBookList =
-                                    //         value['Data']['List'];
-                                    //     countPagination(
-                                    //         value['Data']
-                                    //             ['TotalRows']);
-                                    //   });
-                                    // });
-                                    // updateList();
+                                    getData().then((value) {
+                                      setState(() {});
+                                    });
                                   },
                             child: Container(
                               width: 35,
@@ -686,14 +702,9 @@ class _TopRequestedItemPopupState extends State<TopRequestedItemPopup> {
                           searchTerm.pageNumber =
                               currentPaginatedPage.toString();
 
-                          // apiReq
-                          //     .getMyBookingList(searchTerm)
-                          //     .then((value) {
-                          //   myBookList = value['Data']['List'];
-                          //   countPagination(
-                          //       value['Data']['TotalRows']);
-                          // });
-                          // updateList();
+                          getData().then((value) {
+                            setState(() {});
+                          });
                         });
                       }
                     : null,

@@ -1,10 +1,12 @@
 import 'package:atk_system_ga/constant/colors.dart';
 import 'package:atk_system_ga/constant/text_style.dart';
 import 'package:atk_system_ga/models/main_page_model.dart';
+import 'package:atk_system_ga/view_model/global_model.dart';
 import 'package:atk_system_ga/widgets/buttons.dart';
 import 'package:atk_system_ga/widgets/dropdown.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class DashboardOptionsWidget extends StatefulWidget {
   const DashboardOptionsWidget({super.key});
@@ -14,6 +16,7 @@ class DashboardOptionsWidget extends StatefulWidget {
 }
 
 class _DashboardOptionsWidgetState extends State<DashboardOptionsWidget> {
+  late GlobalModel globalModel;
   List<BusinessUnit> businessUnit = [
     BusinessUnit(photo: "assets/ace_logo.png"),
   ];
@@ -31,7 +34,19 @@ class _DashboardOptionsWidgetState extends State<DashboardOptionsWidget> {
     {"value": 1, "name": "January"},
     {"value": 2, "name": "February"},
     {"value": 3, "name": "Maret"},
-    {"value": 4, "name": "April"}
+    {"value": 4, "name": "April"},
+    {"value": 5, "name": "May"},
+    {"value": 6, "name": "June"},
+    {"value": 7, "name": "July"},
+    {"value": 8, "name": "August"},
+    {"value": 9, "name": "September"},
+    {"value": 10, "name": "October"},
+    {"value": 11, "name": "November"},
+    {"value": 12, "name": "December"},
+    {"value": 13, "name": "Q1"},
+    {"value": 14, "name": "Q2"},
+    {"value": 15, "name": "Q3"},
+    {"value": 16, "name": "Q4"}
   ];
 
   int selectedYear = 1;
@@ -39,8 +54,15 @@ class _DashboardOptionsWidgetState extends State<DashboardOptionsWidget> {
     {"value": 1, "name": "2023"},
     {"value": 2, "name": "2022"},
     {"value": 3, "name": "2021"},
-    {"value": 4, "name": "2020"}
+    {"value": 4, "name": "2020"},
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    globalModel = Provider.of<GlobalModel>(context, listen: false);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Dialog(
@@ -213,7 +235,10 @@ class _DashboardOptionsWidgetState extends State<DashboardOptionsWidget> {
                 RegularButton(
                   text: "Apply",
                   disabled: false,
-                  onTap: () {},
+                  onTap: () {
+                    globalModel.setMonth(selectedMonth.toString());
+                    globalModel.setYear(selectedYear.toString());
+                  },
                   padding: ButtonSize().mediumSize(),
                 )
               ],

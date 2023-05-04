@@ -50,7 +50,10 @@ class ShowMoreIcon extends StatelessWidget {
                 ),
                 PopupMenuItem(
                   onTap: () {
-                    exportCallback();
+                    Future.delayed(
+                      const Duration(seconds: 0),
+                      () => exportCallback(),
+                    );
                   },
                   child: Text(
                     'Export',

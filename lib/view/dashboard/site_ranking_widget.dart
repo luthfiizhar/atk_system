@@ -2,6 +2,7 @@ import 'package:atk_system_ga/constant/colors.dart';
 import 'package:atk_system_ga/constant/constraints.dart';
 import 'package:atk_system_ga/constant/text_style.dart';
 import 'package:atk_system_ga/models/main_page_model.dart';
+import 'package:atk_system_ga/view/dashboard/popup_dialog/export_dialog.dart';
 import 'package:atk_system_ga/view/dashboard/popup_dialog/site_ranking_popup.dart';
 import 'package:atk_system_ga/view/dashboard/show_more_icon.dart';
 import 'package:atk_system_ga/view/dashboard/widget_icon.dart';
@@ -23,6 +24,7 @@ class _SiteRankingWidgetState extends State<SiteRankingWidget> {
   late GlobalModel globalModel;
   FocusNode optionsNode = FocusNode();
   List sortOptions = [
+    {"value": 7, "title": "Cost vs Budget"},
     {"value": 1, "title": "Highest Cost"},
     {"value": 2, "title": "Lowest Cost"},
     {"value": 3, "title": "Highest Budget"},
@@ -94,12 +96,48 @@ class _SiteRankingWidgetState extends State<SiteRankingWidget> {
     );
   }
 
-  int selectedSort = 1;
+  export() {
+    String dataType = "Site Ranking - ";
+    switch (selectedSort) {
+      case 1:
+        dataType += "Highest Cost";
+        break;
+      case 2:
+        dataType += "Lowest Cost";
+        break;
+      case 3:
+        dataType += "Highest Budget";
+        break;
+      case 4:
+        dataType += "Lowest Budget";
+        break;
+      case 5:
+        dataType += "Fastest Leadtime";
+        break;
+      case 6:
+        dataType += "Slowest Leadtime";
+        break;
+      case 7:
+        dataType += "Cost vs Budget";
+        break;
+      default:
+    }
+    showDialog(
+      context: context,
+      builder: (context) => ExportDashboardPopup(
+        dataType: dataType,
+      ),
+    );
+  }
+
+  int selectedSort = 7;
   @override
   void initState() {
     super.initState();
     globalModel = Provider.of<GlobalModel>(context, listen: false);
-    siteRankViewModel.getHighestCost(globalModel).onError((error, stackTrace) {
+    siteRankViewModel
+        .getBudgetCostComparison(globalModel)
+        .onError((error, stackTrace) {
       siteRankViewModel.closeListener();
     });
   }
@@ -171,6 +209,7 @@ class _SiteRankingWidgetState extends State<SiteRankingWidget> {
                                   model.getSlowestLeadTime(globalModel);
                                   break;
                                 case 7:
+                                  model.getBudgetCostComparison(globalModel);
                                   // model.getHighestCost(globalModel);
                                   break;
                                 default:
@@ -195,6 +234,7 @@ class _SiteRankingWidgetState extends State<SiteRankingWidget> {
                       ),
                       ShowMoreIcon(
                         showMoreCallback: showMore,
+                        exportCallback: export,
                       ),
                     ],
                   )
@@ -208,7 +248,7 @@ class _SiteRankingWidgetState extends State<SiteRankingWidget> {
                 child: ConstrainedBox(
                   constraints: const BoxConstraints(
                     minHeight: 400,
-                    maxHeight: 540,
+                    maxHeight: 670,
                   ),
                   child: model.rankItem.isEmpty
                       ? const Center(
@@ -268,7 +308,7 @@ class _SiteRankingWidgetState extends State<SiteRankingWidget> {
                                                             item: e,
                                                           );
                                                         case 7:
-                                                          return RankingItemSubmissionContainer(
+                                                          return BudgetCostComparisonContainer(
                                                             item: e,
                                                           );
                                                         default:
@@ -338,7 +378,7 @@ class _SiteRankingWidgetState extends State<SiteRankingWidget> {
                                                             item: e,
                                                           );
                                                         case 7:
-                                                          return RankingItemSubmissionContainer(
+                                                          return BudgetCostComparisonContainer(
                                                             item: e,
                                                           );
                                                         default:
@@ -725,6 +765,189 @@ class RankingItemBudgetContainer extends StatelessWidget {
                   ),
                 ],
               )
+            ],
+          ),
+        )
+      ],
+    );
+  }
+}
+
+class BudgetCostComparisonContainer extends StatelessWidget {
+  BudgetCostComparisonContainer({super.key, SiteRanking? item})
+      : item = item ?? SiteRanking();
+
+  SiteRanking item;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          item.rank.toString().padLeft(2, "0"),
+          style: helveticaText.copyWith(
+            fontSize: 32,
+            fontWeight: FontWeight.w700,
+            color: orangeAccent,
+          ),
+        ),
+        const SizedBox(
+          width: 18,
+        ),
+        Expanded(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                item.siteName,
+                style: helveticaText.copyWith(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w300,
+                  color: davysGray,
+                ),
+              ),
+              const SizedBox(
+                height: 12,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    formatCurrency.format(item.costCompare),
+                    style: helveticaText.copyWith(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w400,
+                      color: davysGray,
+                    ),
+                  ),
+                  Text(
+                    formatCurrency.format(item.budgetCompare),
+                    style: helveticaText.copyWith(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w400,
+                      color: davysGray,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(
+                height: 8,
+              ),
+              ConstrainedBox(
+                constraints: const BoxConstraints(
+                  minWidth: double.infinity,
+                  maxWidth: double.infinity,
+                  maxHeight: 25,
+                  minHeight: 25,
+                ),
+                child: Stack(
+                  children: [
+                    Align(
+                      alignment: Alignment.center,
+                      child: Container(
+                        height: double.infinity,
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          color: platinumDark,
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                      ),
+                    ),
+                    item.percentageCompare! < 90
+                        ? LayoutBuilder(builder: (context, constraint) {
+                            return Align(
+                              alignment: Alignment.centerLeft,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Container(
+                                    height: constraint.maxHeight,
+                                    width: (constraint.maxWidth *
+                                        (item.percentageCompare! / 100)),
+                                    decoration: const BoxDecoration(
+                                      color: orangeAccent,
+                                      borderRadius: BorderRadius.only(
+                                        topLeft: Radius.circular(5),
+                                        bottomLeft: Radius.circular(5),
+                                      ),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(left: 10),
+                                    child: Text(
+                                      "${item.percentageCompare} %",
+                                      style: helveticaText.copyWith(
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w700,
+                                        color: orangeAccent,
+                                      ),
+                                    ),
+                                  )
+                                ],
+                              ),
+                            );
+                          })
+                        : Align(
+                            alignment: Alignment.centerLeft,
+                            child:
+                                LayoutBuilder(builder: (context, constraint) {
+                              return Container(
+                                height: double.infinity,
+                                width: item.percentageCompare! > 100
+                                    ? constraint.maxWidth
+                                    : constraint.maxWidth *
+                                        (item.percentageCompare! / 100),
+                                decoration: BoxDecoration(
+                                  color: orangeAccent,
+                                  borderRadius: BorderRadius.circular(5),
+                                ),
+                                child: Align(
+                                  alignment: Alignment.centerRight,
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(right: 10),
+                                    child: Text(
+                                      "${item.percentageCompare} %",
+                                      style: helveticaText.copyWith(
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w700,
+                                        color: white,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              );
+                            }),
+                          ),
+                  ],
+                ),
+              ),
+              const SizedBox(
+                height: 8,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "Cost",
+                    style: helveticaText.copyWith(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w300,
+                      color: davysGray,
+                    ),
+                  ),
+                  Text(
+                    "Budget",
+                    style: helveticaText.copyWith(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w300,
+                      color: davysGray,
+                    ),
+                  ),
+                ],
+              ),
             ],
           ),
         )

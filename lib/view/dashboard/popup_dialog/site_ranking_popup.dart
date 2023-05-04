@@ -1,9 +1,13 @@
 import 'package:atk_system_ga/constant/colors.dart';
 import 'package:atk_system_ga/constant/text_style.dart';
+import 'package:atk_system_ga/functions/api_request.dart';
+import 'package:atk_system_ga/models/main_page_model.dart';
 import 'package:atk_system_ga/models/search_term.dart';
+import 'package:atk_system_ga/view/dashboard/popup_dialog/export_dialog.dart';
 import 'package:atk_system_ga/view/dashboard/widget_icon.dart';
 import 'package:atk_system_ga/view_model/global_model.dart';
 import 'package:atk_system_ga/widgets/buttons.dart';
+import 'package:atk_system_ga/widgets/dialogs.dart';
 import 'package:atk_system_ga/widgets/dropdown.dart';
 import 'package:atk_system_ga/widgets/search_input_field.dart';
 import 'package:flutter/material.dart';
@@ -22,6 +26,7 @@ class SiteRankingPopup extends StatefulWidget {
 }
 
 class _SiteRankingPopupState extends State<SiteRankingPopup> {
+  ApiService apiService = ApiService();
   SearchTerm searchTerm = SearchTerm();
   TextEditingController _search = TextEditingController();
   late GlobalModel globalModel;
@@ -35,6 +40,9 @@ class _SiteRankingPopupState extends State<SiteRankingPopup> {
   List showPerPageList = ["5", "10", "20", "50", "100"];
   int resultRows = 0;
 
+  String dataType = "Lowes Cost";
+
+  List<SiteRanking> itemList = [];
   onTapHeader(String orderBy) {
     setState(() {
       // tempItems = items;
@@ -113,10 +121,102 @@ class _SiteRankingPopupState extends State<SiteRankingPopup> {
     });
   }
 
+  setDataType() {
+    switch (widget.option) {
+      case 1:
+        dataType = "Highest Cost";
+        break;
+      case 2:
+        dataType = "Lowest Cost";
+        break;
+      case 3:
+        dataType = "Highest Budget";
+        break;
+      case 4:
+        dataType = "Lowest Budget";
+        break;
+      case 5:
+        dataType = "Fastest Leadtime";
+        break;
+      case 6:
+        dataType = "Slowest Leadtime";
+        break;
+      case 7:
+        dataType = "Cost vs Budget";
+        break;
+      default:
+        dataType = "Cost vs Budget";
+    }
+  }
+
+  Future getData() {
+    setDataType();
+    return apiService
+        .dashboardSiteRanking(searchTerm, globalModel, dataType)
+        .then((value) {
+      if (value["Status"].toString() == "200") {
+        List<SiteRanking> temp = [];
+        List itemResult = value["Data"]["List"];
+        resultRows = value["Data"]["TotalRows"];
+
+        for (var element in itemResult) {
+          temp.add(SiteRanking(
+            siteName: element["SiteName"],
+            rank: element["Order"].toString(),
+            cost: element["TotalCost"] ?? 0,
+            budgetAddition: element["AdditionalBudget"] ?? 0,
+            budgetMonthly: element["MonthlyBudget"] ?? 0,
+            percentageCompare: element["Percentage"] ?? 0.0,
+            reqTime: element["RequestTime"] ?? "",
+            settlementTime: element["SettlementTime"] ?? "",
+            budgetCompare: element["Budget"] ?? 0,
+            costCompare: element["Cost"] ?? 0,
+          ));
+        }
+        itemList = temp;
+
+        print("LIST -> $itemList");
+        setState(() {});
+      } else {
+        String status = value["Status"];
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialogBlack(
+            title: value["Title"],
+            contentText: value["Message"],
+            isSuccess: false,
+          ),
+        ).then((value) {
+          if (status == "401") {}
+        });
+      }
+      // setState(() {});
+    }).onError((error, stackTrace) {});
+  }
+
+  countPagination(int totalRow) {
+    setState(() {
+      availablePage.clear();
+      if (totalRow == 0) {
+        currentPaginatedPage = 1;
+        showedPage = [1];
+        availablePage = [1];
+      }
+      var totalPage = totalRow / int.parse(searchTerm.max);
+      for (var i = 0; i < totalPage.ceil(); i++) {
+        availablePage.add(i + 1);
+      }
+      showedPage = availablePage.take(5).toList();
+    });
+  }
+
   @override
   void initState() {
     super.initState();
     globalModel = Provider.of<GlobalModel>(context, listen: false);
+    getData().then((value) {
+      countPagination(resultRows);
+    });
   }
 
   @override
@@ -198,7 +298,7 @@ class _SiteRankingPopupState extends State<SiteRankingPopup> {
               ListView.builder(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
-                itemCount: 4,
+                itemCount: itemList.length,
                 itemBuilder: (context, index) {
                   return Column(
                     children: [
@@ -209,8 +309,11 @@ class _SiteRankingPopupState extends State<SiteRankingPopup> {
                               color: grayx11,
                             ),
                       Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 28),
-                        child: SizedBox(),
+                        padding: const EdgeInsets.symmetric(vertical: 20),
+                        child: SiteRankDetailListContainer(
+                          item: itemList[index],
+                          option: widget.option,
+                        ),
                       ),
                     ],
                   );
@@ -241,7 +344,14 @@ class _SiteRankingPopupState extends State<SiteRankingPopup> {
                         RegularButton(
                           text: 'Export',
                           disabled: false,
-                          onTap: () {},
+                          onTap: () {
+                            showDialog(
+                              context: context,
+                              builder: (context) => ExportDashboardPopup(
+                                dataType: dataType,
+                              ),
+                            );
+                          },
                           padding: ButtonSize().mediumSize(),
                         )
                       ],
@@ -270,6 +380,8 @@ class _SiteRankingPopupState extends State<SiteRankingPopup> {
         return leadTimeHeader();
       case 6:
         return leadTimeHeader();
+      case 7:
+        return comparisonHeader();
       default:
         return const SizedBox();
     }
@@ -575,6 +687,112 @@ class _SiteRankingPopupState extends State<SiteRankingPopup> {
     );
   }
 
+  Widget comparisonHeader() {
+    return Column(
+      children: [
+        Row(
+          children: [
+            Expanded(
+              flex: 2,
+              child: InkWell(
+                onTap: () {
+                  onTapHeader("SiteName");
+                },
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        'Site Name',
+                        style: headerTableTextStyle,
+                      ),
+                    ),
+                    iconSort("SiteName"),
+                    const SizedBox(
+                      width: 20,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Expanded(
+              child: InkWell(
+                onTap: () {
+                  onTapHeader("Cost");
+                },
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        'Cost',
+                        style: headerTableTextStyle,
+                      ),
+                    ),
+                    iconSort("Cost"),
+                    const SizedBox(
+                      width: 20,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Expanded(
+              child: InkWell(
+                onTap: () {
+                  onTapHeader("Percentage");
+                },
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        'Usage',
+                        style: headerTableTextStyle,
+                      ),
+                    ),
+                    iconSort("Percentage"),
+                    const SizedBox(
+                      width: 20,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Expanded(
+              child: InkWell(
+                onTap: () {
+                  onTapHeader("Budget");
+                },
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        'Budget',
+                        style: headerTableTextStyle,
+                      ),
+                    ),
+                    iconSort("Budget"),
+                    const SizedBox(
+                      width: 20,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            // const SizedBox(
+            //   width: 20,
+            // )
+          ],
+        ),
+        const SizedBox(
+          height: 12,
+        ),
+        const Divider(
+          color: spanishGray,
+          thickness: 1,
+        ),
+      ],
+    );
+  }
+
   Widget iconSort(String orderBy) {
     return SizedBox(
       width: 20,
@@ -653,17 +871,9 @@ class _SiteRankingPopupState extends State<SiteRankingPopup> {
                       currentPaginatedPage = 1;
                       searchTerm.pageNumber = "1";
                       searchTerm.max = value!.toString();
-                      // apiReq
-                      //     .getMyBookingList(searchTerm)
-                      //     .then((value) {
-                      //   myBookList = value['Data']['List'];
-                      //   countPagination(value['Data']['TotalRows']);
-                      //   showedPage = availablePage.take(5).toList();
-                      // });
-                      // updateList().then((value) {
-                      //   countPagination(resultRows);
-                      //   showedPage = availablePage.take(5).toList();
-                      // });
+                      getData().then((value) {
+                        countPagination(resultRows);
+                      });
                     });
                   },
                   value: searchTerm.max,
@@ -722,15 +932,7 @@ class _SiteRankingPopupState extends State<SiteRankingPopup> {
                           }
                           searchTerm.pageNumber =
                               currentPaginatedPage.toString();
-
-                          // apiReq
-                          //     .getMyBookingList(searchTerm)
-                          //     .then((value) {
-                          //   myBookList = value['Data']['List'];
-                          //   countPagination(
-                          //       value['Data']['TotalRows']);
-                          // });
-                          // updateList();
+                          getData().then((value) {});
                         });
                       }
                     : null,
@@ -793,19 +995,7 @@ class _SiteRankingPopupState extends State<SiteRankingPopup> {
                                     });
                                     searchTerm.pageNumber =
                                         currentPaginatedPage.toString();
-                                    // apiReq
-                                    //     .getMyBookingList(
-                                    //         searchTerm)
-                                    //     .then((value) {
-                                    //   setState(() {
-                                    //     myBookList =
-                                    //         value['Data']['List'];
-                                    //     countPagination(
-                                    //         value['Data']
-                                    //             ['TotalRows']);
-                                    //   });
-                                    // });
-                                    // updateList();
+                                    getData().then((value) {});
                                   },
                             child: Container(
                               width: 35,
@@ -885,14 +1075,7 @@ class _SiteRankingPopupState extends State<SiteRankingPopup> {
                           searchTerm.pageNumber =
                               currentPaginatedPage.toString();
 
-                          // apiReq
-                          //     .getMyBookingList(searchTerm)
-                          //     .then((value) {
-                          //   myBookList = value['Data']['List'];
-                          //   countPagination(
-                          //       value['Data']['TotalRows']);
-                          // });
-                          // updateList();
+                          getData().then((value) {});
                         });
                       }
                     : null,
@@ -913,6 +1096,240 @@ class _SiteRankingPopupState extends State<SiteRankingPopup> {
             ],
           ),
         ),
+      ],
+    );
+  }
+}
+
+class SiteRankDetailListContainer extends StatelessWidget {
+  SiteRankDetailListContainer({super.key, SiteRanking? item, this.option = 1})
+      : item = item ?? SiteRanking();
+
+  SiteRanking item;
+  int option;
+
+  TextStyle light = helveticaText.copyWith(
+    fontSize: 16,
+    fontWeight: FontWeight.w300,
+    color: eerieBlack,
+  );
+
+  TextStyle normal = helveticaText.copyWith(
+    fontSize: 16,
+    fontWeight: FontWeight.w400,
+    color: davysGray,
+  );
+
+  @override
+  Widget build(BuildContext context) {
+    switch (option) {
+      case 1:
+        return costContainer();
+      case 2:
+        return costContainer();
+      case 3:
+        return budgetContainer();
+      case 4:
+        return budgetContainer();
+      case 5:
+        return timeContainer();
+      case 6:
+        return timeContainer();
+      case 7:
+        return comparisonContainer();
+      default:
+        return costContainer();
+    }
+  }
+
+  Widget costContainer() {
+    return Row(
+      children: [
+        SizedBox(
+          width: 75,
+          child: Text(
+            item.rank,
+            style: helveticaText.copyWith(
+              fontSize: 16,
+              fontWeight: FontWeight.w400,
+              color: davysGray,
+            ),
+          ),
+        ),
+        Expanded(
+          flex: 2,
+          child: Text(
+            item.siteName,
+            style: helveticaText.copyWith(
+              fontSize: 16,
+              fontWeight: FontWeight.w400,
+              color: davysGray,
+            ),
+          ),
+        ),
+        Expanded(
+          child: Text(
+            formatCurrency.format(item.cost),
+            style: helveticaText.copyWith(
+              fontSize: 16,
+              fontWeight: FontWeight.w300,
+              color: eerieBlack,
+            ),
+          ),
+        ),
+        const SizedBox(
+          width: 50,
+        )
+      ],
+    );
+  }
+
+  Widget budgetContainer() {
+    return Row(
+      children: [
+        SizedBox(
+          width: 75,
+          child: Text(
+            item.rank,
+            style: normal,
+          ),
+        ),
+        Expanded(
+          flex: 2,
+          child: Text(
+            item.siteName,
+            style: normal,
+          ),
+        ),
+        Expanded(
+          child: Text(
+            formatCurrency.format(item.budgetMonthly),
+            style: light,
+          ),
+        ),
+        Expanded(
+          child: Text(
+            formatCurrency.format(item.budgetAddition),
+            style: light,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget timeContainer() {
+    return Row(
+      children: [
+        SizedBox(
+          width: 75,
+          child: Row(
+            children: [
+              Text(
+                item.rank,
+                style: normal,
+              ),
+            ],
+          ),
+        ),
+        Expanded(
+          flex: 2,
+          child: Text(
+            item.siteName,
+            style: normal,
+          ),
+        ),
+        Expanded(
+          child: Text(
+            item.reqTime!,
+            style: light,
+          ),
+        ),
+        Expanded(
+          child: Text(
+            item.settlementTime!,
+            style: light,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget comparisonContainer() {
+    return Row(
+      children: [
+        Expanded(
+          flex: 2,
+          child: Text(
+            item.siteName,
+            style: normal,
+          ),
+        ),
+        Expanded(
+          child: Text(
+            formatCurrency.format(item.costCompare),
+            style: light,
+          ),
+        ),
+        Expanded(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              SizedBox(
+                width: 120,
+                height: 25,
+                child: LayoutBuilder(builder: (context, constraint) {
+                  return Stack(
+                    children: [
+                      Container(
+                        width: double.infinity,
+                        height: double.infinity,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(3),
+                          color: platinumDark,
+                        ),
+                      ),
+                      Container(
+                        height: double.infinity,
+                        width: constraint.maxWidth *
+                            (item.percentageCompare! / 100),
+                        decoration: BoxDecoration(
+                          borderRadius: item.percentageCompare! < 100
+                              ? const BorderRadius.only(
+                                  topLeft: Radius.circular(3),
+                                  bottomLeft: Radius.circular(3),
+                                )
+                              : BorderRadius.circular(3),
+                          color: orangeAccent,
+                        ),
+                      ),
+                    ],
+                  );
+                }),
+              ),
+              const SizedBox(
+                width: 13,
+              ),
+              Text(
+                "${item.percentageCompare} %",
+                style: helveticaText.copyWith(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w300,
+                  color: orangeAccent,
+                ),
+              )
+            ],
+          ),
+        ),
+        Expanded(
+          child: Text(
+            formatCurrency.format(item.budgetCompare),
+            style: light,
+          ),
+        ),
+        // const SizedBox(
+        //   width: 20,
+        // )
       ],
     );
   }

@@ -210,9 +210,9 @@ class _DashboardPageState extends State<DashboardPage> {
                           children: [
                             TotalCostStatistic(),
                             SummCostBarChart(),
-                            RecentTransactionWidget(),
                             TopReqItemsWidget(),
                             ActualPricingItemWidget(),
+                            RecentTransactionWidget(),
                             SiteRankingWidget(),
                           ],
                         ),

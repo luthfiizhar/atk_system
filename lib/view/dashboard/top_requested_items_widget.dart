@@ -2,6 +2,7 @@ import 'package:atk_system_ga/constant/colors.dart';
 import 'package:atk_system_ga/constant/constraints.dart';
 import 'package:atk_system_ga/constant/text_style.dart';
 import 'package:atk_system_ga/models/main_page_model.dart';
+import 'package:atk_system_ga/view/dashboard/popup_dialog/export_dialog.dart';
 import 'package:atk_system_ga/view/dashboard/popup_dialog/top_requested__item_popup.dart';
 import 'package:atk_system_ga/view/dashboard/show_more_icon.dart';
 import 'package:atk_system_ga/view/dashboard/widget_icon.dart';
@@ -32,6 +33,15 @@ class _TopReqItemsWidgetState extends State<TopReqItemsWidget> {
     );
   }
 
+  export() {
+    showDialog(
+      context: context,
+      builder: (context) => ExportDashboardPopup(
+        dataType: "Top Requested Item",
+      ),
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -49,8 +59,8 @@ class _TopReqItemsWidgetState extends State<TopReqItemsWidget> {
       child: Consumer<TopReqItemsViewModel>(builder: (context, model, child) {
         return Container(
           constraints: const BoxConstraints(
-            minWidth: 500,
-            maxWidth: 600,
+            minWidth: 585,
+            maxWidth: 585,
           ),
           padding: cardPadding,
           decoration: cardDecoration,
@@ -76,6 +86,7 @@ class _TopReqItemsWidgetState extends State<TopReqItemsWidget> {
                   ),
                   ShowMoreIcon(
                     showMoreCallback: showMore,
+                    exportCallback: export,
                   ),
                 ],
               ),

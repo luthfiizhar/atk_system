@@ -9,8 +9,8 @@ class GlobalModel extends ChangeNotifier {
   String? _month;
 
   String get businessUnit => _businessUnit ?? "1";
-  String get role => _role ?? "AreaManager";
-  String get areaId => _areaId ?? "AM 01";
+  String get role => _role ?? "RegionalManager";
+  String get areaId => _areaId ?? "RM1";
   String get year => _year ?? DateTime.now().year.toString();
   String get month => _month ?? "Apr";
 
