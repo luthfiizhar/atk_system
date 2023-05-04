@@ -200,9 +200,12 @@ class ActualPriceItem {
 class SiteRanking {
   String rank;
   String siteName;
+  int? costCompare;
+  int? budgetCompare;
   int? cost;
   int? budgetMonthly;
   int? budgetAddition;
+  double? percentageCompare;
   String? reqTime;
   String? settlementTime;
   String? reqSubmission;
@@ -218,18 +221,24 @@ class SiteRanking {
     this.settlementTime = "",
     this.reqSubmission = "",
     this.settlementSubmission = "",
+    this.percentageCompare = 50.0,
+    this.costCompare = 0,
+    this.budgetCompare = 0,
   });
 
   SiteRanking.fromJson(Map<String, dynamic> json)
       : rank = json["Order"] ?? "1",
         siteName = json["SiteName"] ?? "",
         cost = json["TotalCost"] ?? 0,
+        costCompare = json["Cost"] ?? 0,
+        budgetCompare = json["Budget"] ?? 0,
         budgetMonthly = json["MonthlyBudget"] ?? 0,
         budgetAddition = json["AdditionalBudget"] ?? 0,
         reqTime = json["RequestTime"] ?? "",
         settlementTime = json["SettlementTime"] ?? "",
         reqSubmission = json["RequestSub"] ?? "",
-        settlementSubmission = json["SettlementSub"] ?? "";
+        settlementSubmission = json["SettlementSub"] ?? "",
+        percentageCompare = json["Percentage"] ?? 50.0;
 
   Map<String, String> toJson() => {
         "Rank": rank.toString(),
