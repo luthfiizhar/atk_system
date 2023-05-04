@@ -34,9 +34,11 @@ class BlackDropdown extends StatelessWidget {
   Widget build(BuildContext context) {
     return DropdownButtonFormField2(
       buttonStyleData: ButtonStyleData(
-        width: width,
-        height: 39,
-      ),
+          width: width,
+          height: 39,
+          overlayColor: MaterialStateProperty.resolveWith<Color>((states) {
+            return Colors.transparent;
+          })),
       // buttonWidth: 120,
       // buttonHeight: 39,
       value: value,
@@ -95,11 +97,12 @@ class BlackDropdown extends StatelessWidget {
             width: 1,
           ),
         ),
-        fillColor: enabled!
-            ? focusNode!.hasFocus
-                ? culturedWhite
-                : Colors.transparent
-            : platinum,
+        // fillColor: enabled!
+        //     ? focusNode!.hasFocus
+        //         ? culturedWhite
+        //         : Colors.transparent
+        //     : platinum,
+        fillColor: Colors.transparent,
         filled: true,
         isDense: true,
         // isCollapsed: true,
