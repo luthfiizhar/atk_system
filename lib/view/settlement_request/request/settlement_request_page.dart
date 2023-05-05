@@ -508,46 +508,46 @@ class _SettlementRequestPageState extends State<SettlementRequestPage> {
         ),
         Row(
           children: [
-            CustomRegularButton(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 20,
-                vertical: 18,
-              ),
-              onTap: () {
-                showDialog(
-                  context: context,
-                  builder: (context) => AddNewItemDialog(
-                    formId: widget.formId,
-                  ),
-                ).then((value) {
-                  if (value == 1) {
-                    updateList().then((value) {});
-                  }
-                });
-              },
-              child: Wrap(
-                runAlignment: WrapAlignment.center,
-                children: [
-                  const Icon(
-                    Icons.add,
-                    size: 14,
-                  ),
-                  const SizedBox(
-                    width: 10,
-                  ),
-                  Text(
-                    'Add Item',
-                    style: helveticaText.copyWith(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  )
-                ],
-              ),
-            ),
-            const SizedBox(
-              width: 15,
-            ),
+            // CustomRegularButton(
+            //   padding: const EdgeInsets.symmetric(
+            //     horizontal: 20,
+            //     vertical: 18,
+            //   ),
+            //   onTap: () {
+            //     showDialog(
+            //       context: context,
+            //       builder: (context) => AddNewItemDialog(
+            //         formId: widget.formId,
+            //       ),
+            //     ).then((value) {
+            //       if (value == 1) {
+            //         updateList().then((value) {});
+            //       }
+            //     });
+            //   },
+            //   child: Wrap(
+            //     runAlignment: WrapAlignment.center,
+            //     children: [
+            //       const Icon(
+            //         Icons.add,
+            //         size: 14,
+            //       ),
+            //       const SizedBox(
+            //         width: 10,
+            //       ),
+            //       Text(
+            //         'Add Item',
+            //         style: helveticaText.copyWith(
+            //           fontSize: 14,
+            //           fontWeight: FontWeight.w700,
+            //         ),
+            //       )
+            //     ],
+            //   ),
+            // ),
+            // const SizedBox(
+            //   width: 15,
+            // ),
             SizedBox(
               width: 220,
               child: SearchInputField(
