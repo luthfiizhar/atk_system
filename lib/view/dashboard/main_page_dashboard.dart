@@ -1,14 +1,19 @@
+import 'package:atk_system_ga/constant/colors.dart';
 import 'package:atk_system_ga/constant/constraints.dart';
 import 'package:atk_system_ga/layout/layout_page.dart';
 import 'package:atk_system_ga/view/dashboard/actual_pricing_items_widget.dart';
+import 'package:atk_system_ga/view/dashboard/dashboard_options_widget.dart';
 import 'package:atk_system_ga/view/dashboard/main_page_header.dart';
 import 'package:atk_system_ga/view/dashboard/recent_transaction.dart';
+import 'package:atk_system_ga/view/dashboard/site_ranking_widget.dart';
 import 'package:atk_system_ga/view/dashboard/summary_cost_bar_chart.dart';
 import 'package:atk_system_ga/view/dashboard/top_requested_items_widget.dart';
 import 'package:atk_system_ga/view/dashboard/total_cost_stat.dart';
+import 'package:atk_system_ga/view_model/global_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:provider/provider.dart';
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
@@ -19,6 +24,81 @@ class DashboardPage extends StatefulWidget {
 
 class _DashboardPageState extends State<DashboardPage> {
   MapController mapController = MapController();
+  GlobalModel globalModel = GlobalModel();
+
+  OverlayEntry? optionsOverlayEntry;
+  GlobalKey optionsKey = GlobalKey();
+  LayerLink optionsLayerLink = LayerLink();
+  bool isOverlayOptionsOpen = false;
+
+  bool isOptionsVisible = false;
+
+  OverlayEntry OptionsOverlay() {
+    RenderBox? renderBox =
+        optionsKey.currentContext!.findRenderObject() as RenderBox?;
+    var size = renderBox!.size;
+    var offset = renderBox.localToGlobal(Offset.zero);
+
+    return OverlayEntry(
+        builder: (context) => Positioned(
+            // top: offset.dy + size.height + 10,
+            width: 485,
+            child: CompositedTransformFollower(
+              showWhenUnlinked: false,
+              offset: Offset(-350, size.height),
+              link: optionsLayerLink,
+              child: Padding(
+                padding: const EdgeInsets.only(
+                  top: 5,
+                ),
+                child: Material(
+                  elevation: 4.0,
+                  color: white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: const DashboardOptionsWidget(),
+                ),
+              ),
+            )));
+  }
+
+  showOptionsOverlay() {
+    if (isOverlayOptionsOpen) {
+      if (optionsOverlayEntry!.mounted) {
+        optionsOverlayEntry!.remove();
+      }
+      isOverlayOptionsOpen = false;
+    } else {
+      isOverlayOptionsOpen = true;
+      optionsOverlayEntry = OptionsOverlay();
+      Overlay.of(context).insert(optionsOverlayEntry!);
+    }
+  }
+
+  closeOverlay() {
+    if (isOverlayOptionsOpen) {
+      if (optionsOverlayEntry!.mounted) {
+        optionsOverlayEntry!.remove();
+      }
+      isOverlayOptionsOpen = false;
+    }
+  }
+
+  openOptions() {
+    if (isOptionsVisible) {
+      isOptionsVisible = false;
+    } else {
+      isOptionsVisible = true;
+    }
+    setState(() {});
+  }
+
+  closeOptions() {
+    isOptionsVisible = false;
+    setState(() {});
+  }
+
   final notFilledPoints = <LatLng>[
     LatLng(51.5, -0.09),
     LatLng(53.3498, -6.2603),
@@ -72,42 +152,89 @@ class _DashboardPageState extends State<DashboardPage> {
     LatLng(52, -16),
     LatLng(52, -17),
   ];
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return LayoutPageWeb(
-      index: 0,
-      child: ConstrainedBox(
-        constraints: pageContstraint,
-        child: Align(
-          alignment: Alignment.topCenter,
-          child: SizedBox(
-            width: 1200,
-            child: Column(
-              // crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const SizedBox(
-                  height: 15,
-                ),
-                DashboardHeader(),
-                // MapContainer(),
-                const SizedBox(
-                  height: 10,
-                ),
-                Wrap(
-                  spacing: 30,
-                  runSpacing: 30,
-                  children: const [
-                    TotalCostStatistic(),
-                    SummCostBarChart(),
-                    // RecentTransactionWidget(),
-                    TopReqItemsWidget(),
-                    ActualPricingItemWidget()
+    return ChangeNotifierProvider.value(
+      value: globalModel,
+      child: GestureDetector(
+        onTap: () {
+          closeOptions();
+        },
+        child: LayoutPageWeb(
+          index: 0,
+          child: ConstrainedBox(
+            constraints: pageContstraint,
+            child: Align(
+              alignment: Alignment.topCenter,
+              child: SizedBox(
+                width: 1200,
+                child: Stack(
+                  children: [
+                    Column(
+                      // crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        const SizedBox(
+                          height: 15,
+                        ),
+                        // ElevatedButton(
+                        //     onPressed: () {
+                        //       globalModel.setAreaId("RM2");
+                        //       // print(globalModel.areaId);
+                        //     },
+                        //     child: Text('Check')),
+                        // ElevatedButton(
+                        //     onPressed: () {
+                        //       globalModel.setAreaId("RM3");
+                        //       // print(globalModel.areaId);
+                        //     },
+                        //     child: Text('Check2')),
+                        DashboardHeader(
+                          showOverlay: openOptions,
+                          unitKey: optionsKey,
+                          optionLayerLink: optionsLayerLink,
+                          closeOverlay: closeOptions,
+                        ),
+                        // MapContainer(),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        Wrap(
+                          spacing: 30,
+                          runSpacing: 30,
+                          children: [
+                            TotalCostStatistic(),
+                            SummCostBarChart(),
+                            TopReqItemsWidget(),
+                            ActualPricingItemWidget(),
+                            RecentTransactionWidget(),
+                            SiteRankingWidget(),
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 50,
+                        )
+                      ],
+                    ),
+                    Visibility(
+                      visible: isOptionsVisible,
+                      child: Positioned(
+                        top: 120,
+                        right: 0,
+                        child: GestureDetector(
+                          onTap: () {},
+                          child: DashboardOptionsWidget(),
+                        ),
+                      ),
+                    )
                   ],
                 ),
-                const SizedBox(
-                  height: 50,
-                )
-              ],
+              ),
             ),
           ),
         ),

@@ -23,6 +23,7 @@ const Color orangeAccent = Color(0xFFF26529);
 const Color white = Color(0xFFFFFFFF);
 const Color blueAccent = Color(0xFF0097D6);
 const Color platinumLight = Color(0xFFEBEBEB);
+const Color platinumDark = Color(0xFFE1E1E1);
 const Color violetAccent = Color(0xFF585EAA);
 const Color yellow = Color(0xFFFFCB1F);
 const Color yellowAccent = Color(0xFFFFD64F);

@@ -2,6 +2,11 @@ import 'package:atk_system_ga/constant/colors.dart';
 import 'package:atk_system_ga/constant/constraints.dart';
 import 'package:atk_system_ga/constant/text_style.dart';
 import 'package:atk_system_ga/models/main_page_model.dart';
+import 'package:atk_system_ga/view/dashboard/popup_dialog/export_dialog.dart';
+import 'package:atk_system_ga/view/dashboard/popup_dialog/top_requested__item_popup.dart';
+import 'package:atk_system_ga/view/dashboard/show_more_icon.dart';
+import 'package:atk_system_ga/view/dashboard/widget_icon.dart';
+import 'package:atk_system_ga/view_model/global_model.dart';
 import 'package:atk_system_ga/view_model/main_page_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
@@ -17,11 +22,38 @@ class TopReqItemsWidget extends StatefulWidget {
 
 class _TopReqItemsWidgetState extends State<TopReqItemsWidget> {
   TopReqItemsViewModel topReqViewModel = TopReqItemsViewModel();
+  late GlobalModel globalModel;
+
+  GlobalKey iconKey = GlobalKey();
+
+  showMore() {
+    showDialog(
+      context: context,
+      builder: (context) => const TopRequestedItemPopup(),
+    );
+  }
+
+  export() {
+    showDialog(
+      context: context,
+      builder: (context) => ExportDashboardPopup(
+        dataType: "Top Requested Item",
+      ),
+    );
+  }
 
   @override
   void initState() {
     super.initState();
-    topReqViewModel.getTopReqItems();
+    globalModel = Provider.of<GlobalModel>(context, listen: false);
+    topReqViewModel.getTopReqItems(globalModel);
+    // globalModel.addListener(() {
+    //   topReqViewModel.getTopReqItems(globalModel);
+    // });
+    globalModel.addListener(() {
+      topReqViewModel.closeListener();
+      topReqViewModel.getTopReqItems(globalModel);
+    });
   }
 
   @override
@@ -31,17 +63,36 @@ class _TopReqItemsWidgetState extends State<TopReqItemsWidget> {
       child: Consumer<TopReqItemsViewModel>(builder: (context, model, child) {
         return Container(
           constraints: const BoxConstraints(
-            minWidth: 500,
-            maxWidth: 600,
+            minWidth: 585,
+            maxWidth: 585,
           ),
           padding: cardPadding,
           decoration: cardDecoration,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                "Top Requested Item",
-                style: cardTitle,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Wrap(
+                    spacing: 10,
+                    runAlignment: WrapAlignment.center,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    children: [
+                      TitleIcon(
+                        icon: "assets/icons/top_requested_icon.png",
+                      ),
+                      Text(
+                        "Top Requested Item",
+                        style: cardTitle,
+                      ),
+                    ],
+                  ),
+                  ShowMoreIcon(
+                    showMoreCallback: showMore,
+                    exportCallback: export,
+                  ),
+                ],
               ),
               const SizedBox(
                 height: 30,
@@ -54,7 +105,7 @@ class _TopReqItemsWidgetState extends State<TopReqItemsWidget> {
                     )
                   : ListView.builder(
                       shrinkWrap: true,
-                      itemCount: model.topReqItems.length,
+                      itemCount: model.topReqItems.take(5).length,
                       physics: const NeverScrollableScrollPhysics(),
                       itemBuilder: (context, index) {
                         return Column(

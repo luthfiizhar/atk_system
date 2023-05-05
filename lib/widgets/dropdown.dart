@@ -15,6 +15,7 @@ class BlackDropdown extends StatelessWidget {
     this.onTap,
     this.value,
     this.customHeights,
+    this.width = 120,
   }) : focusNode = focusNode ?? FocusNode();
 
   final List<DropdownMenuItem<dynamic>>? items;
@@ -27,14 +28,17 @@ class BlackDropdown extends StatelessWidget {
   final VoidCallback? onTap;
   final dynamic value;
   final List<double>? customHeights;
+  double width;
 
   @override
   Widget build(BuildContext context) {
     return DropdownButtonFormField2(
-      buttonStyleData: const ButtonStyleData(
-        width: 120,
-        height: 39,
-      ),
+      buttonStyleData: ButtonStyleData(
+          width: width,
+          height: 39,
+          overlayColor: MaterialStateProperty.resolveWith<Color>((states) {
+            return Colors.transparent;
+          })),
       // buttonWidth: 120,
       // buttonHeight: 39,
       value: value,
@@ -93,11 +97,12 @@ class BlackDropdown extends StatelessWidget {
             width: 1,
           ),
         ),
-        fillColor: enabled!
-            ? focusNode!.hasFocus
-                ? culturedWhite
-                : Colors.transparent
-            : platinum,
+        // fillColor: enabled!
+        //     ? focusNode!.hasFocus
+        //         ? culturedWhite
+        //         : Colors.transparent
+        //     : platinum,
+        fillColor: Colors.transparent,
         filled: true,
         isDense: true,
         // isCollapsed: true,
@@ -127,10 +132,10 @@ class BlackDropdown extends StatelessWidget {
           color: sonicSilver,
         ),
       ),
-      style: const TextStyle(
+      style: helveticaText.copyWith(
         fontSize: 16,
         fontWeight: FontWeight.w300,
-        fontFamily: 'Helvetica',
+        color: eerieBlack,
       ),
       validator: validator,
     );
@@ -369,21 +374,24 @@ class TransparentDropdown extends StatelessWidget {
         ),
         // icon: suffixIcon,
       ),
-      customButton: Wrap(
-        spacing: 5,
-        crossAxisAlignment: WrapCrossAlignment.center,
-        runAlignment: WrapAlignment.center,
-        children: [
-          Text(
-            value,
-            style: helveticaText.copyWith(
-              fontSize: 16,
-              fontWeight: FontWeight.w300,
-              color: sonicSilver,
+      customButton: Align(
+        alignment: Alignment.centerRight,
+        child: Wrap(
+          spacing: 5,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          runAlignment: WrapAlignment.center,
+          children: [
+            Text(
+              value,
+              style: helveticaText.copyWith(
+                fontSize: 16,
+                fontWeight: FontWeight.w300,
+                color: sonicSilver,
+              ),
             ),
-          ),
-          suffixIcon!,
-        ],
+            suffixIcon!,
+          ],
+        ),
       ),
       iconStyleData: IconStyleData(
         icon: suffixIcon!,

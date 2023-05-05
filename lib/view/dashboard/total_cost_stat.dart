@@ -2,12 +2,15 @@ import 'package:atk_system_ga/constant/colors.dart';
 import 'package:atk_system_ga/constant/constraints.dart';
 import 'package:atk_system_ga/constant/text_style.dart';
 import 'package:atk_system_ga/models/main_page_model.dart';
+import 'package:atk_system_ga/view_model/global_model.dart';
 import 'package:atk_system_ga/view_model/main_page_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class TotalCostStatistic extends StatefulWidget {
-  const TotalCostStatistic({super.key});
+  TotalCostStatistic({super.key});
+
+  // GlobalModel globalModel;
 
   @override
   State<TotalCostStatistic> createState() => _TotalCostStatisticState();
@@ -15,32 +18,23 @@ class TotalCostStatistic extends StatefulWidget {
 
 class _TotalCostStatisticState extends State<TotalCostStatistic> {
   TotalCostStatModel totalCostStatModel = TotalCostStatModel();
-  // List<CostSummaryCard> infoCost = [
-  //   CostSummaryCard(
-  //     title: 'Total Cost',
-  //     value: 888888888,
-  //     isHigher: true,
-  //     from: 'from last month',
-  //   ),
-  //   CostSummaryCard(
-  //     title: 'Cost Settled',
-  //     value: 888888888,
-  //     isHigher: false,
-  //     from: 'from last month',
-  //   ),
-  //   CostSummaryCard(
-  //     title: 'Budget',
-  //     value: 888888888,
-  //     isHigher: false,
-  //     from: 'from last month',
-  //   ),
-  // ];
+  late GlobalModel globalModel;
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    totalCostStatModel.getSumCostValue();
+    globalModel = Provider.of<GlobalModel>(context, listen: false);
+    totalCostStatModel.getSumCostValue(globalModel);
+    globalModel.addListener(() async {
+      totalCostStatModel.closeListener();
+      totalCostStatModel.getSumCostValue(globalModel);
+    });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    globalModel.removeListener(() {});
   }
 
   @override

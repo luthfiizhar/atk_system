@@ -8,6 +8,7 @@ import 'package:atk_system_ga/models/item_class.dart';
 import 'package:atk_system_ga/models/search_term.dart';
 import 'package:atk_system_ga/models/supplies_request_class.dart';
 import 'package:atk_system_ga/models/transaction_class.dart';
+import 'package:atk_system_ga/view_model/global_model.dart';
 import 'package:hive/hive.dart';
 import 'package:http/http.dart' as http;
 
@@ -1272,6 +1273,204 @@ class ApiService {
     {
         "FormID" : "$formId",
         "ItemID" : $itemId
+    }
+    """;
+
+    try {
+      var response = await http.post(
+        url,
+        headers: requestHeader,
+        body: bodySend,
+      );
+
+      var data = json.decode(response.body);
+
+      return data;
+    } on Error catch (e) {
+      return e;
+    }
+  }
+
+  //DASHBOARD
+  Future dashboardRecentTransactionDetail(
+      SearchTerm searchTerm, GlobalModel globalModel) async {
+    var box = await Hive.openBox('userLogin');
+    var jwt = box.get('jwTtoken') != "" ? box.get('jwtToken') : "";
+
+    // jwt = jwtToken;
+
+    var url = Uri.https(urlConstant.apiUrl,
+        '/GSS_Backend/public/api/dashboard/recent-transaction-detail');
+    Map<String, String> requestHeader = {
+      'Authorization': 'Bearer $jwt',
+      'Content-Type': 'application/json',
+    };
+
+    var bodySend = """
+    {
+        "Role" : "${globalModel.role}",
+        "Site" : "${globalModel.areaId}",
+        "Month" : 4,
+        "Year" : "${globalModel.year}",
+        "Keywords" : "${searchTerm.keywords}",
+        "PageNumber" : ${searchTerm.pageNumber},
+        "MaxRecord" : ${searchTerm.max},
+        "OrderBy" : "${searchTerm.orderBy}",
+        "OrderDir" : "${searchTerm.orderDir}"
+    }
+    """;
+
+    try {
+      var response = await http.post(
+        url,
+        headers: requestHeader,
+        body: bodySend,
+      );
+
+      var data = json.decode(response.body);
+
+      return data;
+    } on Error catch (e) {
+      return e;
+    }
+  }
+
+  Future dashboardTopRequestedItemDetail(
+      SearchTerm searchTerm, GlobalModel globalModel) async {
+    var box = await Hive.openBox('userLogin');
+    var jwt = box.get('jwTtoken') != "" ? box.get('jwtToken') : "";
+
+    // jwt = jwtToken;
+
+    var url = Uri.https(urlConstant.apiUrl,
+        '/GSS_Backend/public/api/dashboard/requested-item-detail');
+    Map<String, String> requestHeader = {
+      'Authorization': 'Bearer $jwt',
+      'Content-Type': 'application/json',
+    };
+
+    var bodySend = """
+    {
+        "Role" : "${globalModel.role}",
+        "Site" : "${globalModel.areaId}",
+        "Month" : 4,
+        "Year" : "${globalModel.year}",
+        "Keywords" : "${searchTerm.keywords}",
+        "PageNumber" : ${searchTerm.pageNumber},
+        "MaxRecord" : ${searchTerm.max},
+        "OrderBy" : "${searchTerm.orderBy}",
+        "OrderDir" : "${searchTerm.orderDir}"
+    }
+    """;
+
+    try {
+      var response = await http.post(
+        url,
+        headers: requestHeader,
+        body: bodySend,
+      );
+
+      var data = json.decode(response.body);
+
+      return data;
+    } on Error catch (e) {
+      return e;
+    }
+  }
+
+  Future dashboardSiteRanking(
+    SearchTerm searchTerm,
+    GlobalModel globalModel,
+    String dataType,
+  ) async {
+    var box = await Hive.openBox('userLogin');
+    var jwt = box.get('jwTtoken') != "" ? box.get('jwtToken') : "";
+
+    // jwt = jwtToken;
+
+    var url;
+
+    if (dataType == "Highest Cost" || dataType == "Lowest Cost") {
+      url = Uri.https(urlConstant.apiUrl,
+          '/GSS_Backend/public/api/dashboard/ranking-cost-detail');
+    }
+    if (dataType == "Highest Budget" || dataType == "Lowest Budget") {
+      url = Uri.https(urlConstant.apiUrl,
+          '/GSS_Backend/public/api/dashboard/budget-detail');
+    }
+    if (dataType == "Slowest Leadtime" || dataType == "Fastest Leadtime") {
+      url = Uri.https(urlConstant.apiUrl,
+          '/GSS_Backend/public/api/dashboard/ranking-leadtime-detail');
+    }
+
+    if (dataType == "Cost vs Budget") {
+      url = Uri.https(urlConstant.apiUrl,
+          '/GSS_Backend/public/api/dashboard/budget-cost-site-detail');
+    }
+    Map<String, String> requestHeader = {
+      'Authorization': 'Bearer $jwt',
+      'Content-Type': 'application/json',
+    };
+
+    var bodySend = """
+    {
+        "DataType" : "$dataType",
+        "CompName": "",
+        "CompID": "",
+        "Role" : "${globalModel.role}",
+        "Site" : "${globalModel.areaId}",
+        "Month" : 4,
+        "Year" : "${globalModel.year}",
+        "Keywords" : "${searchTerm.keywords}",
+        "PageNumber" : ${searchTerm.pageNumber},
+        "MaxRecord" : ${searchTerm.max},
+        "OrderBy" : "${searchTerm.orderBy}",
+        "OrderDir" : "${searchTerm.orderDir}"
+    }
+    """;
+
+    try {
+      var response = await http.post(
+        url,
+        headers: requestHeader,
+        body: bodySend,
+      );
+
+      var data = json.decode(response.body);
+
+      return data;
+    } on Error catch (e) {
+      return e;
+    }
+  }
+
+  Future exportDashboard(
+    String dataType,
+    String month,
+    String year,
+    GlobalModel globalModel,
+  ) async {
+    var box = await Hive.openBox('userLogin');
+    var jwt = box.get('jwTtoken') != "" ? box.get('jwtToken') : "";
+
+    // jwt = jwtToken;
+
+    var url = Uri.https(
+        urlConstant.apiUrl, '/GSS_Backend/public/api/dashboard/export');
+    Map<String, String> requestHeader = {
+      'Authorization': 'Bearer $jwt',
+      'Content-Type': 'application/json',
+    };
+
+    var bodySend = """
+    {
+        "DataType": "$dataType",
+        "Role": "${globalModel.role}",
+        "CompName": "${globalModel.companyName}",
+        "CompID": "${globalModel.businessUnit}",
+        "Site": "${globalModel.areaId}",
+        "Month": $month,
+        "Year": "$year"
     }
     """;
 
