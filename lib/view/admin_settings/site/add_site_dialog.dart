@@ -58,14 +58,14 @@ class _AddSiteDialogState extends State<AddSiteDialog> {
       _siteName.text = widget.site.siteName;
       _latitude.text = widget.site.latitude.toString();
       _longitude.text = widget.site.longitude.toString();
-      // _siteArea.text = widget.site.siteArea.toString();
+      _siteArea.text = widget.site.siteArea.toString();
       // _monthlyBudget.text = widget.site.monthlyBudget.toString();
       // _additionalBudget.text = widget.site.additionalBudget.toString();
-      _siteArea.value = ThousandsSeparatorInputFormatter().formatEditUpdate(
-          TextEditingValue.empty,
-          TextEditingValue(
-            text: widget.site.siteArea.toString(),
-          ));
+      // _siteArea.value = ThousandsSeparatorInputFormatter().formatEditUpdate(
+      //     TextEditingValue.empty,
+      //     TextEditingValue(
+      //       text: widget.site.siteArea.toString(),
+      //     ));
       _monthlyBudget.value =
           ThousandsSeparatorInputFormatter().formatEditUpdate(
               TextEditingValue.empty,
@@ -230,13 +230,6 @@ class _AddSiteDialogState extends State<AddSiteDialog> {
                         enabled: true,
                         hintText: 'Area here...',
                         maxLines: 1,
-                        inputFormatters: [
-                          FilteringTextInputFormatter.digitsOnly,
-                          FilteringTextInputFormatter.deny(RegExp(
-                                  r'^0+') //users can't type 0 at 1st position
-                              ),
-                          ThousandsSeparatorInputFormatter()
-                        ],
                         validator: (value) =>
                             value == "0" ? "This field is required." : null,
                         onSaved: (newValue) {
