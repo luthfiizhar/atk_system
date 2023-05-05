@@ -310,6 +310,7 @@ class _DashboardOptionsWidgetState extends State<DashboardOptionsWidget> {
                   SizedBox(
                     width: 250,
                     child: BlackDropdown(
+                      maxHeight: 300,
                       items: monthList
                           .map((e) => DropdownMenuItem(
                                 value: e["value"],
@@ -529,7 +530,7 @@ class _AreaSettingContainerState extends State<AreaSettingContainer> {
                   ListView.builder(
                     physics: const NeverScrollableScrollPhysics(),
                     shrinkWrap: true,
-                    itemCount: areaList.take(5).length,
+                    itemCount: areaList.length,
                     itemBuilder: (context, index) {
                       return Padding(
                         padding: const EdgeInsets.symmetric(
