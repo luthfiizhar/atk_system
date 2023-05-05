@@ -264,147 +264,212 @@ class _SummCostBarChartState extends State<SummCostBarChart> {
                           color: eerieBlack,
                         ),
                       )
-                    : BarChart(
-                        BarChartData(
-                          maxY: model.maxY.toDouble() + 250000,
-                          minY: 0,
-                          groupsSpace: 3,
-                          barGroups:
-                              model.summCostBarChart.asMap().entries.map((e) {
-                            final index = e.key;
-                            final data = e.value;
-                            return initBar(index, data.budget.toDouble(),
-                                data.cost.toDouble(),
-                                isThouced: index == touchedGroupIndex);
-                          }).toList(),
-                          borderData: FlBorderData(
-                            show: false,
-                          ),
-                          barTouchData: BarTouchData(
-                            enabled: true,
-                            handleBuiltInTouches: false,
-                            touchTooltipData: BarTouchTooltipData(
-                              maxContentWidth: 170,
-                              tooltipBgColor: white,
-                              tooltipMargin: 10,
-                              tooltipRoundedRadius: 10,
-                              fitInsideHorizontally: true,
-                              fitInsideVertically: true,
-                              tooltipBorder:
-                                  const BorderSide(color: platinum, width: 1),
-                              tooltipPadding: const EdgeInsets.symmetric(
-                                vertical: 15,
-                                horizontal: 20,
+                    : Stack(
+                        children: [
+                          BarChart(
+                            BarChartData(
+                              maxY: model.maxY.toDouble() + 250000,
+                              minY: 0,
+                              groupsSpace: 3,
+                              barGroups: model.summCostBarChart
+                                  .asMap()
+                                  .entries
+                                  .map((e) {
+                                final index = e.key;
+                                final data = e.value;
+                                return initBar(index, data.budget.toDouble(),
+                                    data.cost.toDouble(),
+                                    isThouced: index == touchedGroupIndex);
+                              }).toList(),
+                              borderData: FlBorderData(
+                                show: false,
                               ),
-                              getTooltipItem:
-                                  (group, groupIndex, rod, rodIndex) {
-                                String month = xToMonth(groupIndex);
-                                String year = selectedYear;
-                                double percentage = (group.barRods[1].toY /
-                                        group.barRods[0].toY) *
-                                    100;
-                                return BarTooltipItem(
-                                  "$month $year",
-                                  helveticaText.copyWith(
-                                    fontWeight: FontWeight.w700,
-                                    color: eerieBlack,
-                                    fontSize: 14,
+                              barTouchData: BarTouchData(
+                                enabled: true,
+                                handleBuiltInTouches: false,
+                                touchTooltipData: BarTouchTooltipData(
+                                  maxContentWidth: 170,
+                                  tooltipBgColor: white,
+                                  tooltipMargin: 10,
+                                  tooltipRoundedRadius: 10,
+                                  fitInsideHorizontally: true,
+                                  fitInsideVertically: true,
+                                  tooltipBorder: const BorderSide(
+                                      color: platinum, width: 1),
+                                  tooltipPadding: const EdgeInsets.symmetric(
+                                    vertical: 15,
+                                    horizontal: 20,
                                   ),
-                                  textAlign: TextAlign.start,
-                                  children: [
-                                    const TextSpan(
-                                      text: "\n\n",
-                                    ),
-                                    TextSpan(
-                                      text:
-                                          'Cost: ${formatCurrency.format(group.barRods[1].toY)}\n',
-                                      style: helveticaText.copyWith(
+                                  getTooltipItem:
+                                      (group, groupIndex, rod, rodIndex) {
+                                    String month = xToMonth(groupIndex);
+                                    String year = selectedYear;
+                                    double percentage = (group.barRods[1].toY /
+                                            group.barRods[0].toY) *
+                                        100;
+                                    if (percentage.isInfinite) {
+                                      percentage = 0;
+                                    }
+                                    return BarTooltipItem(
+                                      "$month $year",
+                                      helveticaText.copyWith(
+                                        fontWeight: FontWeight.w700,
+                                        color: eerieBlack,
                                         fontSize: 14,
-                                        fontWeight: FontWeight.w300,
-                                        color: davysGray,
-                                        height: 1.8,
                                       ),
-                                    ),
-                                    TextSpan(
-                                      text:
-                                          'Budget: ${formatCurrency.format(group.barRods[0].toY)}\n',
-                                      style: helveticaText.copyWith(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w300,
-                                        color: davysGray,
-                                        height: 1.8,
-                                      ),
-                                    ),
-                                    TextSpan(
-                                        text: 'Budget has been used by ',
-                                        style: helveticaText.copyWith(
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.w300,
-                                          color: davysGray,
-                                          height: 1.8,
+                                      textAlign: TextAlign.start,
+                                      children: [
+                                        const TextSpan(
+                                          text: "\n\n",
                                         ),
-                                        children: [
-                                          TextSpan(
-                                            text:
-                                                '${percentage.toStringAsFixed(2)} %',
+                                        TextSpan(
+                                          text:
+                                              'Cost: ${formatCurrency.format(group.barRods[1].toY)}\n',
+                                          style: helveticaText.copyWith(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w300,
+                                            color: davysGray,
+                                            height: 1.8,
+                                          ),
+                                        ),
+                                        TextSpan(
+                                          text:
+                                              'Budget: ${formatCurrency.format(group.barRods[0].toY)}\n',
+                                          style: helveticaText.copyWith(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w300,
+                                            color: davysGray,
+                                            height: 1.8,
+                                          ),
+                                        ),
+                                        TextSpan(
+                                            text: 'Budget has been used by ',
                                             style: helveticaText.copyWith(
                                               fontSize: 12,
                                               fontWeight: FontWeight.w300,
-                                              color: orangeAccent,
+                                              color: davysGray,
+                                              height: 1.8,
                                             ),
-                                          ),
-                                        ]),
-                                  ],
-                                );
-                              },
+                                            children: [
+                                              TextSpan(
+                                                text:
+                                                    '${percentage.toStringAsFixed(2)} %',
+                                                style: helveticaText.copyWith(
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.w300,
+                                                  color: orangeAccent,
+                                                ),
+                                              ),
+                                            ]),
+                                      ],
+                                    );
+                                  },
+                                ),
+                                touchCallback: (event, response) {
+                                  if (event.isInterestedForInteractions &&
+                                      response != null &&
+                                      response.spot != null) {
+                                    setState(() {
+                                      touchedGroupIndex =
+                                          response.spot!.touchedBarGroupIndex;
+                                    });
+                                  } else {
+                                    setState(() {
+                                      touchedGroupIndex = -1;
+                                    });
+                                  }
+                                },
+                              ),
+                              gridData: FlGridData(
+                                drawVerticalLine: false,
+                                horizontalInterval: model.maxY / 5,
+                              ),
+                              titlesData: FlTitlesData(
+                                topTitles: AxisTitles(
+                                  sideTitles: SideTitles(
+                                    showTitles: false,
+                                  ),
+                                ),
+                                bottomTitles: AxisTitles(
+                                  sideTitles: SideTitles(
+                                    showTitles: true,
+                                    reservedSize: 28,
+                                    getTitlesWidget: bottomTitles,
+                                  ),
+                                ),
+                                rightTitles: AxisTitles(
+                                  sideTitles: SideTitles(
+                                    showTitles: false,
+                                  ),
+                                ),
+                                leftTitles: AxisTitles(
+                                  sideTitles: SideTitles(
+                                    showTitles: true,
+                                    reservedSize: 55,
+                                    interval: model.maxY / 5,
+                                    getTitlesWidget: leftTitles,
+                                  ),
+                                ),
+                              ),
                             ),
-                            touchCallback: (event, response) {
-                              if (event.isInterestedForInteractions &&
-                                  response != null &&
-                                  response.spot != null) {
-                                setState(() {
-                                  touchedGroupIndex =
-                                      response.spot!.touchedBarGroupIndex;
-                                });
-                              } else {
-                                setState(() {
-                                  touchedGroupIndex = -1;
-                                });
-                              }
-                            },
                           ),
-                          gridData: FlGridData(
-                            drawVerticalLine: false,
-                            horizontalInterval: model.maxY / 5,
-                          ),
-                          titlesData: FlTitlesData(
-                            topTitles: AxisTitles(
-                              sideTitles: SideTitles(
-                                showTitles: false,
-                              ),
-                            ),
-                            bottomTitles: AxisTitles(
-                              sideTitles: SideTitles(
-                                showTitles: true,
-                                reservedSize: 28,
-                                getTitlesWidget: bottomTitles,
-                              ),
-                            ),
-                            rightTitles: AxisTitles(
-                              sideTitles: SideTitles(
-                                showTitles: false,
-                              ),
-                            ),
-                            leftTitles: AxisTitles(
-                              sideTitles: SideTitles(
-                                showTitles: true,
-                                reservedSize: 55,
-                                interval: model.maxY / 5,
-                                getTitlesWidget: leftTitles,
-                              ),
-                            ),
-                          ),
-                        ),
+                          // LineChart(
+                          //   LineChartData(
+                          //     maxY: model.maxY.toDouble() + 250000,
+                          //     minY: 0,
+                          //     lineBarsData: [
+                          //       LineChartBarData(
+                          //         dotData: FlDotData(show: false),
+                          //         barWidth: 3,
+                          //         spots: model.summCostBarChart
+                          //             .asMap()
+                          //             .entries
+                          //             .map((e) {
+                          //           return FlSpot(
+                          //             e.key.toDouble(),
+                          //             e.value.budget.toDouble(),
+                          //           );
+                          //         }).toList(),
+                          //       ),
+                          //     ],
+                          //     titlesData: FlTitlesData(
+                          //       topTitles: AxisTitles(
+                          //         sideTitles: SideTitles(
+                          //           showTitles: false,
+                          //         ),
+                          //       ),
+                          //       bottomTitles: AxisTitles(
+                          //         sideTitles: SideTitles(
+                          //           showTitles: true,
+                          //           reservedSize: 28,
+                          //           getTitlesWidget: (value, meta) =>
+                          //               SizedBox(),
+                          //         ),
+                          //       ),
+                          //       rightTitles: AxisTitles(
+                          //         sideTitles: SideTitles(
+                          //           showTitles: false,
+                          //         ),
+                          //       ),
+                          //       leftTitles: AxisTitles(
+                          //         sideTitles: SideTitles(
+                          //           showTitles: true,
+                          //           reservedSize: 55,
+                          //           interval: model.maxY / 5,
+                          //           getTitlesWidget: (value, meta) =>
+                          //               SizedBox(),
+                          //         ),
+                          //       ),
+                          //     ),
+                          //     borderData: FlBorderData(
+                          //       show: false,
+                          //     ),
+                          //     gridData: FlGridData(
+                          //       show: false,
+                          //     ),
+                          //   ),
+                          // ),
+                        ],
                       ),
               ),
             ],

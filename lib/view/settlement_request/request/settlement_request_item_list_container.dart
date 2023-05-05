@@ -237,7 +237,8 @@ class _SettlementRequestItemListContainerState
                   hoverColor: Colors.transparent,
                   highlightColor: Colors.transparent,
                   onPressed: () {
-                    widget.removeItem!(widget.item.itemId);
+                    widget.removeItem!(
+                        widget.item.itemId, widget.item.itemListId);
                   },
                   icon: const Icon(Icons.close_sharp),
                 ),

@@ -77,8 +77,10 @@ class CostSummaryBarChartModel extends ChangeNotifier {
   }
 
   void closeListener() {
+    _summCostBarChartResult!.clear();
     _chartDataStream!.cancel();
     _chartSettingStream!.cancel();
+    notifyListeners();
   }
 }
 
@@ -170,9 +172,11 @@ class TotalCostStatModel extends ChangeNotifier {
   }
 
   void closeListener() {
+    _costSummaryList!.clear();
     _totalReqListener!.cancel();
     _totalSettleListener!.cancel();
     _totalBudgetListener!.cancel();
+    notifyListeners();
   }
 }
 
@@ -209,7 +213,9 @@ class RecentTransactionViewModel extends ChangeNotifier {
   }
 
   void closeListener() {
+    _listRecTransaction.clear();
     _recentStream!.cancel();
+    notifyListeners();
   }
 }
 
@@ -246,7 +252,9 @@ class TopReqItemsViewModel extends ChangeNotifier {
   }
 
   void closeListener() {
+    _topReqItems.clear();
     _topReqStream!.cancel();
+    notifyListeners();
   }
 }
 
@@ -303,7 +311,9 @@ class ActualPriceItemViewModel extends ChangeNotifier {
   }
 
   void closeStream() {
+    _sliderList.clear();
     _actPriceStream!.cancel();
+    notifyListeners();
   }
 }
 
@@ -334,6 +344,7 @@ class SiteRankViewModel extends ChangeNotifier {
   }
 
   Future getBudgetCostComparison(GlobalModel globalModel) async {
+    // print(globalModel.toString());
     _rankSiteStream = databaseRef
         .child(
             '${globalModel.businessUnit}/${globalModel.role}/SiteRanking/BudgetCost/${globalModel.areaId}/${globalModel.year}/${globalModel.month}')
@@ -439,6 +450,8 @@ class SiteRankViewModel extends ChangeNotifier {
   }
 
   void closeListener() {
+    _rankItem.clear();
     _rankSiteStream!.cancel();
+    notifyListeners();
   }
 }

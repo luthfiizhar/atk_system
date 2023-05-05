@@ -275,7 +275,7 @@ class _RecentTransactionPopUpState extends State<RecentTransactionPopUp> {
                               color: grayx11,
                             ),
                       Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 28),
+                        padding: const EdgeInsets.symmetric(vertical: 20),
                         child: RecentTransactionItems(
                           recents: recTransList[index],
                         ),
@@ -380,7 +380,8 @@ class _RecentTransactionPopUpState extends State<RecentTransactionPopUp> {
                 ),
               ),
             ),
-            Expanded(
+            SizedBox(
+              width: 190,
               child: InkWell(
                 onTap: () {
                   onTapHeader("Cost");
@@ -402,7 +403,7 @@ class _RecentTransactionPopUpState extends State<RecentTransactionPopUp> {
               ),
             ),
             SizedBox(
-              width: 135,
+              width: 175,
               child: InkWell(
                 onTap: () {
                   onTapHeader("DateTime");
@@ -429,7 +430,7 @@ class _RecentTransactionPopUpState extends State<RecentTransactionPopUp> {
           ],
         ),
         const SizedBox(
-          height: 12,
+          height: 8,
         ),
         const Divider(
           color: spanishGray,

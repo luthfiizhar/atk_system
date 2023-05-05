@@ -33,6 +33,7 @@ class _DashboardHeaderState extends State<DashboardHeader> {
   ApiService apiService = ApiService();
 
   String month = "";
+  String monthName = "";
   int year = 2023;
 
   String greeting = "";
@@ -40,6 +41,60 @@ class _DashboardHeaderState extends State<DashboardHeader> {
   setGreeting(String value) {
     greeting = value;
     setState(() {});
+  }
+
+  setMonthName(String value) {
+    switch (value) {
+      case "Jan":
+        monthName = "January";
+        break;
+      case "Feb":
+        monthName = "February";
+        break;
+      case "Mar":
+        monthName = "March";
+        break;
+      case "Apr":
+        monthName = "April";
+        break;
+      case "May":
+        monthName = "May";
+        break;
+      case "Jun":
+        monthName = "June";
+        break;
+      case "Jul":
+        monthName = "July";
+        break;
+      case "Aug":
+        monthName = "August";
+        break;
+      case "Sep":
+        monthName = "September";
+        break;
+      case "Oct":
+        monthName = "October";
+        break;
+      case "Nov":
+        monthName = "November";
+        break;
+      case "Dec":
+        monthName = "December";
+        break;
+      case "Q1":
+        monthName = "Q1";
+        break;
+      case "Q2":
+        monthName = "Q2";
+        break;
+      case "Q3":
+        monthName = "Q3";
+        break;
+      case "Q4":
+        monthName = "Q4";
+        break;
+      default:
+    }
   }
 
   @override
@@ -60,8 +115,12 @@ class _DashboardHeaderState extends State<DashboardHeader> {
       if (value["Status"].toString() == "200") {
         globalModel.setEmpName(value["Data"]["EmpName"]);
         globalModel.setCompanyName(value["Data"]["CompanyName"]);
-        month = DateFormat("MMMM").format(DateTime.now());
+        globalModel.setRole(value["Data"]["DashboardRole"]);
+        globalModel.setAreaId(value["Data"]["Site"]);
+        month = DateFormat("MMM").format(DateTime.now());
         year = DateTime.now().year;
+        print(year);
+        setMonthName(month);
         globalModel.setMonth(month);
         globalModel.setYear(year.toString());
       } else {
@@ -75,6 +134,9 @@ class _DashboardHeaderState extends State<DashboardHeader> {
         );
       }
     }).onError((error, stackTrace) {});
+    globalModel.addListener(() {
+      setMonthName(globalModel.month);
+    });
   }
 
   @override
@@ -89,7 +151,10 @@ class _DashboardHeaderState extends State<DashboardHeader> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               greetingsAndName(model.empName),
-              companyAndDate(model.companyName, model.month, model.year),
+              Builder(builder: (context) {
+                setMonthName(model.empName);
+                return companyAndDate(model, monthName, model.year);
+              }),
             ],
           ),
         );
@@ -126,7 +191,11 @@ class _DashboardHeaderState extends State<DashboardHeader> {
     );
   }
 
-  Widget companyAndDate(String company, String month, String year) {
+  Widget companyAndDate(GlobalModel globalModel, String month, String year) {
+    String region = "";
+    if (globalModel.role == "Operation") {
+      region = "All Indonesia Region";
+    }
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -135,7 +204,7 @@ class _DashboardHeaderState extends State<DashboardHeader> {
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             Text(
-              globalModel.companyName,
+              region,
               style: helveticaText.copyWith(
                 fontSize: 18,
                 fontWeight: FontWeight.w300,

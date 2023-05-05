@@ -98,6 +98,7 @@ class _SettlementRequestPageState extends State<SettlementRequestPage> {
               actualPrice: element['ActualPrice'],
               actualQty: element['ActualQuantity'],
               itemInfo: element['ItemInformation'],
+              itemListId: element['RowID'],
             ),
           );
           transaction.items = items;
@@ -124,9 +125,11 @@ class _SettlementRequestPageState extends State<SettlementRequestPage> {
     });
   }
 
-  removeItem(String itemId) {
+  removeItem(String itemId, String rowId) {
     // itemsContainer.removeAt(index);
-    apiService.deleteAdditionalItemSettle(widget.formId, itemId).then((value) {
+    apiService
+        .deleteAdditionalItemSettle(widget.formId, itemId, rowId)
+        .then((value) {
       if (value["Status"].toString() == "200") {
         updateList().then((value) {});
       } else {
@@ -226,14 +229,16 @@ class _SettlementRequestPageState extends State<SettlementRequestPage> {
         for (var element in resultItems) {
           items.add(
             Item(
-                itemId: element['ItemID'].toString(),
-                itemName: element['ItemName'],
-                basePrice: element['ItemPrice'],
-                qty: element['Quantity'],
-                totalPrice: element['TotalPrice'],
-                actualPrice: element['ActualPrice'],
-                actualQty: element['ActualQuantity'],
-                itemInfo: element['ItemInformation']),
+              itemId: element['ItemID'].toString(),
+              itemName: element['ItemName'],
+              basePrice: element['ItemPrice'],
+              qty: element['Quantity'],
+              totalPrice: element['TotalPrice'],
+              actualPrice: element['ActualPrice'],
+              actualQty: element['ActualQuantity'],
+              itemInfo: element['ItemInformation'],
+              itemListId: element['RowID'],
+            ),
           );
 
           totalActualCost = totalActualCost +
