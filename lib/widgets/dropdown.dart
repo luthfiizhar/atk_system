@@ -16,6 +16,8 @@ class BlackDropdown extends StatelessWidget {
     this.value,
     this.customHeights,
     this.width = 120,
+    this.customButton,
+    this.maxHeight,
   }) : focusNode = focusNode ?? FocusNode();
 
   final List<DropdownMenuItem<dynamic>>? items;
@@ -29,6 +31,8 @@ class BlackDropdown extends StatelessWidget {
   final dynamic value;
   final List<double>? customHeights;
   double width;
+  double? maxHeight;
+  Widget? customButton;
 
   @override
   Widget build(BuildContext context) {
@@ -46,6 +50,7 @@ class BlackDropdown extends StatelessWidget {
       // isExpanded: true,
       items: items,
       dropdownStyleData: DropdownStyleData(
+        maxHeight: maxHeight,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
           border: Border.all(
@@ -66,6 +71,7 @@ class BlackDropdown extends StatelessWidget {
       iconStyleData: IconStyleData(
         icon: suffixIcon!,
       ),
+      customButton: customButton,
       // customItemsHeights: customHeights,
       onChanged: onChanged,
       decoration: InputDecoration(
