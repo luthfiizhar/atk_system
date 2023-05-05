@@ -127,7 +127,9 @@ class _SettlementRequestPageState extends State<SettlementRequestPage> {
 
   removeItem(String itemId, String rowId) {
     // itemsContainer.removeAt(index);
-    apiService.deleteAdditionalItemSettle(widget.formId, itemId).then((value) {
+    apiService
+        .deleteAdditionalItemSettle(widget.formId, itemId, rowId)
+        .then((value) {
       if (value["Status"].toString() == "200") {
         updateList().then((value) {});
       } else {
