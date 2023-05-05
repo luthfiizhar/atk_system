@@ -233,8 +233,7 @@ class _AddSiteDialogState extends State<AddSiteDialog> {
                         validator: (value) =>
                             value == "0" ? "This field is required." : null,
                         onSaved: (newValue) {
-                          siteArea = double.parse(
-                              newValue.toString().replaceAll(".", ""));
+                          siteArea = double.parse(newValue.toString());
                         },
                       ),
                     ),
