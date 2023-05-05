@@ -1255,7 +1255,8 @@ class ApiService {
     }
   }
 
-  Future deleteAdditionalItemSettle(String formId, String itemId) async {
+  Future deleteAdditionalItemSettle(
+      String formId, String itemId, String rowId) async {
     // print(bookingId);
     var box = await Hive.openBox('userLogin');
     var jwt = box.get('jwTtoken') != "" ? box.get('jwtToken') : "";
@@ -1272,7 +1273,8 @@ class ApiService {
     var bodySend = """
     {
         "FormID" : "$formId",
-        "ItemID" : $itemId
+        "ItemID" : $itemId,
+        "RowID": $rowId
     }
     """;
 
@@ -1479,6 +1481,70 @@ class ApiService {
         url,
         headers: requestHeader,
         body: bodySend,
+      );
+
+      var data = json.decode(response.body);
+
+      return data;
+    } on Error catch (e) {
+      return e;
+    }
+  }
+
+  Future dashboardOptAreaList(GlobalModel globalModel, String search) async {
+    var box = await Hive.openBox('userLogin');
+    var jwt = box.get('jwTtoken') != "" ? box.get('jwtToken') : "";
+
+    // jwt = jwtToken;
+
+    var url = Uri.https(urlConstant.apiUrl,
+        '/GSS_Backend/public/api/dashboard/user-location-list');
+    Map<String, String> requestHeader = {
+      'Authorization': 'Bearer $jwt',
+      'Content-Type': 'application/json',
+    };
+
+    var bodySend = """
+    {
+        "Role" : "${globalModel.role}",
+        "Site" : "${globalModel.areaId}",
+        "Keyword" : "$search",
+        "BusinessID" : ${globalModel.businessUnit}
+    }
+    """;
+
+    try {
+      var response = await http.post(
+        url,
+        headers: requestHeader,
+        body: bodySend,
+      );
+
+      var data = json.decode(response.body);
+
+      return data;
+    } on Error catch (e) {
+      return e;
+    }
+  }
+
+  Future dashboardOptBusinessUnitList() async {
+    var box = await Hive.openBox('userLogin');
+    var jwt = box.get('jwTtoken') != "" ? box.get('jwtToken') : "";
+
+    // jwt = jwtToken;
+
+    var url = Uri.https(
+        urlConstant.apiUrl, '/GSS_Backend/public/api/dashboard/business-list');
+    Map<String, String> requestHeader = {
+      'Authorization': 'Bearer $jwt',
+      'Content-Type': 'application/json',
+    };
+
+    try {
+      var response = await http.get(
+        url,
+        headers: requestHeader,
       );
 
       var data = json.decode(response.body);

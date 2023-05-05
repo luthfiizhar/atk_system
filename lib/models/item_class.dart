@@ -17,6 +17,7 @@ class Item {
     this.isChecked = false,
     this.isDefault = false,
     this.itemInfo = "",
+    this.itemListId = "",
   });
 
   String itemId;
@@ -24,6 +25,7 @@ class Item {
   String unit;
   String category;
   String itemInfo;
+  String itemListId;
   int basePrice;
   int estimatedPrice;
   int qty;
