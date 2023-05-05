@@ -49,9 +49,10 @@ class _ActualPricingItemWidgetState extends State<ActualPricingItemWidget> {
     super.initState();
     globalModel = Provider.of<GlobalModel>(context, listen: false);
     actualPriceItemViewModel.getActualPriceItem(globalModel);
-    // globalModel.addListener(() {
-    //   actualPriceItemViewModel.getActualPriceItem(globalModel);
-    // });
+    globalModel.addListener(() {
+      actualPriceItemViewModel.closeStream();
+      actualPriceItemViewModel.getActualPriceItem(globalModel);
+    });
   }
 
   @override
@@ -202,8 +203,7 @@ class ActualPriceItemContainer extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          SizedBox(
-            width: 200,
+          Expanded(
             child: Row(
               children: [
                 content.dir == "up"
@@ -228,7 +228,8 @@ class ActualPriceItemContainer extends StatelessWidget {
               ],
             ),
           ),
-          Expanded(
+          SizedBox(
+            width: 350,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.center,

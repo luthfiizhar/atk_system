@@ -140,6 +140,35 @@ class _SiteRankingWidgetState extends State<SiteRankingWidget> {
         .onError((error, stackTrace) {
       siteRankViewModel.closeListener();
     });
+
+    globalModel.addListener(() {
+      siteRankViewModel.closeListener();
+      switch (selectedSort) {
+        case 1:
+          siteRankViewModel.getHighestCost(globalModel);
+          break;
+        case 2:
+          siteRankViewModel.getLowestCost(globalModel);
+          break;
+        case 3:
+          siteRankViewModel.getHighestBudget(globalModel);
+          break;
+        case 4:
+          siteRankViewModel.getLowestBudget(globalModel);
+          break;
+        case 5:
+          siteRankViewModel.getFastestLeadTime(globalModel);
+          break;
+        case 6:
+          siteRankViewModel.getSlowestLeadTime(globalModel);
+          break;
+        case 7:
+          siteRankViewModel.getBudgetCostComparison(globalModel);
+          // model.getHighestCost(globalModel);
+          break;
+        default:
+      }
+    });
   }
 
   @override

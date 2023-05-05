@@ -1,5 +1,6 @@
 import 'package:atk_system_ga/constant/colors.dart';
 import 'package:atk_system_ga/constant/constraints.dart';
+import 'package:atk_system_ga/functions/api_request.dart';
 import 'package:atk_system_ga/layout/layout_page.dart';
 import 'package:atk_system_ga/view/dashboard/actual_pricing_items_widget.dart';
 import 'package:atk_system_ga/view/dashboard/dashboard_options_widget.dart';
@@ -10,6 +11,7 @@ import 'package:atk_system_ga/view/dashboard/summary_cost_bar_chart.dart';
 import 'package:atk_system_ga/view/dashboard/top_requested_items_widget.dart';
 import 'package:atk_system_ga/view/dashboard/total_cost_stat.dart';
 import 'package:atk_system_ga/view_model/global_model.dart';
+import 'package:atk_system_ga/widgets/dialogs.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
@@ -24,7 +26,8 @@ class DashboardPage extends StatefulWidget {
 
 class _DashboardPageState extends State<DashboardPage> {
   MapController mapController = MapController();
-  GlobalModel globalModel = GlobalModel();
+  late GlobalModel globalModel;
+  ApiService apiService = ApiService();
 
   OverlayEntry? optionsOverlayEntry;
   GlobalKey optionsKey = GlobalKey();
@@ -156,6 +159,7 @@ class _DashboardPageState extends State<DashboardPage> {
   @override
   void initState() {
     super.initState();
+    globalModel = Provider.of<GlobalModel>(context, listen: false);
   }
 
   @override

@@ -23,6 +23,11 @@ class GlobalModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  void setBusinessUnit(String value) {
+    _businessUnit = value;
+    notifyListeners();
+  }
+
   void setEmpName(String value) {
     _empName = value;
     notifyListeners();
@@ -46,5 +51,19 @@ class GlobalModel extends ChangeNotifier {
   void setMonth(String value) {
     _month = value;
     notifyListeners();
+  }
+
+  @override
+  String toString() {
+    return """
+    ===GLOBAL MODEL===
+    Role : $role,
+    AreaId : $_areaId, 
+    BusinessUnit : $_businessUnit, 
+    CompanyName : $_companyName, 
+    EmpName : $_empName, 
+    Month: $_month,
+    Year: $_year, 
+    """;
   }
 }

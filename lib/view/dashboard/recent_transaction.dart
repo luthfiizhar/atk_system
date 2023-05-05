@@ -342,7 +342,8 @@ class _RecentTransactionWidgetState extends State<RecentTransactionWidget> {
                 ),
               ),
             ),
-            Expanded(
+            SizedBox(
+              width: 190,
               child: InkWell(
                 onTap: () {
                   onTapHeader("Cost");
@@ -364,7 +365,7 @@ class _RecentTransactionWidgetState extends State<RecentTransactionWidget> {
               ),
             ),
             SizedBox(
-              width: 135,
+              width: 175,
               child: InkWell(
                 onTap: () {
                   onTapHeader("DateTime");
@@ -391,7 +392,7 @@ class _RecentTransactionWidgetState extends State<RecentTransactionWidget> {
           ],
         ),
         const SizedBox(
-          height: 12,
+          height: 8,
         ),
         const Divider(
           color: spanishGray,
@@ -507,14 +508,15 @@ class RecentTransactionItems extends StatelessWidget {
               style: light,
             ),
           ),
-          Expanded(
+          SizedBox(
+            width: 190,
             child: Text(
               formatCurrency.format(int.parse(recents.cost)),
               style: light,
             ),
           ),
           SizedBox(
-              width: 135,
+              width: 175,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
