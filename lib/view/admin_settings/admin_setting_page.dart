@@ -7,10 +7,17 @@ import 'package:atk_system_ga/functions/api_request.dart';
 import 'package:atk_system_ga/layout/layout_page.dart';
 import 'package:atk_system_ga/models/admin_page_class.dart';
 import 'package:atk_system_ga/models/item_class.dart';
+import 'package:atk_system_ga/models/main_page_model.dart';
 import 'package:atk_system_ga/models/search_term.dart';
 import 'package:atk_system_ga/view/admin_settings/admin_tab_menu.dart';
+import 'package:atk_system_ga/view/admin_settings/area/add_area_dialog.dart';
+import 'package:atk_system_ga/view/admin_settings/area/area_list_container.dart';
+import 'package:atk_system_ga/view/admin_settings/business_unit/add_business_unit_dialog.dart';
+import 'package:atk_system_ga/view/admin_settings/business_unit/business_unit_list_container.dart';
 import 'package:atk_system_ga/view/admin_settings/item/add_item_dialog.dart';
 import 'package:atk_system_ga/view/admin_settings/item/item_list_container.dart';
+import 'package:atk_system_ga/view/admin_settings/region/add_region_dialog.dart';
+import 'package:atk_system_ga/view/admin_settings/region/region_list_container.dart';
 import 'package:atk_system_ga/view/admin_settings/site/add_site_dialog.dart';
 import 'package:atk_system_ga/view/admin_settings/site/site_list_container.dart';
 import 'package:atk_system_ga/view/admin_settings/user/add_user_dialog.dart';
@@ -43,6 +50,35 @@ class _AdminSettingPageState extends State<AdminSettingPage> {
 
   List<Item> itemList = [];
 
+  List<BusinessUnit> businessUnitList = [];
+
+  List<Region> regionList = [
+    Region(
+      regionId: "RM1",
+      regionName: "sdqweasdqwe",
+    ),
+    Region(
+      regionId: "RM1",
+      regionName: "sdqweasdqwe",
+    ),
+    Region(
+      regionId: "RM1",
+      regionName: "sdqweasdqwe",
+    ),
+    Region(
+      regionId: "RM1",
+      regionName: "sdqweasdqwe",
+    )
+  ];
+
+  List<Area> areaList = [
+    Area(areaId: "AM1", areaName: "sdkjfiqjea", regionName: "RM1"),
+    Area(areaId: "AM1", areaName: "sdkjfiqjea", regionName: "RM1"),
+    Area(areaId: "AM1", areaName: "sdkjfiqjea", regionName: "RM1"),
+    Area(areaId: "AM1", areaName: "sdkjfiqjea", regionName: "RM1"),
+    Area(areaId: "AM1", areaName: "sdkjfiqjea", regionName: "RM1"),
+  ];
+
   bool isLoading = true;
 
   String role = "";
@@ -52,6 +88,9 @@ class _AdminSettingPageState extends State<AdminSettingPage> {
     {"value": "Site", "name": "Site List"},
     {"value": "User", "name": "User List"},
     {"value": "Item", "name": "Item List"},
+    {"value": "BusinessUnit", "name": "Business Unit List"},
+    {"value": "Region", "name": "Region List"},
+    {"value": "Area", "name": "Area List"},
   ];
 
   final TextEditingController textEditingController = TextEditingController();
@@ -79,6 +118,9 @@ class _AdminSettingPageState extends State<AdminSettingPage> {
     }
     if (menu == "Item") {
       searchTerm.orderBy = "ItemName";
+    }
+    if (menu == "Region") {
+      searchTerm.orderBy = "RegionalID";
     }
     setState(() {});
     updateList(menu).then((value) {
@@ -198,6 +240,43 @@ class _AdminSettingPageState extends State<AdminSettingPage> {
             setState(() {});
           } else {}
         });
+      case "BusinessUnit":
+        businessUnitList.clear();
+        return apiService
+            .getAdminPageBusinessUnitList(searchTerm)
+            .then((value) {
+          print(value);
+          if (value['Status'].toString() == "200") {
+            resultRows = value['Data']['TotalRows'];
+            List itemResult = value['Data']['List'];
+            for (var element in itemResult) {
+              businessUnitList.add(BusinessUnit(
+                  businessUnitId: element["BusinessID"].toString(),
+                  name: element["CompanyName"],
+                  photo: element["CompanyLogo"]));
+            }
+            setState(() {});
+          } else {}
+        });
+      case "Region":
+        regionList.clear();
+        return apiService.getAdminPageRegionList(searchTerm).then((value) {
+          print(value);
+          if (value['Status'].toString() == "200") {
+            resultRows = value['Data']['TotalRows'];
+            List itemResult = value['Data']['List'];
+            for (var element in itemResult) {
+              regionList.add(
+                Region(
+                  regionId: element["RegionalID"],
+                  regionName: element["RegionName"],
+                  businessUnitID: element["CompanyID"].toString(),
+                ),
+              );
+            }
+            setState(() {});
+          } else {}
+        });
       default:
         return nothing();
     }
@@ -251,6 +330,40 @@ class _AdminSettingPageState extends State<AdminSettingPage> {
 
   closeItemListDetail(int index) {
     itemList[index].isExpanded = false;
+    setState(() {});
+  }
+
+  onClickListRegion(int index) {
+    for (var element in regionList) {
+      element.isExpanded = false;
+    }
+    if (!regionList[index].isExpanded) {
+      regionList[index].isExpanded = true;
+    } else if (regionList[index].isExpanded) {
+      regionList[index].isExpanded = false;
+    }
+    setState(() {});
+  }
+
+  closeRegionListDetail(int index) {
+    regionList[index].isExpanded = false;
+    setState(() {});
+  }
+
+  onClickListArea(int index) {
+    for (var element in areaList) {
+      element.isExpanded = false;
+    }
+    if (!areaList[index].isExpanded) {
+      areaList[index].isExpanded = true;
+    } else if (areaList[index].isExpanded) {
+      areaList[index].isExpanded = false;
+    }
+    setState(() {});
+  }
+
+  closeAreaListDetail(int index) {
+    areaList[index].isExpanded = false;
     setState(() {});
   }
 
@@ -366,6 +479,13 @@ class _AdminSettingPageState extends State<AdminSettingPage> {
                             return Expanded(child: addButtonUser(context));
                           case "Item":
                             return Expanded(child: addButtonItem(context));
+                          case "BusinessUnit":
+                            return Expanded(
+                                child: addButtonBusinessUnit(context));
+                          case "Region":
+                            return Expanded(child: addButtonRegion(context));
+                          case "Area":
+                            return Expanded(child: addButtonArea(context));
                           default:
                             return SizedBox();
                         }
@@ -388,6 +508,12 @@ class _AdminSettingPageState extends State<AdminSettingPage> {
                         return userListTable(menu);
                       case "Item":
                         return itemListTable(menu);
+                      case "BusinessUnit":
+                        return businessUnitTable(menu);
+                      case "Region":
+                        return regionListTable(menu);
+                      case "Area":
+                        return areaListTable(menu);
                       default:
                         return SizedBox();
                     }
@@ -406,6 +532,26 @@ class _AdminSettingPageState extends State<AdminSettingPage> {
               ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget searchField() {
+    return SizedBox(
+      width: 200,
+      child: SearchInputField(
+        controller: _search,
+        obsecureText: false,
+        enabled: true,
+        maxLines: 1,
+        hintText: 'Search here...',
+        onFieldSubmitted: (value) => searchList(menu),
+        prefixIcon: const ImageIcon(
+          AssetImage(
+            'assets/icons/search_icon.png',
+          ),
+          color: davysGray,
         ),
       ),
     );
@@ -451,23 +597,7 @@ class _AdminSettingPageState extends State<AdminSettingPage> {
             ],
           ),
         ),
-        SizedBox(
-          width: 200,
-          child: SearchInputField(
-            controller: _search,
-            obsecureText: false,
-            enabled: true,
-            maxLines: 1,
-            hintText: 'Search here...',
-            onFieldSubmitted: (value) => searchList(menu),
-            prefixIcon: const ImageIcon(
-              AssetImage(
-                'assets/icons/search_icon.png',
-              ),
-              color: davysGray,
-            ),
-          ),
-        )
+        searchField(),
       ],
     );
   }
@@ -512,23 +642,7 @@ class _AdminSettingPageState extends State<AdminSettingPage> {
             ],
           ),
         ),
-        SizedBox(
-          width: 200,
-          child: SearchInputField(
-            controller: _search,
-            obsecureText: false,
-            enabled: true,
-            maxLines: 1,
-            hintText: 'Search here...',
-            onFieldSubmitted: (value) => searchList(menu),
-            prefixIcon: const ImageIcon(
-              AssetImage(
-                'assets/icons/search_icon.png',
-              ),
-              color: davysGray,
-            ),
-          ),
-        )
+        searchField(),
       ],
     );
     ;
@@ -574,23 +688,142 @@ class _AdminSettingPageState extends State<AdminSettingPage> {
             ],
           ),
         ),
-        SizedBox(
-          width: 200,
-          child: SearchInputField(
-            controller: _search,
-            obsecureText: false,
-            enabled: true,
-            maxLines: 1,
-            hintText: 'Search here...',
-            onFieldSubmitted: (value) => searchList(menu),
-            prefixIcon: const ImageIcon(
-              AssetImage(
-                'assets/icons/search_icon.png',
-              ),
-              color: davysGray,
-            ),
+        searchField(),
+      ],
+    );
+  }
+
+  Widget addButtonBusinessUnit(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        CustomRegularButton(
+          padding: const EdgeInsets.symmetric(
+            vertical: 18,
+            horizontal: 20,
           ),
-        )
+          onTap: () {
+            showDialog(
+              context: context,
+              builder: (context) => AddBusinessUnitDialog(),
+            ).then((value) {
+              if (value == 1) {
+                updateList(menu).then((value) {});
+              }
+            });
+          },
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const Icon(
+                Icons.add,
+                size: 25,
+              ),
+              const SizedBox(
+                width: 10,
+              ),
+              Text(
+                'Add BU',
+                style: helveticaText.copyWith(
+                  fontSize: 16,
+                  height: 1.3,
+                  fontWeight: FontWeight.w700,
+                ),
+              )
+            ],
+          ),
+        ),
+        searchField(),
+      ],
+    );
+  }
+
+  Widget addButtonRegion(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        CustomRegularButton(
+          padding: const EdgeInsets.symmetric(
+            vertical: 18,
+            horizontal: 20,
+          ),
+          onTap: () {
+            showDialog(
+              context: context,
+              builder: (context) => AddRegionDialog(),
+            ).then((value) {
+              if (value == 1) {
+                updateList(menu).then((value) {});
+              }
+            });
+          },
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const Icon(
+                Icons.add,
+                size: 25,
+              ),
+              const SizedBox(
+                width: 10,
+              ),
+              Text(
+                'Add Region',
+                style: helveticaText.copyWith(
+                  fontSize: 16,
+                  height: 1.3,
+                  fontWeight: FontWeight.w700,
+                ),
+              )
+            ],
+          ),
+        ),
+        searchField(),
+      ],
+    );
+  }
+
+  Widget addButtonArea(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        CustomRegularButton(
+          padding: const EdgeInsets.symmetric(
+            vertical: 18,
+            horizontal: 20,
+          ),
+          onTap: () {
+            showDialog(
+              context: context,
+              builder: (context) => AddAreaDialog(),
+            ).then((value) {
+              if (value == 1) {
+                updateList(menu).then((value) {});
+              }
+            });
+          },
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const Icon(
+                Icons.add,
+                size: 25,
+              ),
+              const SizedBox(
+                width: 10,
+              ),
+              Text(
+                'Add Area',
+                style: helveticaText.copyWith(
+                  fontSize: 16,
+                  height: 1.3,
+                  fontWeight: FontWeight.w700,
+                ),
+              )
+            ],
+          ),
+        ),
+        searchField(),
       ],
     );
   }
@@ -1248,6 +1481,256 @@ class _AdminSettingPageState extends State<AdminSettingPage> {
                       updateList: updateList,
                     ),
                   )
+      ],
+    );
+  }
+
+  Widget businessUnitTable(String menu) {
+    return GridView.count(
+      shrinkWrap: true,
+      childAspectRatio: 210 / 235,
+      crossAxisCount: 5,
+      mainAxisSpacing: 30,
+      crossAxisSpacing: 15,
+      children: businessUnitList
+          .asMap()
+          .entries
+          .map(
+            (e) => BusinessUnitListContainer(
+              businessUnit: e.value,
+              updateList: updateList,
+              menu: menu,
+            ),
+          )
+          .toList(),
+    );
+    // return Wrap(
+    //   spacing: 10,
+    //   runSpacing: 30,
+    //   children: businessUnitList
+    //       .asMap()
+    //       .entries
+    //       .map(
+    //         (e) => BusinessUnitListContainer(
+    //           name: e.value.name,
+    //           photo: e.value.photo,
+    //         ),
+    //       )
+    //       .toList(),
+    // );
+  }
+
+  Widget regionListTable(String menu) {
+    return Column(
+      children: [
+        Row(
+          children: [
+            SizedBox(
+              width: 180,
+              child: InkWell(
+                onTap: () {
+                  onTapHeader("RegionID", menu);
+                },
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        'Region ID',
+                        style: headerTableTextStyle,
+                      ),
+                    ),
+                    iconSort("RegionID"),
+                    const SizedBox(
+                      width: 20,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Expanded(
+              child: InkWell(
+                onTap: () {
+                  onTapHeader("RegionName", menu);
+                },
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        'Region Name',
+                        style: headerTableTextStyle,
+                      ),
+                    ),
+                    iconSort("RegionName"),
+                    const SizedBox(
+                      width: 20,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(
+              width: 75,
+            ),
+          ],
+        ),
+        const SizedBox(
+          height: 12,
+        ),
+        const Divider(
+          color: spanishGray,
+          thickness: 1,
+        ),
+        isLoading
+            ? const SizedBox(
+                width: double.infinity,
+                height: 150,
+                child: Center(
+                  child: SizedBox(
+                    height: 50,
+                    width: 50,
+                    child: CircularProgressIndicator(
+                      color: eerieBlack,
+                    ),
+                  ),
+                ),
+              )
+            : regionList.isEmpty
+                ? EmptyTable(
+                    text: "Region list is empty.",
+                  )
+                : ListView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: regionList.length,
+                    itemBuilder: (context, index) {
+                      return RegionListContainer(
+                        index: index,
+                        menu: menu,
+                        region: regionList[index],
+                        close: closeRegionListDetail,
+                        onClick: onClickListRegion,
+                        updateList: updateList,
+                      );
+                    },
+                  ),
+      ],
+    );
+  }
+
+  Widget areaListTable(String menu) {
+    return Column(
+      children: [
+        Row(
+          children: [
+            SizedBox(
+              width: 135,
+              child: InkWell(
+                onTap: () {
+                  onTapHeader("AreaID", menu);
+                },
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        'Area ID',
+                        style: headerTableTextStyle,
+                      ),
+                    ),
+                    iconSort("AreaID"),
+                    const SizedBox(
+                      width: 20,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Expanded(
+              child: InkWell(
+                onTap: () {
+                  onTapHeader("AreaName", menu);
+                },
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        'Area Name',
+                        style: headerTableTextStyle,
+                      ),
+                    ),
+                    iconSort("AreaName"),
+                    const SizedBox(
+                      width: 20,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Expanded(
+              child: InkWell(
+                onTap: () {
+                  onTapHeader("RegionName", menu);
+                },
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        'Region',
+                        style: headerTableTextStyle,
+                      ),
+                    ),
+                    iconSort("RegionName"),
+                    const SizedBox(
+                      width: 20,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(
+              width: 45,
+            ),
+          ],
+        ),
+        const SizedBox(
+          height: 12,
+        ),
+        const Divider(
+          color: spanishGray,
+          thickness: 1,
+        ),
+        isLoading
+            ? const SizedBox(
+                width: double.infinity,
+                height: 150,
+                child: Center(
+                  child: SizedBox(
+                    height: 50,
+                    width: 50,
+                    child: CircularProgressIndicator(
+                      color: eerieBlack,
+                    ),
+                  ),
+                ),
+              )
+            : areaList.isEmpty
+                ? EmptyTable(
+                    text: "Region list is empty.",
+                  )
+                : ListView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: regionList.length,
+                    itemBuilder: (context, index) {
+                      return AreaListContainer(
+                        index: index,
+                        menu: menu,
+                        area: areaList[index],
+                        close: closeAreaListDetail,
+                        onClick: onClickListArea,
+                        updateList: updateList,
+                      );
+                    },
+                  ),
       ],
     );
   }

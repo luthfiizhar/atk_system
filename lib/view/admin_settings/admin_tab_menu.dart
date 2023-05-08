@@ -49,6 +49,18 @@ class _AdminMenuSearchBarState extends State<AdminMenuSearchBar> {
         changeHighlight("Item");
         widget.updateList!(type);
         break;
+      case "BusinessUnit":
+        changeHighlight("BusinessUnit");
+        widget.updateList!(type);
+        break;
+      case "Region":
+        changeHighlight("Region");
+        widget.updateList!(type);
+        break;
+      case "Area":
+        changeHighlight("Area");
+        widget.updateList!(type);
+        break;
     }
   }
 
