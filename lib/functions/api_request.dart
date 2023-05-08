@@ -5,6 +5,7 @@ import 'package:atk_system_ga/functions/api_link.dart';
 import 'package:atk_system_ga/main.dart';
 import 'package:atk_system_ga/models/admin_page_class.dart';
 import 'package:atk_system_ga/models/item_class.dart';
+import 'package:atk_system_ga/models/main_page_model.dart';
 import 'package:atk_system_ga/models/search_term.dart';
 import 'package:atk_system_ga/models/supplies_request_class.dart';
 import 'package:atk_system_ga/models/transaction_class.dart';
@@ -772,6 +773,274 @@ class ApiService {
     }
   }
 
+  Future getAdminPageBusinessUnitList(SearchTerm searchTerm) async {
+    // print(bookingId);
+    var box = await Hive.openBox('userLogin');
+    var jwt = box.get('jwTtoken') != "" ? box.get('jwtToken') : "";
+
+    // jwt = jwtToken;
+
+    var url = Uri.https(
+        urlConstant.apiUrl, '/GSS_Backend/public/api/admin/business-list');
+    Map<String, String> requestHeader = {
+      'Authorization': 'Bearer $jwt',
+      'Content-Type': 'application/json',
+    };
+
+    var bodySend = """
+    {
+        "Keywords" : "${searchTerm.keywords}",
+        "PageNumber" : ${searchTerm.pageNumber},
+        "MaxRecord" : ${searchTerm.max}
+    }
+    """;
+
+    try {
+      var response =
+          await http.post(url, headers: requestHeader, body: bodySend);
+
+      var data = json.decode(response.body);
+
+      return data;
+    } on Error catch (e) {
+      return e;
+    }
+  }
+
+  Future getAdminPageRegionList(SearchTerm searchTerm) async {
+    // print(bookingId);
+    var box = await Hive.openBox('userLogin');
+    var jwt = box.get('jwTtoken') != "" ? box.get('jwtToken') : "";
+
+    // jwt = jwtToken;
+
+    var url = Uri.https(
+        urlConstant.apiUrl, '/GSS_Backend/public/api/admin/region-list');
+    Map<String, String> requestHeader = {
+      'Authorization': 'Bearer $jwt',
+      'Content-Type': 'application/json',
+    };
+
+    var bodySend = """
+    {
+        "Keywords" : "${searchTerm.keywords}",
+        "PageNumber" : ${searchTerm.pageNumber},
+        "MaxRecord" : ${searchTerm.max},
+        "OrderBy": "${searchTerm.orderBy}",
+        "OrderDir": "${searchTerm.orderDir}"
+    }
+    """;
+
+    try {
+      var response =
+          await http.post(url, headers: requestHeader, body: bodySend);
+
+      var data = json.decode(response.body);
+
+      return data;
+    } on Error catch (e) {
+      return e;
+    }
+  }
+
+  Future addBusinessUnit(BusinessUnit businessUnit) async {
+    // print(bookingId);
+    var box = await Hive.openBox('userLogin');
+    var jwt = box.get('jwTtoken') != "" ? box.get('jwtToken') : "";
+
+    // jwt = jwtToken;
+
+    var url = Uri.https(
+        urlConstant.apiUrl, '/GSS_Backend/public/api/admin/add-business');
+    Map<String, String> requestHeader = {
+      'Authorization': 'Bearer $jwt',
+      'Content-Type': 'application/json',
+    };
+
+    var bodySend = """
+    {
+        "Name" : "${businessUnit.name}",
+        "Image" : "${businessUnit.photo}"
+    }
+    """;
+
+    try {
+      var response =
+          await http.post(url, headers: requestHeader, body: bodySend);
+
+      var data = json.decode(response.body);
+
+      return data;
+    } on Error catch (e) {
+      return e;
+    }
+  }
+
+  Future updateBusinessUnit(BusinessUnit businessUnit) async {
+    // print(bookingId);
+    var box = await Hive.openBox('userLogin');
+    var jwt = box.get('jwTtoken') != "" ? box.get('jwtToken') : "";
+
+    // jwt = jwtToken;
+
+    var url = Uri.https(
+        urlConstant.apiUrl, '/GSS_Backend/public/api/admin/edit-business');
+    Map<String, String> requestHeader = {
+      'Authorization': 'Bearer $jwt',
+      'Content-Type': 'application/json',
+    };
+
+    var bodySend = """
+    {
+        "BusinessID" : ${businessUnit.businessUnitId},
+        "Name" : "${businessUnit.name}",
+        "Image" : "${businessUnit.photo}"
+    }
+    """;
+
+    try {
+      var response =
+          await http.put(url, headers: requestHeader, body: bodySend);
+
+      var data = json.decode(response.body);
+
+      return data;
+    } on Error catch (e) {
+      return e;
+    }
+  }
+
+  Future deleteBusinssUnit(BusinessUnit businessUnit) async {
+    // print(bookingId);
+    var box = await Hive.openBox('userLogin');
+    var jwt = box.get('jwTtoken') != "" ? box.get('jwtToken') : "";
+
+    // jwt = jwtToken;
+
+    var url = Uri.https(
+        urlConstant.apiUrl, '/GSS_Backend/public/api/admin/delete-business');
+    Map<String, String> requestHeader = {
+      'Authorization': 'Bearer $jwt',
+      'Content-Type': 'application/json',
+    };
+
+    var bodySend = """
+    {
+        "BusinessID" : ${businessUnit.businessUnitId}
+    }
+    """;
+
+    try {
+      var response =
+          await http.delete(url, headers: requestHeader, body: bodySend);
+
+      var data = json.decode(response.body);
+
+      return data;
+    } on Error catch (e) {
+      return e;
+    }
+  }
+
+  Future addRegion(Region region) async {
+    // print(bookingId);
+    var box = await Hive.openBox('userLogin');
+    var jwt = box.get('jwTtoken') != "" ? box.get('jwtToken') : "";
+
+    // jwt = jwtToken;
+
+    var url = Uri.https(
+        urlConstant.apiUrl, '/GSS_Backend/public/api/admin/add-region');
+    Map<String, String> requestHeader = {
+      'Authorization': 'Bearer $jwt',
+      'Content-Type': 'application/json',
+    };
+
+    var bodySend = """
+    {
+        "RegionName" : "${region.regionName}",
+        "CompanyID" : "${region.businessUnitID}"
+    }
+    """;
+
+    try {
+      var response =
+          await http.post(url, headers: requestHeader, body: bodySend);
+
+      var data = json.decode(response.body);
+
+      return data;
+    } on Error catch (e) {
+      return e;
+    }
+  }
+
+  Future updateRegion(Region region) async {
+    // print(bookingId);
+    var box = await Hive.openBox('userLogin');
+    var jwt = box.get('jwTtoken') != "" ? box.get('jwtToken') : "";
+
+    // jwt = jwtToken;
+
+    var url = Uri.https(
+        urlConstant.apiUrl, '/GSS_Backend/public/api/admin/edit-region');
+    Map<String, String> requestHeader = {
+      'Authorization': 'Bearer $jwt',
+      'Content-Type': 'application/json',
+    };
+
+    var bodySend = """
+    {
+        "RegionID" : "${region.regionId}",
+        "RegionName" : "${region.regionName}",
+        "CompanyID" : "${region.businessUnitID}"
+    }
+    """;
+
+    try {
+      var response =
+          await http.put(url, headers: requestHeader, body: bodySend);
+
+      var data = json.decode(response.body);
+
+      return data;
+    } on Error catch (e) {
+      return e;
+    }
+  }
+
+  Future deleteRegion(Region region) async {
+    // print(bookingId);
+    var box = await Hive.openBox('userLogin');
+    var jwt = box.get('jwTtoken') != "" ? box.get('jwtToken') : "";
+
+    // jwt = jwtToken;
+
+    var url = Uri.https(
+        urlConstant.apiUrl, '/GSS_Backend/public/api/admin/delete-business');
+    Map<String, String> requestHeader = {
+      'Authorization': 'Bearer $jwt',
+      'Content-Type': 'application/json',
+    };
+
+    var bodySend = """
+    {
+        "RegionalID" : "${region.regionId}"
+    }
+    """;
+
+    try {
+      var response =
+          await http.delete(url, headers: requestHeader, body: bodySend);
+
+      var data = json.decode(response.body);
+
+      return data;
+    } on Error catch (e) {
+      return e;
+    }
+  }
+
   Future addSite(Site site) async {
     // print(bookingId);
     var box = await Hive.openBox('userLogin');
@@ -919,6 +1188,35 @@ class ApiService {
       'Authorization': 'Bearer $jwt',
       'Content-Type': 'application/json',
     };
+
+    try {
+      var response = await http.get(url, headers: requestHeader);
+
+      var data = json.decode(response.body);
+
+      return data;
+    } on Error catch (e) {
+      return e;
+    }
+  }
+
+  Future getBUListDropdown() async {
+    // print(bookingId);
+    var box = await Hive.openBox('userLogin');
+    var jwt = box.get('jwTtoken') != "" ? box.get('jwtToken') : "";
+
+    // jwt = jwtToken;
+
+    var url = Uri.https(
+        urlConstant.apiUrl, '/GSS_Backend/public/api/admin/business-dropdown');
+    Map<String, String> requestHeader = {
+      'Authorization': 'Bearer $jwt',
+      'Content-Type': 'application/json',
+    };
+
+    var bodySend = """
+   
+    """;
 
     try {
       var response = await http.get(url, headers: requestHeader);
