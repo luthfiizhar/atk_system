@@ -202,7 +202,6 @@ class RecentTransactionViewModel extends ChangeNotifier {
         .onValue
         .listen((event) {
       final jsonString = event.snapshot.value;
-      print("$jsonString");
       dynamic result = List<dynamic>.from(jsonString as dynamic);
       List<RecentTransactionTable> list = (result as List)
           .map((e) => RecentTransactionTable.fromJson(e))

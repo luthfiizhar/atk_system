@@ -52,32 +52,9 @@ class _AdminSettingPageState extends State<AdminSettingPage> {
 
   List<BusinessUnit> businessUnitList = [];
 
-  List<Region> regionList = [
-    Region(
-      regionId: "RM1",
-      regionName: "sdqweasdqwe",
-    ),
-    Region(
-      regionId: "RM1",
-      regionName: "sdqweasdqwe",
-    ),
-    Region(
-      regionId: "RM1",
-      regionName: "sdqweasdqwe",
-    ),
-    Region(
-      regionId: "RM1",
-      regionName: "sdqweasdqwe",
-    )
-  ];
+  List<Region> regionList = [];
 
-  List<Area> areaList = [
-    Area(areaId: "AM1", areaName: "sdkjfiqjea", regionName: "RM1"),
-    Area(areaId: "AM1", areaName: "sdkjfiqjea", regionName: "RM1"),
-    Area(areaId: "AM1", areaName: "sdkjfiqjea", regionName: "RM1"),
-    Area(areaId: "AM1", areaName: "sdkjfiqjea", regionName: "RM1"),
-    Area(areaId: "AM1", areaName: "sdkjfiqjea", regionName: "RM1"),
-  ];
+  List<Area> areaList = [];
 
   bool isLoading = true;
 
@@ -121,6 +98,9 @@ class _AdminSettingPageState extends State<AdminSettingPage> {
     }
     if (menu == "Region") {
       searchTerm.orderBy = "RegionalID";
+    }
+    if (menu == "Area") {
+      searchTerm.orderBy = "AreaID";
     }
     setState(() {});
     updateList(menu).then((value) {
@@ -183,8 +163,11 @@ class _AdminSettingPageState extends State<AdminSettingPage> {
                 monthlyBudget: element['Budget'],
                 siteArea: double.parse(element['SiteArea'].toString()),
                 additionalBudget: element['AdditionalBudget'] ?? 0,
-                latitude: double.parse(element["Latitude"]),
-                longitude: double.parse(element["Longitude"]),
+                latitude: element["Latitude"].toString(),
+                longitude: element["Longitude"].toString(),
+                areaId: element["AreaID"].toString(),
+                areaName: element["AreaName"],
+                regionName: element["RegionName"],
               ));
             }
           } else {}
@@ -271,6 +254,26 @@ class _AdminSettingPageState extends State<AdminSettingPage> {
                   regionId: element["RegionalID"],
                   regionName: element["RegionName"],
                   businessUnitID: element["CompanyID"].toString(),
+                ),
+              );
+            }
+            setState(() {});
+          } else {}
+        });
+      case "Area":
+        areaList.clear();
+        return apiService.getAdminPageAreaList(searchTerm).then((value) {
+          print(value);
+          if (value['Status'].toString() == "200") {
+            resultRows = value['Data']['TotalRows'];
+            List itemResult = value['Data']['List'];
+            for (var element in itemResult) {
+              areaList.add(
+                Area(
+                  regionID: element["RegionalID"],
+                  areaId: element["AreaID"].toString(),
+                  areaName: element["AreaName"],
+                  regionName: element["RegionName"],
                 ),
               );
             }
@@ -388,8 +391,11 @@ class _AdminSettingPageState extends State<AdminSettingPage> {
                 monthlyBudget: element['Budget'],
                 siteArea: double.parse(element['SiteArea'].toString()),
                 additionalBudget: element['AdditionalBudget'] ?? 0,
-                latitude: double.parse(element["Latitude"]),
-                longitude: double.parse(element["Longitude"]),
+                latitude: element["Latitude"].toString(),
+                longitude: element["Longitude"].toString(),
+                areaId: element["AreaID"].toString(),
+                areaName: element["AreaName"],
+                regionName: element["RegionName"],
               ));
             }
             countPagination(resultRows);
@@ -426,7 +432,6 @@ class _AdminSettingPageState extends State<AdminSettingPage> {
   @override
   void initState() {
     super.initState();
-
     initList();
   }
 
@@ -852,9 +857,11 @@ class _AdminSettingPageState extends State<AdminSettingPage> {
                   width: 10,
                 ),
                 SizedBox(
-                  width: 120,
+                  width: 110,
                   child: BlackDropdown(
                     focusNode: showPerRowsNode,
+                    width: 110,
+                    dropdownWidth: 120,
                     onChanged: (value) {
                       setState(() {
                         currentPaginatedPage = 1;
@@ -1155,8 +1162,7 @@ class _AdminSettingPageState extends State<AdminSettingPage> {
                 ),
               ),
             ),
-            SizedBox(
-              width: 350,
+            Expanded(
               child: InkWell(
                 onTap: () {
                   onTapHeader("MonthlyBudget", menu);
@@ -1170,6 +1176,28 @@ class _AdminSettingPageState extends State<AdminSettingPage> {
                       ),
                     ),
                     iconSort("MonthlyBudget"),
+                    const SizedBox(
+                      width: 20,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            SizedBox(
+              width: 220,
+              child: InkWell(
+                onTap: () {
+                  onTapHeader("AdditionalBudget", menu);
+                },
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        'Additional Budget',
+                        style: headerTableTextStyle,
+                      ),
+                    ),
+                    iconSort("AdditionalBudget"),
                     const SizedBox(
                       width: 20,
                     ),
@@ -1719,7 +1747,7 @@ class _AdminSettingPageState extends State<AdminSettingPage> {
                 : ListView.builder(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
-                    itemCount: regionList.length,
+                    itemCount: areaList.length,
                     itemBuilder: (context, index) {
                       return AreaListContainer(
                         index: index,

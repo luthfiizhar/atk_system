@@ -139,6 +139,7 @@ class _SiteRankingWidgetState extends State<SiteRankingWidget> {
         .getBudgetCostComparison(globalModel)
         .onError((error, stackTrace) {
       siteRankViewModel.closeListener();
+      print("error SiteRank");
     });
 
     globalModel.addListener(() {
@@ -310,7 +311,8 @@ class _SiteRankingWidgetState extends State<SiteRankingWidget> {
                                                             height: 30,
                                                           ),
                                                     Builder(builder: (context) {
-                                                      // e.rank = index + 1;
+                                                      e.rank = (index + 1)
+                                                          .toString();
                                                       switch (selectedSort) {
                                                         case 1:
                                                           return RankingItemCostContainer(
@@ -380,7 +382,8 @@ class _SiteRankingWidgetState extends State<SiteRankingWidget> {
                                                             height: 30,
                                                           ),
                                                     Builder(builder: (context) {
-                                                      // e.rank = index + 6;
+                                                      e.rank = (index + 6)
+                                                          .toString();
                                                       switch (selectedSort) {
                                                         case 1:
                                                           return RankingItemCostContainer(

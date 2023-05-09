@@ -1,7 +1,11 @@
 import 'package:atk_system_ga/constant/colors.dart';
 import 'package:atk_system_ga/constant/text_style.dart';
+import 'package:atk_system_ga/functions/api_request.dart';
+import 'package:atk_system_ga/models/admin_page_class.dart';
 import 'package:atk_system_ga/models/main_page_model.dart';
+import 'package:atk_system_ga/view/admin_settings/area/add_area_dialog.dart';
 import 'package:atk_system_ga/widgets/buttons.dart';
+import 'package:atk_system_ga/widgets/dialogs.dart';
 import 'package:flutter/material.dart';
 
 class AreaListContainer extends StatefulWidget {
@@ -113,17 +117,17 @@ class _AreaListContainerState extends State<AreaListContainer> {
                                 padding:
                                     const EdgeInsets.symmetric(vertical: 20),
                                 onTap: () {
-                                  // showDialog(
-                                  //   context: context,
-                                  //   builder: (context) => AddSiteDialog(
-                                  //     isEdit: true,
-                                  //     site: widget.site,
-                                  //   ),
-                                  // ).then((value) {
-                                  //   if (value == 1) {
-                                  //     widget.updateList!(widget.menu);
-                                  //   }
-                                  // });
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) => AddAreaDialog(
+                                      isEdit: true,
+                                      area: widget.area,
+                                    ),
+                                  ).then((value) {
+                                    if (value == 1) {
+                                      widget.updateList!(widget.menu);
+                                    }
+                                  });
                                 },
                               ),
                             ),
@@ -138,50 +142,57 @@ class _AreaListContainerState extends State<AreaListContainer> {
                                 padding:
                                     const EdgeInsets.symmetric(vertical: 20),
                                 onTap: () {
-                                  // showDialog(
-                                  //   context: context,
-                                  //   builder: (context) => const ConfirmDialogBlack(
-                                  //     title: "Confirmation",
-                                  //     contentText: "Are you sure to delete site?",
-                                  //   ),
-                                  // ).then((value) {
-                                  //   if (value == 1) {
-                                  //     ApiService apiService = ApiService();
-                                  //     apiService
-                                  //         .deleteSite(widget.site.siteId)
-                                  //         .then((value) {
-                                  //       if (value['Status'].toString() == "200") {
-                                  //         showDialog(
-                                  //           context: context,
-                                  //           builder: (context) => AlertDialogBlack(
-                                  //             title: value['Title'],
-                                  //             contentText: value['Message'],
-                                  //           ),
-                                  //         ).then((value) {
-                                  //           widget.updateList!(widget.menu);
-                                  //         });
-                                  //       } else {
-                                  //         showDialog(
-                                  //           context: context,
-                                  //           builder: (context) => AlertDialogBlack(
-                                  //             title: value['Title'],
-                                  //             contentText: value['Message'],
-                                  //             isSuccess: false,
-                                  //           ),
-                                  //         );
-                                  //       }
-                                  //     }).onError((error, stackTrace) {
-                                  //       showDialog(
-                                  //         context: context,
-                                  //         builder: (context) => const AlertDialogBlack(
-                                  //           title: "Error deleteSite",
-                                  //           contentText: "No internet connection",
-                                  //           isSuccess: false,
-                                  //         ),
-                                  //       );
-                                  //     });
-                                  //   }
-                                  // });
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) =>
+                                        const ConfirmDialogBlack(
+                                      title: "Confirmation",
+                                      contentText:
+                                          "Are you sure to delete site?",
+                                    ),
+                                  ).then((value) {
+                                    if (value == 1) {
+                                      ApiService apiService = ApiService();
+                                      apiService
+                                          .deleteArea(widget.area)
+                                          .then((value) {
+                                        if (value['Status'].toString() ==
+                                            "200") {
+                                          showDialog(
+                                            context: context,
+                                            builder: (context) =>
+                                                AlertDialogBlack(
+                                              title: value['Title'],
+                                              contentText: value['Message'],
+                                            ),
+                                          ).then((value) {
+                                            widget.updateList!(widget.menu);
+                                          });
+                                        } else {
+                                          showDialog(
+                                            context: context,
+                                            builder: (context) =>
+                                                AlertDialogBlack(
+                                              title: value['Title'],
+                                              contentText: value['Message'],
+                                              isSuccess: false,
+                                            ),
+                                          );
+                                        }
+                                      }).onError((error, stackTrace) {
+                                        showDialog(
+                                          context: context,
+                                          builder: (context) =>
+                                              const AlertDialogBlack(
+                                            title: "Error deleteArea",
+                                            contentText:
+                                                "No internet connection",
+                                            isSuccess: false,
+                                          ),
+                                        );
+                                      });
+                                    }
+                                  });
                                 },
                               ),
                             )

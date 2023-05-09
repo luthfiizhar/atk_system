@@ -3,9 +3,12 @@ class Site {
     this.siteId = "",
     this.siteName = "",
     this.oldSiteId = "",
-    this.latitude = 0.0,
-    this.longitude = 0.0,
+    this.latitude = "",
+    this.longitude = "",
     this.siteArea = 0,
+    this.regionName = "",
+    this.areaId = "",
+    this.areaName = "",
     this.monthlyBudget = 0,
     this.additionalBudget = 0,
     this.isExpanded = false,
@@ -14,8 +17,11 @@ class Site {
   String siteId;
   String oldSiteId;
   String siteName;
-  double latitude;
-  double longitude;
+  String areaId;
+  String areaName;
+  String regionName;
+  String latitude;
+  String longitude;
   int monthlyBudget;
   int additionalBudget;
   double siteArea;
@@ -87,5 +93,84 @@ class Role {
   @override
   String toString() {
     return toJson().toString();
+  }
+}
+
+class Region {
+  String regionName;
+  String regionId;
+  String logoBase64;
+  String businessUnitID;
+  String businessUnitName;
+  bool isExpanded;
+
+  Region({
+    this.regionId = "",
+    this.regionName = "",
+    this.logoBase64 = "",
+    this.businessUnitID = "1",
+    this.businessUnitName = "",
+    this.isExpanded = false,
+  });
+
+  Map<String, String> toJson() =>
+      {"RegionId": regionId, "RegionName": regionName};
+
+  @override
+  String toString() {
+    return toJson().toString();
+  }
+}
+
+class Area {
+  String areaId;
+  String areaName;
+  String regionID;
+  String regionName;
+  bool isExpanded;
+
+  Area({
+    this.areaId = "",
+    this.areaName = "",
+    this.regionID = "",
+    this.regionName = "",
+    this.isExpanded = false,
+  });
+
+  Map<String, String> toJson() => {
+        "RegionId": regionID,
+        "RegionName": regionName,
+        "AreaName": areaName,
+        "AreaId": areaId,
+      };
+
+  @override
+  String toString() {
+    return toJson().toString();
+  }
+}
+
+class BusinessUnit {
+  String name;
+  String photo;
+  String businessUnitId;
+  bool isSelected;
+  BusinessUnit({
+    this.name = "",
+    this.businessUnitId = "",
+    this.photo = "",
+    this.isSelected = false,
+  });
+
+  Map<String, String> toJson() => {
+        "Name": name,
+        "BusinessUnitID": businessUnitId,
+        "Photo": photo,
+        "isSelected": isSelected.toString()
+      };
+
+  @override
+  String toString() {
+    return toJson.toString();
   }
 }

@@ -75,10 +75,20 @@ class _SiteListContainerState extends State<SiteListContainer> {
                         ),
                       ),
                     ),
-                    SizedBox(
-                      width: 350,
+                    Expanded(
                       child: Text(
                         formatCurrency.format(widget.site.monthlyBudget),
+                        style: helveticaText.copyWith(
+                          fontWeight: FontWeight.w300,
+                          fontSize: 16,
+                          color: davysGray,
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      width: 220,
+                      child: Text(
+                        formatCurrency.format(widget.site.additionalBudget),
                         style: helveticaText.copyWith(
                           fontWeight: FontWeight.w300,
                           fontSize: 16,
@@ -109,8 +119,56 @@ class _SiteListContainerState extends State<SiteListContainer> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Wrap(
-                              spacing: 50,
+                              spacing: 100,
                               children: [
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    RichText(
+                                      text: TextSpan(
+                                        text: "Area Name: ",
+                                        style: helveticaText.copyWith(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w300,
+                                          color: davysGray,
+                                        ),
+                                        children: [
+                                          TextSpan(
+                                            text: widget.site.areaName,
+                                            style: helveticaText.copyWith(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w400,
+                                              color: davysGray,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                      height: 5,
+                                    ),
+                                    RichText(
+                                      text: TextSpan(
+                                        text: "Region Name: ",
+                                        style: helveticaText.copyWith(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w300,
+                                          color: davysGray,
+                                        ),
+                                        children: [
+                                          TextSpan(
+                                            text: widget.site.regionName,
+                                            style: helveticaText.copyWith(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w400,
+                                              color: davysGray,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
                                 RichText(
                                   text: TextSpan(
                                     text: "Site Area: ",
@@ -123,27 +181,6 @@ class _SiteListContainerState extends State<SiteListContainer> {
                                       TextSpan(
                                         text:
                                             "${formatThousand.format(widget.site.siteArea)} m2",
-                                        style: helveticaText.copyWith(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w400,
-                                          color: davysGray,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                RichText(
-                                  text: TextSpan(
-                                    text: "Additional Budget: ",
-                                    style: helveticaText.copyWith(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w300,
-                                      color: davysGray,
-                                    ),
-                                    children: [
-                                      TextSpan(
-                                        text: formatCurrency.format(
-                                            widget.site.additionalBudget),
                                         style: helveticaText.copyWith(
                                           fontSize: 16,
                                           fontWeight: FontWeight.w400,
