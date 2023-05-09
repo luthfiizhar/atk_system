@@ -17,6 +17,7 @@ class BlackDropdown extends StatelessWidget {
     this.customHeights,
     this.width = 120,
     this.customButton,
+    this.dropdownWidth,
     this.maxHeight,
   }) : focusNode = focusNode ?? FocusNode();
 
@@ -31,6 +32,7 @@ class BlackDropdown extends StatelessWidget {
   final dynamic value;
   final List<double>? customHeights;
   double width;
+  double? dropdownWidth;
   double? maxHeight;
   Widget? customButton;
 
@@ -38,11 +40,14 @@ class BlackDropdown extends StatelessWidget {
   Widget build(BuildContext context) {
     return DropdownButtonFormField2(
       buttonStyleData: ButtonStyleData(
-          width: width,
-          height: 39,
-          overlayColor: MaterialStateProperty.resolveWith<Color>((states) {
+        width: width,
+        height: 39,
+        overlayColor: MaterialStateProperty.resolveWith<Color>(
+          (states) {
             return Colors.transparent;
-          })),
+          },
+        ),
+      ),
       // buttonWidth: 120,
       // buttonHeight: 39,
       value: value,
@@ -51,6 +56,7 @@ class BlackDropdown extends StatelessWidget {
       items: items,
       dropdownStyleData: DropdownStyleData(
         maxHeight: maxHeight,
+        width: dropdownWidth,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
           border: Border.all(
