@@ -843,6 +843,42 @@ class ApiService {
     }
   }
 
+  Future getAdminPageAreaList(SearchTerm searchTerm) async {
+    // print(bookingId);
+    var box = await Hive.openBox('userLogin');
+    var jwt = box.get('jwTtoken') != "" ? box.get('jwtToken') : "";
+
+    // jwt = jwtToken;
+
+    var url = Uri.https(
+        urlConstant.apiUrl, '/GSS_Backend/public/api/admin/area-list');
+    Map<String, String> requestHeader = {
+      'Authorization': 'Bearer $jwt',
+      'Content-Type': 'application/json',
+    };
+
+    var bodySend = """
+    {
+        "Keywords" : "${searchTerm.keywords}",
+        "PageNumber" : ${searchTerm.pageNumber},
+        "MaxRecord" : ${searchTerm.max},
+        "OrderBy": "${searchTerm.orderBy}",
+        "OrderDir": "${searchTerm.orderDir}"
+    }
+    """;
+
+    try {
+      var response =
+          await http.post(url, headers: requestHeader, body: bodySend);
+
+      var data = json.decode(response.body);
+
+      return data;
+    } on Error catch (e) {
+      return e;
+    }
+  }
+
   Future addBusinessUnit(BusinessUnit businessUnit) async {
     // print(bookingId);
     var box = await Hive.openBox('userLogin');
@@ -1017,7 +1053,7 @@ class ApiService {
     // jwt = jwtToken;
 
     var url = Uri.https(
-        urlConstant.apiUrl, '/GSS_Backend/public/api/admin/delete-business');
+        urlConstant.apiUrl, '/GSS_Backend/public/api/admin/delete-region');
     Map<String, String> requestHeader = {
       'Authorization': 'Bearer $jwt',
       'Content-Type': 'application/json',
@@ -1026,6 +1062,105 @@ class ApiService {
     var bodySend = """
     {
         "RegionalID" : "${region.regionId}"
+    }
+    """;
+
+    try {
+      var response =
+          await http.delete(url, headers: requestHeader, body: bodySend);
+
+      var data = json.decode(response.body);
+
+      return data;
+    } on Error catch (e) {
+      return e;
+    }
+  }
+
+  Future addArea(Area area) async {
+    // print(bookingId);
+    var box = await Hive.openBox('userLogin');
+    var jwt = box.get('jwTtoken') != "" ? box.get('jwtToken') : "";
+
+    // jwt = jwtToken;
+
+    var url =
+        Uri.https(urlConstant.apiUrl, '/GSS_Backend/public/api/admin/add-area');
+    Map<String, String> requestHeader = {
+      'Authorization': 'Bearer $jwt',
+      'Content-Type': 'application/json',
+    };
+
+    var bodySend = """
+    {
+        "AreaName" : "${area.areaName}",
+        "RegionalID" : "${area.regionID}"
+    }
+    """;
+
+    try {
+      var response =
+          await http.post(url, headers: requestHeader, body: bodySend);
+
+      var data = json.decode(response.body);
+
+      return data;
+    } on Error catch (e) {
+      return e;
+    }
+  }
+
+  Future updateArea(Area area) async {
+    // print(bookingId);
+    var box = await Hive.openBox('userLogin');
+    var jwt = box.get('jwTtoken') != "" ? box.get('jwtToken') : "";
+
+    // jwt = jwtToken;
+
+    var url = Uri.https(
+        urlConstant.apiUrl, '/GSS_Backend/public/api/admin/edit-area');
+    Map<String, String> requestHeader = {
+      'Authorization': 'Bearer $jwt',
+      'Content-Type': 'application/json',
+    };
+
+    var bodySend = """
+    {
+        "AreaID" : "${area.areaId}",
+        "AreaName" : "${area.areaName}",
+        "RegionalID" : "${area.regionID}"
+    }
+    """;
+
+    try {
+      var response =
+          await http.put(url, headers: requestHeader, body: bodySend);
+
+      var data = json.decode(response.body);
+
+      return data;
+    } on Error catch (e) {
+      return e;
+    }
+  }
+
+  Future deleteArea(Area area) async {
+    // print(bookingId);
+    var box = await Hive.openBox('userLogin');
+    var jwt = box.get('jwTtoken') != "" ? box.get('jwtToken') : "";
+
+    // jwt = jwtToken;
+
+    var url = Uri.https(
+        urlConstant.apiUrl, '/GSS_Backend/public/api/admin/delete-area');
+    Map<String, String> requestHeader = {
+      'Authorization': 'Bearer $jwt',
+      'Content-Type': 'application/json',
+    };
+
+    var bodySend = """
+    {
+        
     }
     """;
 
@@ -1063,7 +1198,8 @@ class ApiService {
         "Latitude" : ${site.latitude},
         "Longitude" : ${site.longitude},
         "MonthlyBudget" : ${site.monthlyBudget},
-        "AdditionalBudget" : ${site.additionalBudget}
+        "AdditionalBudget" : ${site.additionalBudget},
+        "AreaID" : "${site.areaId}"
     }
     """;
 
@@ -1102,7 +1238,8 @@ class ApiService {
         "Latitude" : ${site.latitude},
         "Longitude" : ${site.longitude},
         "MonthlyBudget" : ${site.monthlyBudget},
-        "AdditionalBudget" : ${site.additionalBudget}
+        "AdditionalBudget" : ${site.additionalBudget},
+        "AreaID" : "${site.areaId}"
     }
     """;
 
@@ -1175,6 +1312,35 @@ class ApiService {
     }
   }
 
+  Future getAreaListDropdown() async {
+    // print(bookingId);
+    var box = await Hive.openBox('userLogin');
+    var jwt = box.get('jwTtoken') != "" ? box.get('jwtToken') : "";
+
+    // jwt = jwtToken;
+
+    var url = Uri.https(
+        urlConstant.apiUrl, '/GSS_Backend/public/api/admin/area-dropdown');
+    Map<String, String> requestHeader = {
+      'Authorization': 'Bearer $jwt',
+      'Content-Type': 'application/json',
+    };
+
+    var bodySend = """
+   
+    """;
+
+    try {
+      var response = await http.get(url, headers: requestHeader);
+
+      var data = json.decode(response.body);
+
+      return data;
+    } on Error catch (e) {
+      return e;
+    }
+  }
+
   Future getRoleListDropdown() async {
     // print(bookingId);
     var box = await Hive.openBox('userLogin');
@@ -1209,6 +1375,35 @@ class ApiService {
 
     var url = Uri.https(
         urlConstant.apiUrl, '/GSS_Backend/public/api/admin/business-dropdown');
+    Map<String, String> requestHeader = {
+      'Authorization': 'Bearer $jwt',
+      'Content-Type': 'application/json',
+    };
+
+    var bodySend = """
+   
+    """;
+
+    try {
+      var response = await http.get(url, headers: requestHeader);
+
+      var data = json.decode(response.body);
+
+      return data;
+    } on Error catch (e) {
+      return e;
+    }
+  }
+
+  Future getRegionListDropdown() async {
+    // print(bookingId);
+    var box = await Hive.openBox('userLogin');
+    var jwt = box.get('jwTtoken') != "" ? box.get('jwtToken') : "";
+
+    // jwt = jwtToken;
+
+    var url = Uri.https(
+        urlConstant.apiUrl, '/GSS_Backend/public/api/admin/region-dropdown');
     Map<String, String> requestHeader = {
       'Authorization': 'Bearer $jwt',
       'Content-Type': 'application/json',
