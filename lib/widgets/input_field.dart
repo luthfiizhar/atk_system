@@ -107,35 +107,35 @@ class _BlackInputFieldState extends State<BlackInputField> {
             color: eerieBlack,
           ),
           border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(5),
+            borderRadius: BorderRadius.circular(7.5),
             borderSide: const BorderSide(
               color: grayx11,
               width: 1,
             ),
           ),
           enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(5),
+            borderRadius: BorderRadius.circular(7.5),
             borderSide: const BorderSide(
               color: davysGray,
               width: 1,
             ),
           ),
           focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(5),
+            borderRadius: BorderRadius.circular(7.5),
             borderSide: const BorderSide(
               color: davysGray,
               width: 2,
             ),
           ),
           disabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(5),
+            borderRadius: BorderRadius.circular(7.5),
             borderSide: const BorderSide(
               color: grayx11,
               width: 1,
             ),
           ),
           errorBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(5),
+            borderRadius: BorderRadius.circular(7.5),
             borderSide: const BorderSide(
               color: orangeAccent,
               width: 1,
@@ -281,35 +281,35 @@ class _CustomInputFieldState extends State<CustomInputField> {
             color: eerieBlack,
           ),
           border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(5),
+            borderRadius: BorderRadius.circular(7.5),
             borderSide: const BorderSide(
               color: grayx11,
               width: 1,
             ),
           ),
           enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(5),
+            borderRadius: BorderRadius.circular(7.5),
             borderSide: const BorderSide(
-              color: davysGray,
+              color: grayx11,
               width: 1,
             ),
           ),
           focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(5),
+            borderRadius: BorderRadius.circular(7.5),
             borderSide: const BorderSide(
-              color: davysGray,
-              width: 2,
+              color: grayx11,
+              width: 1,
             ),
           ),
           disabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(5),
+            borderRadius: BorderRadius.circular(7.5),
             borderSide: const BorderSide(
-              color: davysGray,
+              color: grayx11,
               width: 1,
             ),
           ),
           errorBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(5),
+            borderRadius: BorderRadius.circular(7.5),
             borderSide: const BorderSide(
               color: orangeAccent,
               width: 1,
