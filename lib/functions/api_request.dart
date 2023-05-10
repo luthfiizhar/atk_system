@@ -1804,6 +1804,8 @@ class ApiService {
 
     var bodySend = """
     {
+        "CompName": "",
+        "CompID": "${globalModel.businessUnit}",
         "Role" : "${globalModel.role}",
         "Site" : "${globalModel.areaId}",
         "Month" : 4,
@@ -1847,6 +1849,8 @@ class ApiService {
 
     var bodySend = """
     {
+        "CompName": "",
+        "CompID": "${globalModel.businessUnit}",
         "Role" : "${globalModel.role}",
         "Site" : "${globalModel.areaId}",
         "Month" : 4,
@@ -1912,7 +1916,7 @@ class ApiService {
     {
         "DataType" : "$dataType",
         "CompName": "",
-        "CompID": "",
+        "CompID": "${globalModel.businessUnit}",
         "Role" : "${globalModel.role}",
         "Site" : "${globalModel.areaId}",
         "Month" : 4,
