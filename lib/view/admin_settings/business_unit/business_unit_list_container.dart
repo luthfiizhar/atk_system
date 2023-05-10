@@ -40,127 +40,127 @@ class _BusinessUnitListContainerState extends State<BusinessUnitListContainer> {
         isHover = false;
         setState(() {});
       },
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(
-          minWidth: 210,
-          maxWidth: 210,
-          minHeight: 235,
-          maxHeight: 235,
-        ),
-        child: Stack(
-          children: [
-            Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(15),
-                border: Border.all(color: platinum, width: 1),
-              ),
-              padding: const EdgeInsets.all(20),
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    pictureWidget(),
-                    const SizedBox(
-                      height: 25,
-                    ),
-                    nameWidget(),
-                  ],
-                ),
+      child: Stack(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(15),
+              border: Border.all(color: platinum, width: 1),
+            ),
+            padding: const EdgeInsets.symmetric(
+              vertical: 20,
+              horizontal: 25,
+            ),
+            constraints: const BoxConstraints(
+              minWidth: 210,
+              maxWidth: 210,
+              minHeight: 235,
+            ),
+            child: Center(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  pictureWidget(),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  nameWidget(),
+                ],
               ),
             ),
-            isHover
-                ? Container(
-                    height: double.infinity,
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(15),
-                      color: Colors.black.withOpacity(0.5),
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        SizedBox(
-                          width: 120,
-                          child: RegularButton(
-                            text: 'Edit',
-                            disabled: false,
-                            padding: const EdgeInsets.symmetric(vertical: 20),
-                            onTap: () {
-                              showDialog(
-                                context: context,
-                                builder: (context) => AddBusinessUnitDialog(
-                                  isEdit: true,
-                                  businessUnit: widget.businessUnit,
-                                ),
-                              ).then((value) {
-                                widget.updateList(widget.menu);
-                              });
-                            },
-                          ),
+          ),
+          isHover
+              ? Container(
+                  height: double.infinity,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(15),
+                    color: Colors.black.withOpacity(0.5),
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      SizedBox(
+                        width: 120,
+                        child: RegularButton(
+                          text: 'Edit',
+                          disabled: false,
+                          padding: const EdgeInsets.symmetric(vertical: 20),
+                          onTap: () {
+                            showDialog(
+                              context: context,
+                              builder: (context) => AddBusinessUnitDialog(
+                                isEdit: true,
+                                businessUnit: widget.businessUnit,
+                              ),
+                            ).then((value) {
+                              widget.updateList(widget.menu);
+                            });
+                          },
                         ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        SizedBox(
-                          width: 120,
-                          child: DeleteButton(
-                            text: 'Delete',
-                            disabled: false,
-                            padding: const EdgeInsets.symmetric(vertical: 20),
-                            onTap: () {
-                              showDialog(
-                                context: context,
-                                builder: (context) => const ConfirmDialogBlack(
-                                  title: "Confirmation",
-                                  contentText: "Are you sure to delete BU?",
-                                ),
-                              ).then((value) {
-                                if (value == 1) {
-                                  ApiService apiService = ApiService();
-                                  apiService
-                                      .deleteBusinssUnit(widget.businessUnit)
-                                      .then((value) {
-                                    if (value["Status"].toString() == "200") {
-                                      showDialog(
-                                        context: context,
-                                        builder: (context) => AlertDialogBlack(
-                                            title: value["Title"],
-                                            contentText: value["Message"]),
-                                      ).then((value) {
-                                        widget.updateList(widget.menu);
-                                      });
-                                    } else {
-                                      showDialog(
-                                        context: context,
-                                        builder: (context) => AlertDialogBlack(
-                                          title: value["Title"],
-                                          contentText: value["Message"],
-                                          isSuccess: false,
-                                        ),
-                                      );
-                                    }
-                                  }).onError((error, stackTrace) {
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      SizedBox(
+                        width: 120,
+                        child: DeleteButton(
+                          text: 'Delete',
+                          disabled: false,
+                          padding: const EdgeInsets.symmetric(vertical: 20),
+                          onTap: () {
+                            showDialog(
+                              context: context,
+                              builder: (context) => const ConfirmDialogBlack(
+                                title: "Confirmation",
+                                contentText: "Are you sure to delete BU?",
+                              ),
+                            ).then((value) {
+                              if (value == 1) {
+                                ApiService apiService = ApiService();
+                                apiService
+                                    .deleteBusinssUnit(widget.businessUnit)
+                                    .then((value) {
+                                  if (value["Status"].toString() == "200") {
                                     showDialog(
                                       context: context,
                                       builder: (context) => AlertDialogBlack(
-                                        title: "Error deleteBU",
-                                        contentText: error.toString(),
+                                          title: value["Title"],
+                                          contentText: value["Message"]),
+                                    ).then((value) {
+                                      widget.updateList(widget.menu);
+                                    });
+                                  } else {
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) => AlertDialogBlack(
+                                        title: value["Title"],
+                                        contentText: value["Message"],
+                                        isSuccess: false,
                                       ),
                                     );
-                                  });
-                                }
-                              });
-                            },
-                          ),
-                        )
-                      ],
-                    ),
-                  )
-                : const SizedBox()
-          ],
-        ),
+                                  }
+                                }).onError((error, stackTrace) {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) => AlertDialogBlack(
+                                      title: "Error deleteBU",
+                                      contentText: error.toString(),
+                                    ),
+                                  );
+                                });
+                              }
+                            });
+                          },
+                        ),
+                      )
+                    ],
+                  ),
+                )
+              : const SizedBox()
+        ],
       ),
     );
   }
@@ -183,6 +183,7 @@ class _BusinessUnitListContainerState extends State<BusinessUnitListContainer> {
         fontSize: 18,
         fontWeight: FontWeight.w300,
         color: davysGray,
+        height: 1.38,
       ),
       textAlign: TextAlign.center,
     );

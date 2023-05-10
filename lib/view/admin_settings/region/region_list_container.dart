@@ -79,6 +79,16 @@ class _RegionListContainerState extends State<RegionListContainer> {
                         ),
                       ),
                     ),
+                    Expanded(
+                      child: Text(
+                        widget.region.businessUnitName,
+                        style: helveticaText.copyWith(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w300,
+                          color: davysGray,
+                        ),
+                      ),
+                    ),
                     SizedBox(
                       width: 75,
                       child: !widget.region.isExpanded

@@ -253,7 +253,8 @@ class _AdminSettingPageState extends State<AdminSettingPage> {
                 Region(
                   regionId: element["RegionalID"],
                   regionName: element["RegionName"],
-                  businessUnitID: element["CompanyID"].toString(),
+                  businessUnitID: element["ID"].toString(),
+                  businessUnitName: element["CompanyName"] ?? "",
                 ),
               );
             }
@@ -1589,6 +1590,27 @@ class _AdminSettingPageState extends State<AdminSettingPage> {
                       ),
                     ),
                     iconSort("RegionName"),
+                    const SizedBox(
+                      width: 20,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Expanded(
+              child: InkWell(
+                onTap: () {
+                  onTapHeader("CompanyName", menu);
+                },
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        'Business Unit',
+                        style: headerTableTextStyle,
+                      ),
+                    ),
+                    iconSort("CompanyName"),
                     const SizedBox(
                       width: 20,
                     ),
