@@ -112,6 +112,7 @@ class _DashboardHeaderState extends State<DashboardHeader> {
       setGreeting('Good Night');
     }
     apiService.getUserData().then((value) {
+      print("getUserData -> $value");
       if (value["Status"].toString() == "200") {
         globalModel.setEmpName(value["Data"]["EmpName"]);
         globalModel.setCompanyName(value["Data"]["CompanyName"]);

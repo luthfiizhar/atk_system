@@ -6,8 +6,8 @@ import 'package:atk_system_ga/view/dashboard/popup_dialog/export_dialog.dart';
 import 'package:atk_system_ga/view/dashboard/popup_dialog/top_requested__item_popup.dart';
 import 'package:atk_system_ga/view/dashboard/show_more_icon.dart';
 import 'package:atk_system_ga/view/dashboard/widget_icon.dart';
+import 'package:atk_system_ga/view_model/dashboard_view_model.dart/total_requested_item_view_model.dart';
 import 'package:atk_system_ga/view_model/global_model.dart';
-import 'package:atk_system_ga/view_model/main_page_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
@@ -54,6 +54,13 @@ class _TopReqItemsWidgetState extends State<TopReqItemsWidget> {
       topReqViewModel.closeListener();
       topReqViewModel.getTopReqItems(globalModel);
     });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    globalModel.removeListener(() {});
+    topReqViewModel.closeListener();
   }
 
   @override

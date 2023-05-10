@@ -42,7 +42,7 @@ class ShowMoreIcon extends StatelessWidget {
                   child: Text(
                     'Show More',
                     style: helveticaText.copyWith(
-                      fontSize: 14,
+                      fontSize: 16,
                       fontWeight: FontWeight.w300,
                       color: davysGray,
                     ),
@@ -58,7 +58,7 @@ class ShowMoreIcon extends StatelessWidget {
                   child: Text(
                     'Export',
                     style: helveticaText.copyWith(
-                      fontSize: 14,
+                      fontSize: 16,
                       fontWeight: FontWeight.w300,
                       color: davysGray,
                     ),

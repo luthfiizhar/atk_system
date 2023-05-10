@@ -24,8 +24,9 @@ class _DashboardOptionsWidgetState extends State<DashboardOptionsWidget> {
   late GlobalModel globalModel;
   List<BusinessUnit> businessUnit = [];
   String selectedBusinessUnit = "";
+  String selectedRole = "";
 
-  int selectedArea = 1;
+  String selectedArea = "";
   List areaList = [
     {"value": 1, "name": "All Indonesia Region"},
     {"value": 2, "name": "Region ABC"},
@@ -69,6 +70,12 @@ class _DashboardOptionsWidgetState extends State<DashboardOptionsWidget> {
   LayerLink areaLayerLink = LayerLink();
   bool isOverlayAreaOpen = false;
 
+  onClickArea(String id, String name, String role) {
+    selectedArea = id;
+    _area.text = name;
+    selectedRole = role;
+  }
+
   OverlayEntry areaOverlay() {
     RenderBox? renderBox =
         areaKey.currentContext!.findRenderObject() as RenderBox?;
@@ -90,22 +97,24 @@ class _DashboardOptionsWidgetState extends State<DashboardOptionsWidget> {
                   },
                 ),
                 Positioned(
-                    // left: offset.dx,
-                    // top: offset.dy + size.height + 10,
-                    width: 200,
-                    child: CompositedTransformFollower(
-                      showWhenUnlinked: false,
-                      offset: Offset(0.0, size.height + 5.0),
-                      link: areaLayerLink,
-                      child: Material(
-                        elevation: 4.0,
-                        color: white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: AreaSettingContainer(),
+                  // left: offset.dx,
+                  // top: offset.dy + size.height + 10,
+                  width: 200,
+                  child: CompositedTransformFollower(
+                    showWhenUnlinked: false,
+                    offset: Offset(0.0, size.height + 5.0),
+                    link: areaLayerLink,
+                    child: Material(
+                      elevation: 4.0,
+                      color: white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
                       ),
-                    )),
+                      child: AreaSettingContainer(
+                          onClick: onClickArea, closeOverlay: closeOverlay),
+                    ),
+                  ),
+                ),
               ],
             ));
   }
@@ -155,6 +164,16 @@ class _DashboardOptionsWidgetState extends State<DashboardOptionsWidget> {
     }
     print(selectedBusinessUnit);
     setState(() {});
+  }
+
+  closeOverlay() {
+    if (isOverlayAreaOpen) {
+      if (areaOverlayEntry!.mounted) {
+        areaOverlayEntry!.remove();
+      }
+      // areaNode.unfocus();
+      isOverlayAreaOpen = false;
+    }
   }
 
   @override
@@ -382,6 +401,9 @@ class _DashboardOptionsWidgetState extends State<DashboardOptionsWidget> {
                       globalModel.setBusinessUnit(selectedBusinessUnit);
                       globalModel.setMonth(selectedMonth.toString());
                       globalModel.setYear(selectedYear.toString());
+                      globalModel.setAreaId(selectedArea.toString());
+                      globalModel.setRole(selectedRole.toString());
+                      Navigator.of(context).pop();
                     },
                     padding: ButtonSize().mediumSize(),
                   )
@@ -440,10 +462,15 @@ class BusinessUnitSelection extends StatelessWidget {
 class AreaSettingContainer extends StatefulWidget {
   AreaSettingContainer({
     super.key,
-    this.onCLick,
-  });
+    Function? onClick,
+    Function? closeOverlay,
+    this.maxWidth = 200,
+  })  : onClick = onClick ?? (() {}),
+        closeOverlay = closeOverlay ?? (() {});
 
-  Function? onCLick;
+  Function onClick;
+  Function closeOverlay;
+  double maxWidth;
 
   @override
   State<AreaSettingContainer> createState() => _AreaSettingContainerState();
@@ -473,6 +500,10 @@ class _AreaSettingContainerState extends State<AreaSettingContainer> {
     }).onError((error, stackTrace) {});
   }
 
+  search() {
+    getData();
+  }
+
   @override
   void initState() {
     super.initState();
@@ -483,9 +514,9 @@ class _AreaSettingContainerState extends State<AreaSettingContainer> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      constraints: const BoxConstraints(
+      constraints: BoxConstraints(
         minWidth: 200,
-        maxWidth: 200,
+        maxWidth: 500,
         maxHeight: 300,
       ),
       padding: const EdgeInsets.symmetric(
@@ -499,30 +530,33 @@ class _AreaSettingContainerState extends State<AreaSettingContainer> {
           TextFormField(
             controller: _search,
             cursorColor: davysGray,
-            onChanged: (value) {
-              // widget.onCLick!(value);
+            onFieldSubmitted: (value) {
+              search();
             },
-            decoration: const InputDecoration(
-              enabledBorder: UnderlineInputBorder(
-                borderSide: BorderSide(
-                  color: davysGray,
+            decoration: InputDecoration(
+                enabledBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: sonicSilver, width: 0.5),
                 ),
-              ),
-              focusedBorder: UnderlineInputBorder(
-                borderSide: BorderSide(
-                  color: davysGray,
+                focusedBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(
+                    color: sonicSilver,
+                    width: 0.5,
+                  ),
                 ),
-              ),
-              prefixIcon: Icon(
-                Icons.search,
-                color: davysGray,
-              ),
-              contentPadding: EdgeInsets.symmetric(
-                vertical: 15,
-                horizontal: 0,
-              ),
-              hintText: 'Search here ...',
-            ),
+                prefixIcon: Icon(
+                  Icons.search,
+                  weight: 300,
+                ),
+                contentPadding: EdgeInsets.symmetric(
+                  vertical: 15,
+                  horizontal: 0,
+                ),
+                hintText: 'Search here ...',
+                hintStyle: helveticaText.copyWith(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w300,
+                  color: sonicSilver,
+                )),
           ),
           Expanded(
             child: SingleChildScrollView(
@@ -538,7 +572,13 @@ class _AreaSettingContainerState extends State<AreaSettingContainer> {
                           vertical: 15,
                         ),
                         child: InkWell(
-                          onTap: () {},
+                          onTap: () {
+                            widget.onClick(
+                                areaList[index]["ID"],
+                                areaList[index]["Name"],
+                                areaList[index]["Role"]);
+                            widget.closeOverlay();
+                          },
                           child: Text(
                             areaList[index]["Name"],
                             style: helveticaText.copyWith(

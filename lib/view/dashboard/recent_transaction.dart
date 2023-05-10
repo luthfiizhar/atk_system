@@ -7,8 +7,8 @@ import 'package:atk_system_ga/view/dashboard/popup_dialog/export_dialog.dart';
 import 'package:atk_system_ga/view/dashboard/popup_dialog/recent_transaction_popup.dart';
 import 'package:atk_system_ga/view/dashboard/show_more_icon.dart';
 import 'package:atk_system_ga/view/dashboard/widget_icon.dart';
+import 'package:atk_system_ga/view_model/dashboard_view_model.dart/recent_transaction_view_model.dart';
 import 'package:atk_system_ga/view_model/global_model.dart';
-import 'package:atk_system_ga/view_model/main_page_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'dart:html' as html;
@@ -156,6 +156,13 @@ class _RecentTransactionWidgetState extends State<RecentTransactionWidget> {
       recentTransactionViewModel.closeListener();
       recentTransactionViewModel.getRecentTransaction(globalModel);
     });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    globalModel.removeListener(() {});
+    recentTransactionViewModel.closeListener();
   }
 
   @override

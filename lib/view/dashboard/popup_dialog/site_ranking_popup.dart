@@ -31,6 +31,7 @@ class _SiteRankingPopupState extends State<SiteRankingPopup> {
   TextEditingController _search = TextEditingController();
   late GlobalModel globalModel;
   FocusNode showPerRowsNode = FocusNode();
+  FocusNode optionsNode = FocusNode();
 
   double rowPerPage = 10;
   double firstPaginated = 0;
@@ -41,6 +42,18 @@ class _SiteRankingPopupState extends State<SiteRankingPopup> {
   int resultRows = 0;
 
   String dataType = "Lowes Cost";
+
+  int selectedSort = 7;
+
+  List sortOptions = [
+    {"value": 7, "title": "Cost vs Budget"},
+    {"value": 1, "title": "Highest Cost"},
+    {"value": 2, "title": "Lowest Cost"},
+    {"value": 3, "title": "Highest Budget"},
+    {"value": 4, "title": "Lowest Budget"},
+    {"value": 5, "title": "Fastest Leadtime"},
+    {"value": 6, "title": "Slowest Leadtime"},
+  ];
 
   List<SiteRanking> itemList = [];
   onTapHeader(String orderBy) {
@@ -122,7 +135,7 @@ class _SiteRankingPopupState extends State<SiteRankingPopup> {
   }
 
   setDataType() {
-    switch (widget.option) {
+    switch (selectedSort) {
       case 1:
         dataType = "Highest Cost";
         break;
@@ -151,6 +164,8 @@ class _SiteRankingPopupState extends State<SiteRankingPopup> {
 
   Future getData() {
     setDataType();
+    print(selectedSort);
+    print(dataType);
     return apiService
         .dashboardSiteRanking(searchTerm, globalModel, dataType)
         .then((value) {
@@ -214,6 +229,7 @@ class _SiteRankingPopupState extends State<SiteRankingPopup> {
   void initState() {
     super.initState();
     globalModel = Provider.of<GlobalModel>(context, listen: false);
+    selectedSort = widget.option;
     getData().then((value) {
       countPagination(resultRows);
     });
@@ -263,7 +279,7 @@ class _SiteRankingPopupState extends State<SiteRankingPopup> {
                               '-',
                               style: helveticaText.copyWith(
                                 fontSize: 20,
-                                fontWeight: FontWeight.w300,
+                                fontWeight: FontWeight.w400,
                                 color: davysGray,
                               ),
                             ),
@@ -272,7 +288,7 @@ class _SiteRankingPopupState extends State<SiteRankingPopup> {
                             '${globalModel.month} ${globalModel.year}, ${globalModel.areaId}',
                             style: helveticaText.copyWith(
                               fontSize: 20,
-                              fontWeight: FontWeight.w300,
+                              fontWeight: FontWeight.w400,
                               color: davysGray,
                             ),
                           ),
@@ -309,10 +325,10 @@ class _SiteRankingPopupState extends State<SiteRankingPopup> {
                               color: grayx11,
                             ),
                       Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 20),
+                        padding: const EdgeInsets.symmetric(vertical: 15),
                         child: SiteRankDetailListContainer(
                           item: itemList[index],
-                          option: widget.option,
+                          option: selectedSort,
                         ),
                       ),
                     ],
@@ -348,7 +364,7 @@ class _SiteRankingPopupState extends State<SiteRankingPopup> {
                             showDialog(
                               context: context,
                               builder: (context) => ExportDashboardPopup(
-                                dataType: dataType,
+                                dataType: "Site Ranking - $dataType",
                               ),
                             );
                           },
@@ -367,7 +383,7 @@ class _SiteRankingPopupState extends State<SiteRankingPopup> {
   }
 
   Widget headerTable() {
-    switch (widget.option) {
+    switch (selectedSort) {
       case 1:
         return costHeader();
       case 2:
@@ -1285,7 +1301,7 @@ class SiteRankDetailListContainer extends StatelessWidget {
                         width: double.infinity,
                         height: double.infinity,
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(3),
+                          borderRadius: BorderRadius.circular(5.5),
                           color: platinumDark,
                         ),
                       ),
@@ -1295,11 +1311,8 @@ class SiteRankDetailListContainer extends StatelessWidget {
                             (item.percentageCompare! / 100),
                         decoration: BoxDecoration(
                           borderRadius: item.percentageCompare! < 100
-                              ? const BorderRadius.only(
-                                  topLeft: Radius.circular(3),
-                                  bottomLeft: Radius.circular(3),
-                                )
-                              : BorderRadius.circular(3),
+                              ? BorderRadius.circular(5.5)
+                              : BorderRadius.circular(5.5),
                           color: orangeAccent,
                         ),
                       ),

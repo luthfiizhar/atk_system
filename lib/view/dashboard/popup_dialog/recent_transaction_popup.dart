@@ -225,7 +225,7 @@ class _RecentTransactionPopUpState extends State<RecentTransactionPopUp> {
                               '-',
                               style: helveticaText.copyWith(
                                 fontSize: 20,
-                                fontWeight: FontWeight.w300,
+                                fontWeight: FontWeight.w400,
                                 color: davysGray,
                               ),
                             ),
@@ -234,7 +234,7 @@ class _RecentTransactionPopUpState extends State<RecentTransactionPopUp> {
                             '${globalModel.month} ${globalModel.year}, ${globalModel.areaId}',
                             style: helveticaText.copyWith(
                               fontSize: 20,
-                              fontWeight: FontWeight.w300,
+                              fontWeight: FontWeight.w400,
                               color: davysGray,
                             ),
                           ),
@@ -275,7 +275,7 @@ class _RecentTransactionPopUpState extends State<RecentTransactionPopUp> {
                               color: grayx11,
                             ),
                       Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 20),
+                        padding: const EdgeInsets.symmetric(vertical: 15),
                         child: RecentTransactionItems(
                           recents: recTransList[index],
                         ),

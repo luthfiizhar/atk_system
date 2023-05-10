@@ -6,8 +6,8 @@ import 'package:atk_system_ga/view/dashboard/popup_dialog/export_dialog.dart';
 import 'package:atk_system_ga/view/dashboard/popup_dialog/site_ranking_popup.dart';
 import 'package:atk_system_ga/view/dashboard/show_more_icon.dart';
 import 'package:atk_system_ga/view/dashboard/widget_icon.dart';
+import 'package:atk_system_ga/view_model/dashboard_view_model.dart/site_rank_view_model.dart';
 import 'package:atk_system_ga/view_model/global_model.dart';
-import 'package:atk_system_ga/view_model/main_page_view_model.dart';
 import 'package:atk_system_ga/widgets/dropdown.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -170,6 +170,13 @@ class _SiteRankingWidgetState extends State<SiteRankingWidget> {
         default:
       }
     });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    globalModel.removeListener(() {});
+    siteRankViewModel.closeListener();
   }
 
   @override
@@ -550,7 +557,7 @@ class RankingItemLeadTimeContainer extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(
-                        height: 3,
+                        height: 4,
                       ),
                       Text(
                         'Request',
@@ -577,7 +584,7 @@ class RankingItemLeadTimeContainer extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(
-                        height: 3,
+                        height: 4,
                       ),
                       Text(
                         'Settlement',
@@ -756,7 +763,7 @@ class RankingItemBudgetContainer extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(
-                        height: 3,
+                        height: 4,
                       ),
                       Text(
                         'Monthly',
@@ -783,7 +790,7 @@ class RankingItemBudgetContainer extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(
-                        height: 3,
+                        height: 4,
                       ),
                       Text(
                         'Additional',
@@ -913,7 +920,7 @@ class BudgetCostComparisonContainer extends StatelessWidget {
                                       "${item.percentageCompare} %",
                                       style: helveticaText.copyWith(
                                         fontSize: 13,
-                                        fontWeight: FontWeight.w700,
+                                        fontWeight: FontWeight.w400,
                                         color: orangeAccent,
                                       ),
                                     ),
@@ -944,7 +951,7 @@ class BudgetCostComparisonContainer extends StatelessWidget {
                                       "${item.percentageCompare} %",
                                       style: helveticaText.copyWith(
                                         fontSize: 13,
-                                        fontWeight: FontWeight.w700,
+                                        fontWeight: FontWeight.w400,
                                         color: white,
                                       ),
                                     ),

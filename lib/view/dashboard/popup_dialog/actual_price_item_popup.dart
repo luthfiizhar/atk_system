@@ -182,7 +182,7 @@ class _ActualPriceItemPopupState extends State<ActualPriceItemPopup> {
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           Text(
-                            "Item Actual Price",
+                            "Item Actual Pricing",
                             style: cardTitle,
                           ),
                           Padding(
@@ -191,7 +191,7 @@ class _ActualPriceItemPopupState extends State<ActualPriceItemPopup> {
                               '-',
                               style: helveticaText.copyWith(
                                 fontSize: 20,
-                                fontWeight: FontWeight.w300,
+                                fontWeight: FontWeight.w400,
                                 color: davysGray,
                               ),
                             ),
@@ -200,7 +200,7 @@ class _ActualPriceItemPopupState extends State<ActualPriceItemPopup> {
                             '${globalModel.month} ${globalModel.year}, ${globalModel.areaId}',
                             style: helveticaText.copyWith(
                               fontSize: 20,
-                              fontWeight: FontWeight.w300,
+                              fontWeight: FontWeight.w400,
                               color: davysGray,
                             ),
                           ),
@@ -237,7 +237,7 @@ class _ActualPriceItemPopupState extends State<ActualPriceItemPopup> {
                               color: grayx11,
                             ),
                       Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 20),
+                        padding: const EdgeInsets.symmetric(vertical: 15),
                         child: ActualItemPopupContainer(
                           item: itemList[index],
                         ),
@@ -299,7 +299,7 @@ class _ActualPriceItemPopupState extends State<ActualPriceItemPopup> {
         Row(
           children: [
             SizedBox(
-              width: 120,
+              width: 145,
               child: InkWell(
                 onTap: () {
                   onTapHeader("Rank");
@@ -765,7 +765,7 @@ class ActualItemPopupContainer extends StatelessWidget {
     return Row(
       children: [
         SizedBox(
-          width: 120,
+          width: 145,
           child: Wrap(
             runAlignment: WrapAlignment.center,
             crossAxisAlignment: WrapCrossAlignment.center,
