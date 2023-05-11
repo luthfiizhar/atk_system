@@ -321,12 +321,8 @@ class _CustomInputFieldState extends State<CustomInputField> {
             fontWeight: FontWeight.w300,
             overflow: TextOverflow.clip,
           ),
-          fillColor: widget.enabled!
-              ? widget.focusNode!.hasFocus
-                  ? culturedWhite
-                  : Colors.transparent
-              : culturedWhite,
-          filled: false,
+          fillColor: white,
+          filled: true,
           // isDense: true,
           isCollapsed: true,
           enabled: widget.enabled!,
