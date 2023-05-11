@@ -2151,7 +2151,7 @@ class ApiService {
       'Content-Type': 'application/json',
     };
 
-    var bodySend = """"
+    var bodySend = """
     {
         "CompID" : $businessUnitId
     }
@@ -2182,7 +2182,7 @@ class ApiService {
       'Content-Type': 'application/json',
     };
 
-    var bodySend = """"
+    var bodySend = """
     {
         "CompID" : $businessUnitId
     }
