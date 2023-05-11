@@ -995,7 +995,7 @@ class ApiService {
     var bodySend = """
     {
         "RegionName" : "${region.regionName}",
-        "CompanyID" : "${region.businessUnitID}"
+        "CompID" : "${region.businessUnitID}"
     }
     """;
 
@@ -1029,7 +1029,7 @@ class ApiService {
     {
         "RegionID" : "${region.regionId}",
         "RegionName" : "${region.regionName}",
-        "CompanyID" : "${region.businessUnitID}"
+        "CompID" : "${region.businessUnitID}"
     }
     """;
 
@@ -1366,6 +1366,42 @@ class ApiService {
     }
   }
 
+  Future getSiteListDropdownByRole(String role, String keyword) async {
+    // print(bookingId);
+    var box = await Hive.openBox('userLogin');
+    var jwt = box.get('jwTtoken') != "" ? box.get('jwtToken') : "";
+
+    // jwt = jwtToken;
+
+    var url = Uri.https(
+        urlConstant.apiUrl, '/GSS_Backend/public/api/admin/user-site-list');
+    Map<String, String> requestHeader = {
+      'Authorization': 'Bearer $jwt',
+      'Content-Type': 'application/json',
+    };
+
+    var bodySend = """
+    {
+      "UserRole" : "$role",
+      "Keywords" : "$keyword"
+    }
+    """;
+
+    try {
+      var response = await http.post(
+        url,
+        headers: requestHeader,
+        body: bodySend,
+      );
+
+      var data = json.decode(response.body);
+
+      return data;
+    } on Error catch (e) {
+      return e;
+    }
+  }
+
   Future getBUListDropdown() async {
     // print(bookingId);
     var box = await Hive.openBox('userLogin');
@@ -1443,6 +1479,7 @@ class ApiService {
         "UserNIP" : "${user.nip}",
         "Fullname" : "${user.name}",
         "SiteId" : "${user.siteId}",
+        "CompID" : "${user.compId}",
         "Role" : ${user.roleList.toList()}
     }
     """;
@@ -1479,6 +1516,7 @@ class ApiService {
         "UserNIP" : "${user.nip}",
         "Fullname" : "${user.name}",
         "SiteId" : "${user.siteId}",
+        "CompID" : "${user.compId}",
         "Role" : ${user.roleList.toList()}
     }
     """;
@@ -1833,6 +1871,51 @@ class ApiService {
     }
   }
 
+  Future dashboardActualPriceDetail(
+      SearchTerm searchTerm, GlobalModel globalModel) async {
+    var box = await Hive.openBox('userLogin');
+    var jwt = box.get('jwTtoken') != "" ? box.get('jwtToken') : "";
+
+    // jwt = jwtToken;
+
+    var url = Uri.https(urlConstant.apiUrl,
+        '/GSS_Backend/public/api/dashboard/item-pricing-detail');
+    Map<String, String> requestHeader = {
+      'Authorization': 'Bearer $jwt',
+      'Content-Type': 'application/json',
+    };
+
+    var bodySend = """
+    {
+        "CompName": "",
+        "CompID": "${globalModel.businessUnit}",
+        "Role" : "${globalModel.role}",
+        "Site" : "${globalModel.areaId}",
+        "Month" : 4,
+        "Year" : "${globalModel.year}",
+        "Keywords" : "${searchTerm.keywords}",
+        "PageNumber" : ${searchTerm.pageNumber},
+        "MaxRecord" : ${searchTerm.max},
+        "OrderBy" : "${searchTerm.orderBy}",
+        "OrderDir" : "${searchTerm.orderDir}"
+    }
+    """;
+
+    try {
+      var response = await http.post(
+        url,
+        headers: requestHeader,
+        body: bodySend,
+      );
+
+      var data = json.decode(response.body);
+
+      return data;
+    } on Error catch (e) {
+      return e;
+    }
+  }
+
   Future dashboardTopRequestedItemDetail(
       SearchTerm searchTerm, GlobalModel globalModel) async {
     var box = await Hive.openBox('userLogin');
@@ -2044,6 +2127,68 @@ class ApiService {
         url,
         headers: requestHeader,
       );
+
+      var data = json.decode(response.body);
+
+      return data;
+    } on Error catch (e) {
+      return e;
+    }
+  }
+
+  Future dashboardOptMonthList(String businessUnitId) async {
+    var box = await Hive.openBox('userLogin');
+    var jwt = box.get('jwTtoken') != "" ? box.get('jwtToken') : "";
+
+    // jwt = jwtToken;
+
+    var url = Uri.https(
+        urlConstant.apiUrl, '/GSS_Backend/public/api/dashboard/month-list');
+    Map<String, String> requestHeader = {
+      'Authorization': 'Bearer $jwt',
+      'Content-Type': 'application/json',
+    };
+
+    var bodySend = """"
+    {
+        "CompID" : $businessUnitId
+    }
+    """;
+
+    try {
+      var response =
+          await http.post(url, headers: requestHeader, body: bodySend);
+
+      var data = json.decode(response.body);
+
+      return data;
+    } on Error catch (e) {
+      return e;
+    }
+  }
+
+  Future dashboardOptYearList(String businessUnitId) async {
+    var box = await Hive.openBox('userLogin');
+    var jwt = box.get('jwTtoken') != "" ? box.get('jwtToken') : "";
+
+    // jwt = jwtToken;
+
+    var url = Uri.https(
+        urlConstant.apiUrl, '/GSS_Backend/public/api/dashboard/year-list');
+    Map<String, String> requestHeader = {
+      'Authorization': 'Bearer $jwt',
+      'Content-Type': 'application/json',
+    };
+
+    var bodySend = """"
+    {
+        "CompID" : $businessUnitId
+    }
+    """;
+
+    try {
+      var response =
+          await http.post(url, headers: requestHeader, body: bodySend);
 
       var data = json.decode(response.body);
 
