@@ -198,6 +198,7 @@ class _AddItemDialogState extends State<AddItemDialog> {
         for (var bu in buList) {
           if (bu.businessUnitId == element) {
             bu.isSelected = true;
+            addBu(bu);
           }
         }
       }
