@@ -1369,7 +1369,7 @@ class _AdminSettingPageState extends State<AdminSettingPage> {
               // width: 150,
               child: InkWell(
                 onTap: () {
-                  onTapHeader("Role", menu);
+                  onTapHeader("RoleString", menu);
                 },
                 child: Row(
                   children: [
@@ -1379,7 +1379,7 @@ class _AdminSettingPageState extends State<AdminSettingPage> {
                         style: headerTableTextStyle,
                       ),
                     ),
-                    iconSort("Role"),
+                    iconSort("RoleString"),
                     const SizedBox(
                       width: 20,
                     ),
