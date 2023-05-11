@@ -1576,7 +1576,8 @@ class ApiService {
     {
         "ItemName" : "${item.itemName}",
         "ItemPrice" : ${item.basePrice},
-        "ItemUnit" : "${item.unit}"
+        "ItemUnit" : "${item.unit}",
+        "Business" : ${item.buList}
     }
     """;
 
@@ -1611,7 +1612,8 @@ class ApiService {
         "ItemID" : "${item.itemId}",
         "ItemName" : "${item.itemName}",
         "ItemPrice" : ${item.basePrice},
-        "ItemUnit" : "${item.unit}"
+        "ItemUnit" : "${item.unit}",
+        "Business" : ${item.buList}
     }
     """;
 
