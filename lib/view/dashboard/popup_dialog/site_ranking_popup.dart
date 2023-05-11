@@ -9,6 +9,7 @@ import 'package:atk_system_ga/view_model/global_model.dart';
 import 'package:atk_system_ga/widgets/buttons.dart';
 import 'package:atk_system_ga/widgets/dialogs.dart';
 import 'package:atk_system_ga/widgets/dropdown.dart';
+import 'package:atk_system_ga/widgets/empty_table.dart';
 import 'package:atk_system_ga/widgets/search_input_field.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -32,6 +33,8 @@ class _SiteRankingPopupState extends State<SiteRankingPopup> {
   late GlobalModel globalModel;
   FocusNode showPerRowsNode = FocusNode();
   FocusNode optionsNode = FocusNode();
+
+  bool isLoading = true;
 
   double rowPerPage = 10;
   double firstPaginated = 0;
@@ -163,12 +166,13 @@ class _SiteRankingPopupState extends State<SiteRankingPopup> {
   }
 
   Future getData() {
+    isLoading = true;
     setDataType();
-    print(selectedSort);
-    print(dataType);
+    setState(() {});
     return apiService
         .dashboardSiteRanking(searchTerm, globalModel, dataType)
         .then((value) {
+      isLoading = false;
       if (value["Status"].toString() == "200") {
         List<SiteRanking> temp = [];
         List itemResult = value["Data"]["List"];
@@ -206,7 +210,10 @@ class _SiteRankingPopupState extends State<SiteRankingPopup> {
         });
       }
       // setState(() {});
-    }).onError((error, stackTrace) {});
+    }).onError((error, stackTrace) {
+      isLoading = false;
+      setState(() {});
+    });
   }
 
   countPagination(int totalRow) {
@@ -311,30 +318,41 @@ class _SiteRankingPopupState extends State<SiteRankingPopup> {
                 height: 30,
               ),
               headerTable(),
-              ListView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: itemList.length,
-                itemBuilder: (context, index) {
-                  return Column(
-                    children: [
-                      index == 0
-                          ? const SizedBox()
-                          : const Divider(
-                              thickness: 0.5,
-                              color: grayx11,
-                            ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 15),
-                        child: SiteRankDetailListContainer(
-                          item: itemList[index],
-                          option: selectedSort,
-                        ),
+              isLoading
+                  ? const Center(
+                      child: CircularProgressIndicator(
+                        color: eerieBlack,
                       ),
-                    ],
-                  );
-                },
-              ),
+                    )
+                  : itemList.isEmpty
+                      ? EmptyTable(
+                          text: "Item rank is not available right now",
+                        )
+                      : ListView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: itemList.length,
+                          itemBuilder: (context, index) {
+                            return Column(
+                              children: [
+                                index == 0
+                                    ? const SizedBox()
+                                    : const Divider(
+                                        thickness: 0.5,
+                                        color: grayx11,
+                                      ),
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 15),
+                                  child: SiteRankDetailListContainer(
+                                    item: itemList[index],
+                                    option: selectedSort,
+                                  ),
+                                ),
+                              ],
+                            );
+                          },
+                        ),
               const SizedBox(
                 height: 50,
               ),

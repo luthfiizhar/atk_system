@@ -16,7 +16,7 @@ class GlobalModel extends ChangeNotifier {
   String get role => _role ?? "RegionalManager";
   String get areaId => _areaId ?? "RM1";
   String get year => _year ?? DateTime.now().year.toString();
-  String get month => _month ?? "Jan";
+  String get month => _month ?? DateFormat("MMM").format(DateTime.now());
 
   void setCompanyName(String value) {
     _companyName = value;

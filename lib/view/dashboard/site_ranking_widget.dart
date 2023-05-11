@@ -9,6 +9,7 @@ import 'package:atk_system_ga/view/dashboard/widget_icon.dart';
 import 'package:atk_system_ga/view_model/dashboard_view_model.dart/site_rank_view_model.dart';
 import 'package:atk_system_ga/view_model/global_model.dart';
 import 'package:atk_system_ga/widgets/dropdown.dart';
+import 'package:atk_system_ga/widgets/empty_table.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -287,157 +288,165 @@ class _SiteRankingWidgetState extends State<SiteRankingWidget> {
                     minHeight: 400,
                     maxHeight: 670,
                   ),
-                  child: model.rankItem.isEmpty
+                  child: model.isLoading
                       ? const Center(
                           child: CircularProgressIndicator(
                             color: eerieBlack,
                           ),
                         )
-                      : LayoutBuilder(builder: (context, constraints) {
-                          return Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              IntrinsicHeight(
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Expanded(
-                                      child: Column(
-                                        children: model.rankItem
-                                            .take(5)
-                                            .toList()
-                                            .asMap()
-                                            .map((index, e) => MapEntry(
-                                                index,
-                                                Column(
-                                                  children: [
-                                                    index == 0
-                                                        ? const SizedBox()
-                                                        : const SizedBox(
-                                                            height: 30,
-                                                          ),
-                                                    Builder(builder: (context) {
-                                                      e.rank = (index + 1)
-                                                          .toString();
-                                                      switch (selectedSort) {
-                                                        case 1:
-                                                          return RankingItemCostContainer(
-                                                            item: e,
-                                                          );
-                                                        case 2:
-                                                          return RankingItemCostContainer(
-                                                            item: e,
-                                                          );
-                                                        case 3:
-                                                          return RankingItemBudgetContainer(
-                                                            item: e,
-                                                          );
-                                                        case 4:
-                                                          return RankingItemBudgetContainer(
-                                                            item: e,
-                                                          );
-                                                        case 5:
-                                                          return RankingItemLeadTimeContainer(
-                                                            item: e,
-                                                          );
-                                                        case 6:
-                                                          return RankingItemLeadTimeContainer(
-                                                            item: e,
-                                                          );
-                                                        case 7:
-                                                          return BudgetCostComparisonContainer(
-                                                            item: e,
-                                                          );
-                                                        default:
-                                                          return RankingItemCostContainer(
-                                                            item: e,
-                                                          );
-                                                      }
-                                                    }),
-                                                  ],
-                                                )))
-                                            .values
-                                            .toList(),
-                                      ),
+                      : model.rankItem.isEmpty
+                          ? EmptyTable(
+                              text: "Item rank is not available right now",
+                            )
+                          : LayoutBuilder(builder: (context, constraints) {
+                              return Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  IntrinsicHeight(
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Expanded(
+                                          child: Column(
+                                            children: model.rankItem
+                                                .take(5)
+                                                .toList()
+                                                .asMap()
+                                                .map((index, e) => MapEntry(
+                                                    index,
+                                                    Column(
+                                                      children: [
+                                                        index == 0
+                                                            ? const SizedBox()
+                                                            : const SizedBox(
+                                                                height: 30,
+                                                              ),
+                                                        Builder(
+                                                            builder: (context) {
+                                                          e.rank = (index + 1)
+                                                              .toString();
+                                                          switch (
+                                                              selectedSort) {
+                                                            case 1:
+                                                              return RankingItemCostContainer(
+                                                                item: e,
+                                                              );
+                                                            case 2:
+                                                              return RankingItemCostContainer(
+                                                                item: e,
+                                                              );
+                                                            case 3:
+                                                              return RankingItemBudgetContainer(
+                                                                item: e,
+                                                              );
+                                                            case 4:
+                                                              return RankingItemBudgetContainer(
+                                                                item: e,
+                                                              );
+                                                            case 5:
+                                                              return RankingItemLeadTimeContainer(
+                                                                item: e,
+                                                              );
+                                                            case 6:
+                                                              return RankingItemLeadTimeContainer(
+                                                                item: e,
+                                                              );
+                                                            case 7:
+                                                              return BudgetCostComparisonContainer(
+                                                                item: e,
+                                                              );
+                                                            default:
+                                                              return RankingItemCostContainer(
+                                                                item: e,
+                                                              );
+                                                          }
+                                                        }),
+                                                      ],
+                                                    )))
+                                                .values
+                                                .toList(),
+                                          ),
+                                        ),
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 40,
+                                          ),
+                                          // height: constraints.constrainHeight(),
+                                          child: const VerticalDivider(
+                                            width: 1,
+                                            color: grayx11,
+                                          ),
+                                        ),
+                                        Expanded(
+                                          child: Column(
+                                            children: model.rankItem.reversed
+                                                .take(5)
+                                                .toList()
+                                                .reversed
+                                                .toList()
+                                                .asMap()
+                                                .map((index, e) => MapEntry(
+                                                    index,
+                                                    Column(
+                                                      children: [
+                                                        index == 0
+                                                            ? const SizedBox()
+                                                            : const SizedBox(
+                                                                height: 30,
+                                                              ),
+                                                        Builder(
+                                                            builder: (context) {
+                                                          e.rank = (index + 6)
+                                                              .toString();
+                                                          switch (
+                                                              selectedSort) {
+                                                            case 1:
+                                                              return RankingItemCostContainer(
+                                                                item: e,
+                                                              );
+                                                            case 2:
+                                                              return RankingItemCostContainer(
+                                                                item: e,
+                                                              );
+                                                            case 3:
+                                                              return RankingItemBudgetContainer(
+                                                                item: e,
+                                                              );
+                                                            case 4:
+                                                              return RankingItemBudgetContainer(
+                                                                item: e,
+                                                              );
+                                                            case 5:
+                                                              return RankingItemLeadTimeContainer(
+                                                                item: e,
+                                                              );
+                                                            case 6:
+                                                              return RankingItemLeadTimeContainer(
+                                                                item: e,
+                                                              );
+                                                            case 7:
+                                                              return BudgetCostComparisonContainer(
+                                                                item: e,
+                                                              );
+                                                            default:
+                                                              return RankingItemCostContainer(
+                                                                item: e,
+                                                              );
+                                                          }
+                                                        }),
+                                                      ],
+                                                    )))
+                                                .values
+                                                .toList(),
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 40,
-                                      ),
-                                      // height: constraints.constrainHeight(),
-                                      child: const VerticalDivider(
-                                        width: 1,
-                                        color: grayx11,
-                                      ),
-                                    ),
-                                    Expanded(
-                                      child: Column(
-                                        children: model.rankItem.reversed
-                                            .take(5)
-                                            .toList()
-                                            .reversed
-                                            .toList()
-                                            .asMap()
-                                            .map((index, e) => MapEntry(
-                                                index,
-                                                Column(
-                                                  children: [
-                                                    index == 0
-                                                        ? const SizedBox()
-                                                        : const SizedBox(
-                                                            height: 30,
-                                                          ),
-                                                    Builder(builder: (context) {
-                                                      e.rank = (index + 6)
-                                                          .toString();
-                                                      switch (selectedSort) {
-                                                        case 1:
-                                                          return RankingItemCostContainer(
-                                                            item: e,
-                                                          );
-                                                        case 2:
-                                                          return RankingItemCostContainer(
-                                                            item: e,
-                                                          );
-                                                        case 3:
-                                                          return RankingItemBudgetContainer(
-                                                            item: e,
-                                                          );
-                                                        case 4:
-                                                          return RankingItemBudgetContainer(
-                                                            item: e,
-                                                          );
-                                                        case 5:
-                                                          return RankingItemLeadTimeContainer(
-                                                            item: e,
-                                                          );
-                                                        case 6:
-                                                          return RankingItemLeadTimeContainer(
-                                                            item: e,
-                                                          );
-                                                        case 7:
-                                                          return BudgetCostComparisonContainer(
-                                                            item: e,
-                                                          );
-                                                        default:
-                                                          return RankingItemCostContainer(
-                                                            item: e,
-                                                          );
-                                                      }
-                                                    }),
-                                                  ],
-                                                )))
-                                            .values
-                                            .toList(),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          );
-                        }),
+                                  ),
+                                ],
+                              );
+                            }),
                 ),
               ),
             ],

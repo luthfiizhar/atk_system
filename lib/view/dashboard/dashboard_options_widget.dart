@@ -36,33 +36,11 @@ class _DashboardOptionsWidgetState extends State<DashboardOptionsWidget> {
 
   String selectedMonthName = "";
   String selectedMonth = "Jan";
-  List monthList = [
-    {"value": "Jan", "name": "January"},
-    {"value": "Feb", "name": "February"},
-    {"value": "Mar", "name": "Maret"},
-    {"value": "Apr", "name": "April"},
-    {"value": "May", "name": "May"},
-    {"value": "Jun", "name": "June"},
-    {"value": "Jul", "name": "July"},
-    {"value": "Aug", "name": "August"},
-    {"value": "Sep", "name": "September"},
-    {"value": "Oct", "name": "October"},
-    {"value": "Nov", "name": "November"},
-    {"value": "Dec", "name": "December"},
-    {"value": "Q1", "name": "Q1"},
-    {"value": "Q2", "name": "Q2"},
-    {"value": "Q3", "name": "Q3"},
-    {"value": "Q4", "name": "Q4"}
-  ];
+  List monthList = [];
 
   String selectedYearName = "";
   String selectedYear = "2023";
-  List yearList = [
-    {"value": "2023", "name": "2023"},
-    {"value": "2022", "name": "2022"},
-    {"value": "2021", "name": "2021"},
-    {"value": "2020", "name": "2020"},
-  ];
+  List yearList = [];
 
   TextEditingController _area = TextEditingController();
   OverlayEntry? areaOverlayEntry;
@@ -176,11 +154,69 @@ class _DashboardOptionsWidgetState extends State<DashboardOptionsWidget> {
     }
   }
 
+  initMonthList() {
+    apiService.dashboardOptMonthList(globalModel.businessUnit).then((value) {
+      if (value["Status"].toString() == "200") {
+        monthList = value["Data"];
+      } else {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialogBlack(
+            title: value["Title"],
+            contentText: value["Message"],
+            isSuccess: false,
+          ),
+        );
+      }
+      setState(() {});
+    }).onError((error, stackTrace) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialogBlack(
+          title: "Error getMonthList",
+          contentText: error.toString(),
+          isSuccess: false,
+        ),
+      );
+    });
+  }
+
+  initYearList() {
+    apiService.dashboardOptYearList(globalModel.businessUnit).then((value) {
+      if (value["Status"].toString() == "200") {
+        yearList = value["Data"];
+      } else {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialogBlack(
+            title: value["Title"],
+            contentText: value["Message"],
+            isSuccess: false,
+          ),
+        );
+      }
+      setState(() {});
+    }).onError((error, stackTrace) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialogBlack(
+          title: "Error getMonthList",
+          contentText: error.toString(),
+          isSuccess: false,
+        ),
+      );
+    });
+  }
+
   @override
   void initState() {
     super.initState();
     globalModel = Provider.of<GlobalModel>(context, listen: false);
     initBusinessUnitList();
+    initMonthList();
+    initYearList();
+    selectedMonth = globalModel.month;
+    selectedYear = globalModel.year;
   }
 
   @override
@@ -333,9 +369,9 @@ class _DashboardOptionsWidgetState extends State<DashboardOptionsWidget> {
                       maxHeight: 300,
                       items: monthList
                           .map((e) => DropdownMenuItem(
-                                value: e["value"],
+                                value: e["MonthName"],
                                 child: Text(
-                                  e["name"],
+                                  e["MonthFullName"],
                                   style: helveticaText.copyWith(),
                                 ),
                               ))
@@ -358,15 +394,15 @@ class _DashboardOptionsWidgetState extends State<DashboardOptionsWidget> {
                       child: BlackDropdown(
                         items: yearList
                             .map((e) => DropdownMenuItem(
-                                  value: e["value"],
+                                  value: e["Year"].toString(),
                                   child: Text(
-                                    e["name"],
+                                    e["Year"].toString(),
                                     style: helveticaText.copyWith(),
                                   ),
                                 ))
                             .toList(),
                         onChanged: (value) {
-                          selectedYear = value;
+                          selectedYear = value.toString();
                           setState(() {});
                         },
                         hintText: "Choose Year",

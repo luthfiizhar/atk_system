@@ -9,6 +9,7 @@ import 'package:atk_system_ga/view/dashboard/widget_icon.dart';
 import 'package:atk_system_ga/view_model/global_model.dart';
 import 'package:atk_system_ga/widgets/buttons.dart';
 import 'package:atk_system_ga/widgets/dropdown.dart';
+import 'package:atk_system_ga/widgets/empty_table.dart';
 import 'package:atk_system_ga/widgets/search_input_field.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -28,6 +29,8 @@ class _RecentTransactionPopUpState extends State<RecentTransactionPopUp> {
   ApiService apiService = ApiService();
 
   FocusNode showPerRowsNode = FocusNode();
+
+  bool isLoading = true;
 
   double rowPerPage = 10;
   double firstPaginated = 0;
@@ -56,11 +59,13 @@ class _RecentTransactionPopUpState extends State<RecentTransactionPopUp> {
   }
 
   Future getData() {
+    isLoading = true;
     recTransList.clear();
+    setState(() {});
     return apiService
         .dashboardRecentTransactionDetail(searchTerm, globalModel)
         .then((value) {
-      print(value);
+      isLoading = false;
       if (value["Status"].toString() == "200") {
         List listResult = value["Data"]["List"];
         resultRows = value["Data"]["TotalRows"];
@@ -78,7 +83,10 @@ class _RecentTransactionPopUpState extends State<RecentTransactionPopUp> {
         }
       } else {}
       setState(() {});
-    }).onError((error, stackTrace) {});
+    }).onError((error, stackTrace) {
+      isLoading = false;
+      setState(() {});
+    });
   }
 
   onTapHeader(String orderBy) {
@@ -261,29 +269,40 @@ class _RecentTransactionPopUpState extends State<RecentTransactionPopUp> {
                 height: 30,
               ),
               headerTable(),
-              ListView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: recTransList.length,
-                itemBuilder: (context, index) {
-                  return Column(
-                    children: [
-                      index == 0
-                          ? const SizedBox()
-                          : const Divider(
-                              thickness: 0.5,
-                              color: grayx11,
-                            ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 15),
-                        child: RecentTransactionItems(
-                          recents: recTransList[index],
-                        ),
+              isLoading
+                  ? const Center(
+                      child: CircularProgressIndicator(
+                        color: eerieBlack,
                       ),
-                    ],
-                  );
-                },
-              ),
+                    )
+                  : recTransList.isEmpty
+                      ? EmptyTable(
+                          text: "There is no transaction available right now",
+                        )
+                      : ListView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: recTransList.length,
+                          itemBuilder: (context, index) {
+                            return Column(
+                              children: [
+                                index == 0
+                                    ? const SizedBox()
+                                    : const Divider(
+                                        thickness: 0.5,
+                                        color: grayx11,
+                                      ),
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 15),
+                                  child: RecentTransactionItems(
+                                    recents: recTransList[index],
+                                  ),
+                                ),
+                              ],
+                            );
+                          },
+                        ),
               const SizedBox(
                 height: 50,
               ),

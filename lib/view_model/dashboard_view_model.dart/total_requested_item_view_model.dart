@@ -14,15 +14,23 @@ class TopReqItemsViewModel extends ChangeNotifier {
   // GlobalModel globalModel = GlobalModel();
 
   List<TopRequestedItems> _topReqItems = [];
+  bool _isLoading = false;
 
   List<TopRequestedItems> get topReqItems => _topReqItems;
+  bool get isLoading => _isLoading;
 
   void setTopReqItems(List<TopRequestedItems> value) {
     _topReqItems = value;
     notifyListeners();
   }
 
+  void setIsLoading(bool value) {
+    _isLoading = value;
+    notifyListeners();
+  }
+
   Future getTopReqItems(GlobalModel globalModel) async {
+    setIsLoading(true);
     // _topReqItems.clear();
     _topReqStream = databaseRef
         .child(
@@ -35,6 +43,12 @@ class TopReqItemsViewModel extends ChangeNotifier {
           (result as List).map((e) => TopRequestedItems.fromJson(e)).toList();
       print(list);
       setTopReqItems(list);
+      setIsLoading(false);
+    });
+
+    _topReqStream!.onError((value) {
+      setIsLoading(false);
+      setTopReqItems([]);
     });
   }
 

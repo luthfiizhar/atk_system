@@ -11,6 +11,7 @@ class TotalCostStatModel extends ChangeNotifier {
   DatabaseReference databaseRef = FirebaseDatabase.instance.ref();
   // GlobalModel globalModel = GlobalModel();
 
+  bool _isLoading = false;
   List<CostSummaryCard>? _costSummaryList = [];
 
   StreamSubscription<DatabaseEvent>? _totalReqListener;
@@ -18,6 +19,8 @@ class TotalCostStatModel extends ChangeNotifier {
   StreamSubscription<DatabaseEvent>? _totalBudgetListener;
 
   List<CostSummaryCard> get costSummaryList => _costSummaryList ?? [];
+
+  bool get isLoading => _isLoading;
 
   void setCostSummaryList(List<CostSummaryCard> value) {
     _costSummaryList = value;
@@ -29,9 +32,14 @@ class TotalCostStatModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future getSumCostValue(GlobalModel globalModel) async {
-    _costSummaryList!.clear();
+  void setIsLoading(bool value) {
+    _isLoading = value;
+    notifyListeners();
+  }
 
+  Future getSumCostValue(GlobalModel globalModel) async {
+    setIsLoading(true);
+    _costSummaryList!.clear();
     _totalReqListener = databaseRef
         .child(
             '${globalModel.businessUnit}/${globalModel.role}/MonthlyCost/${globalModel.areaId}/${globalModel.year}/${globalModel.month}/Request')
@@ -50,6 +58,18 @@ class TotalCostStatModel extends ChangeNotifier {
         ..from = "from last month";
       addCostSummaryList(requestValue);
       // _costSummaryList!.add(budgetValue);
+      setIsLoading(false);
+    });
+
+    _totalReqListener!.onError((value) {
+      setIsLoading(false);
+      CostSummaryCard requestValue = CostSummaryCard();
+      requestValue
+        ..value = 0
+        ..percentage = 0
+        ..title = "Total Cost Requested"
+        ..from = "from last month";
+      addCostSummaryList(requestValue);
     });
 
     _totalSettleListener = databaseRef
@@ -70,6 +90,18 @@ class TotalCostStatModel extends ChangeNotifier {
         ..from = "from last month";
       addCostSummaryList(settlementValue);
       // _costSummaryList!.add(budgetValue);
+      setIsLoading(false);
+    });
+
+    _totalSettleListener!.onError((value) {
+      setIsLoading(false);
+      CostSummaryCard requestValue = CostSummaryCard();
+      requestValue
+        ..value = 0
+        ..percentage = 0
+        ..title = "Total Cost Requested"
+        ..from = "from last month";
+      addCostSummaryList(requestValue);
     });
 
     _totalBudgetListener = databaseRef
@@ -90,6 +122,18 @@ class TotalCostStatModel extends ChangeNotifier {
         ..from = "from last month";
       addCostSummaryList(budgetValue);
       // _costSummaryList!.add(budgetValue);
+      setIsLoading(false);
+    });
+
+    _totalBudgetListener!.onError((value) {
+      setIsLoading(false);
+      CostSummaryCard requestValue = CostSummaryCard();
+      requestValue
+        ..value = 0
+        ..percentage = 0
+        ..title = "Total Cost Requested"
+        ..from = "from last month";
+      addCostSummaryList(requestValue);
     });
   }
 

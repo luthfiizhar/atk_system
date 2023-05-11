@@ -15,8 +15,11 @@ class ActualPriceItemViewModel extends ChangeNotifier {
   List<ActualPriceItem> _itemList = [];
   List<List<ActualPriceItem>> _sliderList = [];
 
+  bool _isLoading = false;
+
   List<ActualPriceItem> get itemList => _itemList;
   List<List<ActualPriceItem>> get sliderList => _sliderList;
+  bool get isLoading => _isLoading;
 
   void setActualPriceItemList(List<ActualPriceItem> value) {
     _itemList = value;
@@ -28,7 +31,13 @@ class ActualPriceItemViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  void setIsLoading(bool value) {
+    _isLoading = value;
+    notifyListeners();
+  }
+
   Future getActualPriceItem(GlobalModel globalModel) async {
+    setIsLoading(true);
     _actPriceStream = databaseRef
         .child(
             '${globalModel.businessUnit}/${globalModel.role}/ItemAveragePrice/${globalModel.areaId}/${globalModel.year}/${globalModel.month}')
@@ -53,8 +62,13 @@ class ActualPriceItemViewModel extends ChangeNotifier {
           newList.add(subList);
         }
       }
-
       setActualPriceSlider(newList);
+      setIsLoading(false);
+    });
+
+    _actPriceStream!.onError((value) {
+      setIsLoading(false);
+      setActualPriceItemList([]);
     });
   }
 

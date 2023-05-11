@@ -1,5 +1,6 @@
 import 'package:atk_system_ga/constant/colors.dart';
 import 'package:atk_system_ga/constant/text_style.dart';
+import 'package:atk_system_ga/functions/api_request.dart';
 import 'package:atk_system_ga/models/main_page_model.dart';
 import 'package:atk_system_ga/models/search_term.dart';
 import 'package:atk_system_ga/view/dashboard/popup_dialog/export_dialog.dart';
@@ -7,6 +8,7 @@ import 'package:atk_system_ga/view/dashboard/widget_icon.dart';
 import 'package:atk_system_ga/view_model/global_model.dart';
 import 'package:atk_system_ga/widgets/buttons.dart';
 import 'package:atk_system_ga/widgets/dropdown.dart';
+import 'package:atk_system_ga/widgets/empty_table.dart';
 import 'package:atk_system_ga/widgets/search_input_field.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -19,10 +21,16 @@ class ActualPriceItemPopup extends StatefulWidget {
 }
 
 class _ActualPriceItemPopupState extends State<ActualPriceItemPopup> {
-  SearchTerm searchTerm = SearchTerm();
+  SearchTerm searchTerm = SearchTerm(
+    orderBy: "Percentage",
+  );
+  ApiService apiService = ApiService();
+
   TextEditingController _search = TextEditingController();
   late GlobalModel globalModel;
   FocusNode showPerRowsNode = FocusNode();
+
+  bool isLoading = true;
 
   double rowPerPage = 10;
   double firstPaginated = 0;
@@ -32,36 +40,7 @@ class _ActualPriceItemPopupState extends State<ActualPriceItemPopup> {
   List showPerPageList = ["5", "10", "20", "50", "100"];
   int resultRows = 0;
 
-  List<ActualPriceItem> itemList = [
-    ActualPriceItem(
-      itemName: "TINTA EPSON L100 / L 200 / L 210 / L 3110 MAGENTA",
-      percentage: 88.8,
-      basePrice: 300000,
-      avgPrice: 300000,
-      dir: "Down",
-    ),
-    ActualPriceItem(
-      itemName: "022122F0 ODNER A4",
-      percentage: 88.8,
-      basePrice: 300000,
-      avgPrice: 300000,
-      dir: "Down",
-    ),
-    ActualPriceItem(
-      itemName: "TINTA EPSON L100 / L 200 / L 210 / L 3110 MAGENTA",
-      percentage: 88.8,
-      basePrice: 300000,
-      avgPrice: 600500,
-      dir: "Up",
-    ),
-    ActualPriceItem(
-      itemName: "PLASTIK SAMPAH HITAM UK 110 X 120 CM; 40 MIC",
-      percentage: 88.8,
-      basePrice: 300000,
-      avgPrice: 600500,
-      dir: "Up",
-    ),
-  ];
+  List<ActualPriceItem> itemList = [];
 
   onTapHeader(String orderBy) {
     setState(() {
@@ -141,10 +120,56 @@ class _ActualPriceItemPopupState extends State<ActualPriceItemPopup> {
     });
   }
 
+  countPagination(int totalRow) {
+    setState(() {
+      availablePage.clear();
+      if (totalRow == 0) {
+        currentPaginatedPage = 1;
+        showedPage = [1];
+        availablePage = [1];
+      }
+      var totalPage = totalRow / int.parse(searchTerm.max);
+      for (var i = 0; i < totalPage.ceil(); i++) {
+        availablePage.add(i + 1);
+      }
+      showedPage = availablePage.take(5).toList();
+    });
+  }
+
+  Future getData() {
+    isLoading = true;
+    itemList.clear();
+    setState(() {});
+    return apiService
+        .dashboardActualPriceDetail(searchTerm, globalModel)
+        .then((value) {
+      isLoading = false;
+      if (value["Status"].toString() == "200") {
+        List listResult = value["Data"]["List"];
+        resultRows = value["Data"]["TotalRows"];
+        for (var element in listResult) {
+          itemList.add(ActualPriceItem(
+              itemName: element["ItemName"],
+              basePrice: element["Price"],
+              avgPrice: element["AveragePrice"],
+              dir: element["Direction"],
+              percentage: element["Percentage"]));
+        }
+      } else {}
+      setState(() {});
+    }).onError((error, stackTrace) {
+      isLoading = false;
+      setState(() {});
+    });
+  }
+
   @override
   void initState() {
     super.initState();
     globalModel = Provider.of<GlobalModel>(context, listen: false);
+    getData().then((value) {
+      countPagination(resultRows);
+    });
   }
 
   @override
@@ -223,29 +248,40 @@ class _ActualPriceItemPopupState extends State<ActualPriceItemPopup> {
                 height: 30,
               ),
               headerTable(),
-              ListView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: itemList.length,
-                itemBuilder: (context, index) {
-                  return Column(
-                    children: [
-                      index == 0
-                          ? const SizedBox()
-                          : const Divider(
-                              thickness: 0.5,
-                              color: grayx11,
-                            ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 15),
-                        child: ActualItemPopupContainer(
-                          item: itemList[index],
-                        ),
+              isLoading
+                  ? const Center(
+                      child: CircularProgressIndicator(
+                        color: eerieBlack,
                       ),
-                    ],
-                  );
-                },
-              ),
+                    )
+                  : itemList.isEmpty
+                      ? EmptyTable(
+                          text: "Item price not available right now",
+                        )
+                      : ListView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: itemList.length,
+                          itemBuilder: (context, index) {
+                            return Column(
+                              children: [
+                                index == 0
+                                    ? const SizedBox()
+                                    : const Divider(
+                                        thickness: 0.5,
+                                        color: grayx11,
+                                      ),
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 15),
+                                  child: ActualItemPopupContainer(
+                                    item: itemList[index],
+                                  ),
+                                ),
+                              ],
+                            );
+                          },
+                        ),
               const SizedBox(
                 height: 50,
               ),
@@ -302,7 +338,7 @@ class _ActualPriceItemPopupState extends State<ActualPriceItemPopup> {
               width: 145,
               child: InkWell(
                 onTap: () {
-                  onTapHeader("Rank");
+                  onTapHeader("Percentage");
                 },
                 child: Row(
                   children: [
@@ -312,7 +348,7 @@ class _ActualPriceItemPopupState extends State<ActualPriceItemPopup> {
                         style: headerTableTextStyle,
                       ),
                     ),
-                    iconSort("Rank"),
+                    iconSort("Percentage"),
                     const SizedBox(
                       width: 20,
                     ),
@@ -346,7 +382,7 @@ class _ActualPriceItemPopupState extends State<ActualPriceItemPopup> {
               width: 200,
               child: InkWell(
                 onTap: () {
-                  onTapHeader("BasePrice");
+                  onTapHeader("Price");
                 },
                 child: Row(
                   children: [
@@ -356,7 +392,7 @@ class _ActualPriceItemPopupState extends State<ActualPriceItemPopup> {
                         style: headerTableTextStyle,
                       ),
                     ),
-                    iconSort("TotalReq"),
+                    iconSort("Price"),
                     const SizedBox(
                       width: 20,
                     ),
@@ -367,7 +403,7 @@ class _ActualPriceItemPopupState extends State<ActualPriceItemPopup> {
             Expanded(
               child: InkWell(
                 onTap: () {
-                  onTapHeader("AvgPrice");
+                  onTapHeader("AveragePrice");
                 },
                 child: Row(
                   children: [
@@ -377,7 +413,7 @@ class _ActualPriceItemPopupState extends State<ActualPriceItemPopup> {
                         style: headerTableTextStyle,
                       ),
                     ),
-                    iconSort("AvgPrice"),
+                    iconSort("AveragePrice"),
                     const SizedBox(
                       width: 20,
                     ),
@@ -479,6 +515,9 @@ class _ActualPriceItemPopupState extends State<ActualPriceItemPopup> {
                       currentPaginatedPage = 1;
                       searchTerm.pageNumber = "1";
                       searchTerm.max = value!.toString();
+                      getData().then((value) {
+                        countPagination(resultRows);
+                      });
                       // apiReq
                       //     .getMyBookingList(searchTerm)
                       //     .then((value) {
@@ -548,7 +587,7 @@ class _ActualPriceItemPopupState extends State<ActualPriceItemPopup> {
                           }
                           searchTerm.pageNumber =
                               currentPaginatedPage.toString();
-
+                          getData().then((value) {});
                           // apiReq
                           //     .getMyBookingList(searchTerm)
                           //     .then((value) {
@@ -619,6 +658,7 @@ class _ActualPriceItemPopupState extends State<ActualPriceItemPopup> {
                                     });
                                     searchTerm.pageNumber =
                                         currentPaginatedPage.toString();
+                                    getData().then((value) {});
                                     // apiReq
                                     //     .getMyBookingList(
                                     //         searchTerm)
@@ -710,7 +750,7 @@ class _ActualPriceItemPopupState extends State<ActualPriceItemPopup> {
                           }
                           searchTerm.pageNumber =
                               currentPaginatedPage.toString();
-
+                          getData().then((value) {});
                           // apiReq
                           //     .getMyBookingList(searchTerm)
                           //     .then((value) {
@@ -770,7 +810,7 @@ class ActualItemPopupContainer extends StatelessWidget {
             runAlignment: WrapAlignment.center,
             crossAxisAlignment: WrapCrossAlignment.center,
             children: [
-              item.dir == "Up"
+              item.dir == "up"
                   ? const Icon(
                       Icons.arrow_drop_up_sharp,
                       color: orangeAccent,
@@ -785,7 +825,7 @@ class ActualItemPopupContainer extends StatelessWidget {
                 "${item.percentage.toString()} %",
                 style: normalText.copyWith(
                   fontSize: 18,
-                  color: item.dir == "Up" ? orangeAccent : greenAcent,
+                  color: item.dir == "up" ? orangeAccent : greenAcent,
                 ),
               ),
             ],

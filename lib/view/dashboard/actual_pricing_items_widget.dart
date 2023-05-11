@@ -8,6 +8,7 @@ import 'package:atk_system_ga/view/dashboard/show_more_icon.dart';
 import 'package:atk_system_ga/view/dashboard/widget_icon.dart';
 import 'package:atk_system_ga/view_model/dashboard_view_model.dart/actual_price_item_view_model.dart';
 import 'package:atk_system_ga/view_model/global_model.dart';
+import 'package:atk_system_ga/widgets/empty_table.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
@@ -104,38 +105,45 @@ class _ActualPricingItemWidgetState extends State<ActualPricingItemWidget> {
               const SizedBox(
                 height: 30,
               ),
-              model.sliderList.isEmpty
+              model.isLoading
                   ? const Center(
                       child: CircularProgressIndicator(
                         color: eerieBlack,
                       ),
                     )
-                  : CarouselSlider(
-                      carouselController: carouselController,
-                      disableGesture: true,
-                      items: model.sliderList
-                          .asMap()
-                          .map(
-                            (index, value) => MapEntry(
-                              index,
-                              ActualPriceItemContainer(
-                                list: value,
-                              ),
+                  : model.sliderList.isEmpty
+                      ? SizedBox(
+                          height: 150,
+                          child: EmptyTable(
+                            text: "Item price not available right now",
+                          ),
+                        )
+                      : CarouselSlider(
+                          carouselController: carouselController,
+                          disableGesture: true,
+                          items: model.sliderList
+                              .asMap()
+                              .map(
+                                (index, value) => MapEntry(
+                                  index,
+                                  ActualPriceItemContainer(
+                                    list: value,
+                                  ),
+                                ),
+                              )
+                              .values
+                              .toList(),
+                          options: CarouselOptions(
+                            viewportFraction: 1,
+                            scrollPhysics: const NeverScrollableScrollPhysics(),
+                            // autoPlayAnimationDuration: const Duration(seconds: 15),
+                            autoPlayInterval: const Duration(
+                              seconds: 10,
                             ),
-                          )
-                          .values
-                          .toList(),
-                      options: CarouselOptions(
-                        viewportFraction: 1,
-                        scrollPhysics: const NeverScrollableScrollPhysics(),
-                        // autoPlayAnimationDuration: const Duration(seconds: 15),
-                        autoPlayInterval: const Duration(
-                          seconds: 10,
+                            autoPlay: true,
+                            height: 375,
+                          ),
                         ),
-                        autoPlay: true,
-                        height: 375,
-                      ),
-                    ),
               // const SizedBox(
               //   height: 25,
               // ),

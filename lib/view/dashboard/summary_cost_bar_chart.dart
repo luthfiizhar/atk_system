@@ -288,6 +288,7 @@ class _SummCostBarChartState extends State<SummCostBarChart> {
                       : SfCartesianChart(
                           plotAreaBorderWidth: 0,
                           tooltipBehavior: TooltipBehavior(
+                            activationMode: ActivationMode.singleTap,
                             color: white,
                             duration: 10,
                             borderColor: white,

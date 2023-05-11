@@ -77,7 +77,7 @@ class _TotalCostStatisticState extends State<TotalCostStatistic> {
         index == 0
             ? const SizedBox()
             : const Padding(
-                padding: EdgeInsets.symmetric(vertical: 20),
+                padding: EdgeInsets.symmetric(vertical: 16),
                 child: Divider(
                   color: grayx11,
                   thickness: 0.5,

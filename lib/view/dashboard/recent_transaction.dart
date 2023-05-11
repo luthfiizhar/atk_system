@@ -9,6 +9,7 @@ import 'package:atk_system_ga/view/dashboard/show_more_icon.dart';
 import 'package:atk_system_ga/view/dashboard/widget_icon.dart';
 import 'package:atk_system_ga/view_model/dashboard_view_model.dart/recent_transaction_view_model.dart';
 import 'package:atk_system_ga/view_model/global_model.dart';
+import 'package:atk_system_ga/widgets/empty_table.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'dart:html' as html;
@@ -264,35 +265,40 @@ class _RecentTransactionWidgetState extends State<RecentTransactionWidget> {
                 height: 30,
               ),
               headerTable(),
-              model.listRecTransaction.isEmpty
+              model.isLoading
                   ? const Center(
                       child: CircularProgressIndicator(
                         color: eerieBlack,
                       ),
                     )
-                  : ListView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: model.listRecTransaction.take(5).length,
-                      itemBuilder: (context, index) {
-                        return Column(
-                          children: [
-                            index == 0
-                                ? const SizedBox()
-                                : const Divider(
-                                    thickness: 0.5,
-                                    color: grayx11,
+                  : model.listRecTransaction.isEmpty
+                      ? EmptyTable(
+                          text: "There is no transaction available right now",
+                        )
+                      : ListView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: model.listRecTransaction.take(5).length,
+                          itemBuilder: (context, index) {
+                            return Column(
+                              children: [
+                                index == 0
+                                    ? const SizedBox()
+                                    : const Divider(
+                                        thickness: 0.5,
+                                        color: grayx11,
+                                      ),
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 16),
+                                  child: RecentTransactionItems(
+                                    recents: model.listRecTransaction[index],
                                   ),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              child: RecentTransactionItems(
-                                recents: model.listRecTransaction[index],
-                              ),
-                            ),
-                          ],
-                        );
-                      },
-                    ),
+                                ),
+                              ],
+                            );
+                          },
+                        ),
             ],
           ),
         );

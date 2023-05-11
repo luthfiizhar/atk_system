@@ -16,11 +16,13 @@ class SiteRankViewModel extends ChangeNotifier {
   int _selectedSortOption = 0;
 
   List<SiteRanking> _rankItem = [];
+  bool _isLoading = false;
 
   List get sortOption => _sortOption;
   int get selectedSortOption => _selectedSortOption;
 
   List<SiteRanking> get rankItem => _rankItem;
+  bool get isLoading => _isLoading;
 
   void setSelectedSortOption(int value) {
     _selectedSortOption = value;
@@ -32,8 +34,14 @@ class SiteRankViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  void setIsLoading(bool value) {
+    _isLoading = value;
+    notifyListeners();
+  }
+
   Future getBudgetCostComparison(GlobalModel globalModel) async {
     // print(globalModel.toString());
+    setIsLoading(true);
     _rankSiteStream = databaseRef
         .child(
             '${globalModel.businessUnit}/${globalModel.role}/SiteRanking/BudgetCost/${globalModel.areaId}/${globalModel.year}/${globalModel.month}')
@@ -45,10 +53,17 @@ class SiteRankViewModel extends ChangeNotifier {
           (result as List).map((e) => SiteRanking.fromJson(e)).toList();
 
       setRankList(list);
+      setIsLoading(false);
+    });
+
+    _rankSiteStream!.onError((value) {
+      setIsLoading(false);
+      setRankList([]);
     });
   }
 
   Future getHighestCost(GlobalModel globalModel) async {
+    setIsLoading(true);
     _rankSiteStream = databaseRef
         .child(
             '${globalModel.businessUnit}/${globalModel.role}/SiteRanking/HighestCost/${globalModel.areaId}/${globalModel.year}/${globalModel.month}')
@@ -60,10 +75,17 @@ class SiteRankViewModel extends ChangeNotifier {
           (result as List).map((e) => SiteRanking.fromJson(e)).toList();
 
       setRankList(list);
+      setIsLoading(false);
+    });
+
+    _rankSiteStream!.onError((value) {
+      setIsLoading(false);
+      setRankList([]);
     });
   }
 
   Future getLowestCost(GlobalModel globalModel) async {
+    setIsLoading(true);
     _rankSiteStream = databaseRef
         .child(
             '${globalModel.businessUnit}/${globalModel.role}/SiteRanking/LowestCost/${globalModel.areaId}/${globalModel.year}/${globalModel.month}')
@@ -75,10 +97,17 @@ class SiteRankViewModel extends ChangeNotifier {
           (result as List).map((e) => SiteRanking.fromJson(e)).toList();
 
       setRankList(list);
+      setIsLoading(false);
+    });
+
+    _rankSiteStream!.onError((value) {
+      setIsLoading(false);
+      setRankList([]);
     });
   }
 
   Future getHighestBudget(GlobalModel globalModel) async {
+    setIsLoading(true);
     _rankSiteStream = databaseRef
         .child(
             '${globalModel.businessUnit}/${globalModel.role}/SiteRanking/HighestBudget/${globalModel.areaId}/${globalModel.year}/${globalModel.month}')
@@ -90,10 +119,17 @@ class SiteRankViewModel extends ChangeNotifier {
           (result as List).map((e) => SiteRanking.fromJson(e)).toList();
 
       setRankList(list);
+      setIsLoading(false);
+    });
+
+    _rankSiteStream!.onError((value) {
+      setIsLoading(false);
+      setRankList([]);
     });
   }
 
   Future getLowestBudget(GlobalModel globalModel) async {
+    setIsLoading(true);
     _rankSiteStream = databaseRef
         .child(
             '${globalModel.businessUnit}/${globalModel.role}/SiteRanking/LowestBudget/${globalModel.areaId}/${globalModel.year}/${globalModel.month}')
@@ -105,10 +141,17 @@ class SiteRankViewModel extends ChangeNotifier {
           (result as List).map((e) => SiteRanking.fromJson(e)).toList();
 
       setRankList(list);
+      setIsLoading(false);
+    });
+
+    _rankSiteStream!.onError((value) {
+      setIsLoading(false);
+      setRankList([]);
     });
   }
 
   Future getFastestLeadTime(GlobalModel globalModel) async {
+    setIsLoading(true);
     _rankSiteStream = databaseRef
         .child(
             '${globalModel.businessUnit}/${globalModel.role}/SiteRanking/FastestLeadTime/${globalModel.areaId}/${globalModel.year}/${globalModel.month}')
@@ -120,10 +163,17 @@ class SiteRankViewModel extends ChangeNotifier {
           (result as List).map((e) => SiteRanking.fromJson(e)).toList();
 
       setRankList(list);
+      setIsLoading(false);
+    });
+
+    _rankSiteStream!.onError((value) {
+      setIsLoading(false);
+      setRankList([]);
     });
   }
 
   Future getSlowestLeadTime(GlobalModel globalModel) async {
+    setIsLoading(true);
     _rankSiteStream = databaseRef
         .child(
             '${globalModel.businessUnit}/${globalModel.role}/SiteRanking/SlowestLeadTime/${globalModel.areaId}/${globalModel.year}/${globalModel.month}')
@@ -135,6 +185,12 @@ class SiteRankViewModel extends ChangeNotifier {
           (result as List).map((e) => SiteRanking.fromJson(e)).toList();
 
       setRankList(list);
+      setIsLoading(false);
+    });
+
+    _rankSiteStream!.onError((value) {
+      setIsLoading(false);
+      setRankList([]);
     });
   }
 
