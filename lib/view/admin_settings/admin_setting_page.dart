@@ -179,6 +179,8 @@ class _AdminSettingPageState extends State<AdminSettingPage> {
   Future nothing() async {}
 
   Future updateList(String menu) {
+    isLoading = true;
+    setState(() {});
     switch (menu) {
       case "Site":
         siteList.clear();
@@ -240,7 +242,7 @@ class _AdminSettingPageState extends State<AdminSettingPage> {
       case "Item":
         itemList.clear();
         return apiService.getAdminPageItemList(searchTerm).then((value) {
-          print(value);
+          isLoading = false;
           if (value['Status'].toString() == "200") {
             resultRows = value['Data']['TotalRows'];
             List itemResult = value['Data']['List'];
@@ -262,7 +264,7 @@ class _AdminSettingPageState extends State<AdminSettingPage> {
         return apiService
             .getAdminPageBusinessUnitList(searchTerm)
             .then((value) {
-          print(value);
+          isLoading = false;
           if (value['Status'].toString() == "200") {
             resultRows = value['Data']['TotalRows'];
             List itemResult = value['Data']['List'];
@@ -278,7 +280,7 @@ class _AdminSettingPageState extends State<AdminSettingPage> {
       case "Region":
         regionList.clear();
         return apiService.getAdminPageRegionList(searchTerm).then((value) {
-          print(value);
+          isLoading = false;
           if (value['Status'].toString() == "200") {
             resultRows = value['Data']['TotalRows'];
             List itemResult = value['Data']['List'];
@@ -297,6 +299,7 @@ class _AdminSettingPageState extends State<AdminSettingPage> {
         });
       case "Area":
         areaList.clear();
+        isLoading = false;
         return apiService.getAdminPageAreaList(searchTerm).then((value) {
           print(value);
           if (value['Status'].toString() == "200") {
@@ -1553,24 +1556,33 @@ class _AdminSettingPageState extends State<AdminSettingPage> {
   }
 
   Widget businessUnitTable(String menu) {
-    return GridView.count(
-      shrinkWrap: true,
-      childAspectRatio: 210 / 235,
-      crossAxisCount: 5,
-      mainAxisSpacing: 30,
-      crossAxisSpacing: 15,
-      children: businessUnitList
-          .asMap()
-          .entries
-          .map(
-            (e) => BusinessUnitListContainer(
-              businessUnit: e.value,
-              updateList: updateList,
-              menu: menu,
+    return isLoading
+        ? const SizedBox(
+            height: 150,
+            child: Center(
+              child: CircularProgressIndicator(
+                color: eerieBlack,
+              ),
             ),
           )
-          .toList(),
-    );
+        : GridView.count(
+            shrinkWrap: true,
+            childAspectRatio: 210 / 235,
+            crossAxisCount: 5,
+            mainAxisSpacing: 30,
+            crossAxisSpacing: 15,
+            children: businessUnitList
+                .asMap()
+                .entries
+                .map(
+                  (e) => BusinessUnitListContainer(
+                    businessUnit: e.value,
+                    updateList: updateList,
+                    menu: menu,
+                  ),
+                )
+                .toList(),
+          );
     // return Wrap(
     //   spacing: 10,
     //   runSpacing: 30,
