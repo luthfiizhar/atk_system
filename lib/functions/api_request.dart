@@ -1480,7 +1480,7 @@ class ApiService {
         "Fullname" : "${user.name}",
         "SiteId" : "${user.siteId}",
         "CompID" : "${user.compId}",
-        "Role" : ${user.roleList.toList()}
+        "Role" : "${user.role}"
     }
     """;
 
@@ -1517,7 +1517,7 @@ class ApiService {
         "Fullname" : "${user.name}",
         "SiteId" : "${user.siteId}",
         "CompID" : "${user.compId}",
-        "Role" : ${user.roleList.toList()}
+        "Role" : "${user.role}"
     }
     """;
 
