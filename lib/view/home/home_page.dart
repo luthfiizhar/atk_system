@@ -49,6 +49,7 @@ class _HomePageState extends State<HomePage> {
         photo = value["Data"]["Photo"];
         // isSystemAdmin = value['Data']['SystemAdmin'];
         settingAccess = value["Data"]["SettingAccess"];
+        dashboardAccess = value["Data"]["DashboardAccess"];
         if (value["Data"]["Role"] == "System Admin") {
           isSystemAdmin = true;
         }
