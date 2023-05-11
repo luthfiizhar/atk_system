@@ -10,6 +10,7 @@ String? jwtToken = "";
 bool isTokenValid = false;
 bool isSystemAdmin = false;
 bool settingAccess = false;
+bool dashboardAccess = false;
 bool isOps = false;
 
 loginCheck() async {
@@ -39,6 +40,7 @@ void main() async {
       // print(value);
       if (value['Status'].toString() == "200") {
         settingAccess = value['Data']['SettingAccess'];
+        dashboardAccess = value["Data"]["DashboardAccess"];
         if (value["Data"]["Role"] == "System Admin") {
           isSystemAdmin = true;
         }

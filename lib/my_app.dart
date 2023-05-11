@@ -148,11 +148,20 @@ class MyApp extends StatelessWidget {
       ),
       GoRoute(
         path: '/dashboard',
+        name: 'dashboard',
         pageBuilder: (context, state) {
           return NoTransitionPage<void>(
             key: state.pageKey,
             child: const DashboardPage(),
           );
+        },
+        redirect: (context, state) {
+          final dashboardPage = state.subloc == '/dashboard';
+          if (!dashboardAccess) {
+            return dashboardPage ? '/home' : null;
+          }
+
+          return null;
         },
       ),
       // GoRoute(
