@@ -144,6 +144,7 @@ class _NavigationBarWebState extends State<NavigationBarWeb> {
                   jwtToken = "";
                   isTokenValid = false;
                   isSysAdmin = false;
+                  isSystemAdmin = false;
                   settingAccess = false;
                   context.go('/login');
                   setState(() {});

@@ -81,7 +81,7 @@ class _AdminSettingPageState extends State<AdminSettingPage> {
     AdminMenu(
       name: "Busines Unit List",
       value: "BusinessUnit",
-      isShowed: isSystemAdmin ? true : false,
+      isShowed: false,
     ),
     AdminMenu(
       name: "Region List",
@@ -467,6 +467,10 @@ class _AdminSettingPageState extends State<AdminSettingPage> {
   void initState() {
     super.initState();
     initList();
+    menuList
+        .where((element) => element.value == "BusinessUnit")
+        .first
+        .isShowed = isSystemAdmin ? true : false;
   }
 
   @override
