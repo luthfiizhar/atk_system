@@ -523,13 +523,13 @@ class _SuppliesRequestPageState extends State<SuppliesRequestPage> {
                             width: 20,
                           ),
                           RegularButton(
-                            text: "Cancel",
+                            text: "Cancel Request",
                             disabled: false,
                             padding: ButtonSize().mediumSize(),
                             onTap: () async {
                               showDialog(
                                 context: context,
-                                builder: (context) => ConfirmDialogBlack(
+                                builder: (context) => const ConfirmDialogBlack(
                                   title: "Confirmation",
                                   contentText:
                                       "Are you sure want to cancel this request?",
@@ -539,13 +539,14 @@ class _SuppliesRequestPageState extends State<SuppliesRequestPage> {
                                   apiService
                                       .cancelTransaction(widget.formId)
                                       .then((value) {
+                                    print(value);
                                     if (value["Status"].toString() == "200") {
                                       showDialog(
                                         context: context,
                                         builder: (context) => AlertDialogBlack(
                                           title: value["Title"],
                                           contentText: value["Message"],
-                                          isSuccess: false,
+                                          isSuccess: true,
                                         ),
                                       ).then((value) {
                                         context.goNamed("home");
