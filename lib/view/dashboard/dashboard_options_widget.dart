@@ -77,7 +77,7 @@ class _DashboardOptionsWidgetState extends State<DashboardOptionsWidget> {
                 Positioned(
                   // left: offset.dx,
                   // top: offset.dy + size.height + 10,
-                  width: 200,
+                  width: size.width,
                   child: CompositedTransformFollower(
                     showWhenUnlinked: false,
                     offset: Offset(0.0, size.height + 5.0),
@@ -215,6 +215,7 @@ class _DashboardOptionsWidgetState extends State<DashboardOptionsWidget> {
     initBusinessUnitList();
     initMonthList();
     initYearList();
+    _area.text = globalModel.siteName;
     selectedBusinessUnit = globalModel.businessUnit;
     selectedRole = globalModel.role;
     selectedMonth = globalModel.month;
