@@ -495,13 +495,12 @@ class RecentTransactionItems extends StatelessWidget {
         if (recents.type == "Monthly Supply Request" ||
             recents.type == "Monthly Additional Request") {
           popUpWindow = html.window.open(
-            'http://$host$path#/transaction_list/request_detail/${recents.formId}',
-            'TransactionDetail',
-          );
+              'http://$host$path#/transaction_list/request_detail/${recents.formId}',
+              '');
         } else {
           popUpWindow = html.window.open(
             'http://$host$path#/transaction_list/settlement_detail/${recents.formId}',
-            'TransactionDetail',
+            '',
           );
         }
       },
