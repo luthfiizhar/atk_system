@@ -44,7 +44,8 @@ class _AddUserDialogState extends State<AddUserDialog> {
   String name = "";
 
   String selectedSite = "";
-  String selectedRole = "Store Admin";
+  String selectedRole = "";
+  String compId = "";
 
   OverlayEntry? siteOverlayEntry;
   GlobalKey siteKey = GlobalKey();
@@ -71,25 +72,40 @@ class _AddUserDialogState extends State<AddUserDialog> {
     var offset = renderBox.localToGlobal(Offset.zero);
 
     return OverlayEntry(
-        builder: (context) => Positioned(
-            // left: offset.dx,
-            // top: offset.dy + size.height + 10,
-            width: size.width,
-            child: CompositedTransformFollower(
-              showWhenUnlinked: false,
-              offset: Offset(0.0, size.height + 5.0),
-              link: siteLayerLink,
-              child: Material(
-                elevation: 4.0,
-                color: white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
+        builder: (context) => Stack(
+              children: [
+                ModalBarrier(
+                  onDismiss: () {
+                    if (isOverlaySiteOpen) {
+                      if (siteOverlayEntry!.mounted) {
+                        siteOverlayEntry!.remove();
+                      }
+                      siteNode.unfocus();
+                    }
+                  },
                 ),
-                child: SiteSearchContainer(
-                  onClick: onClickSite,
-                ),
-              ),
-            )));
+                Positioned(
+                    // left: offset.dx,
+                    // top: offset.dy + size.height + 10,
+                    width: size.width,
+                    child: CompositedTransformFollower(
+                      showWhenUnlinked: false,
+                      offset: Offset(0.0, size.height - 60),
+                      link: siteLayerLink,
+                      child: Material(
+                        elevation: 4.0,
+                        color: white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: SiteSearchContainer(
+                          onClick: onClickSite,
+                          selectedRole: selectedRole,
+                        ),
+                      ),
+                    )),
+              ],
+            ));
   }
 
   OverlayEntry roleOverlay() {
@@ -122,7 +138,8 @@ class _AddUserDialogState extends State<AddUserDialog> {
             )));
   }
 
-  onClickSite(String id, String name) {
+  onClickSite(String id, String name, String companyId) {
+    compId = companyId;
     _site.text = "$id - $name";
     selectedSite = id;
     if (isOverlaySiteOpen) {
@@ -172,15 +189,15 @@ class _AddUserDialogState extends State<AddUserDialog> {
     return apiService.getRoleListDropdown().then((value) {
       if (value['Status'].toString() == "200") {
         roleList = value['Data'];
-        for (var element in roleList) {
-          role.add(
-            Role(
-              name: element["Name"],
-              value: element["Value"],
-              isChecked: false,
-            ),
-          );
-        }
+        // for (var element in roleList) {
+        //   role.add(
+        //     Role(
+        //       name: element["Name"],
+        //       value: element["Value"],
+        //       isChecked: false,
+        //     ),
+        //   );
+        // }
         // setState(() {});
       } else {
         showDialog(
@@ -192,6 +209,7 @@ class _AddUserDialogState extends State<AddUserDialog> {
           ),
         );
       }
+      setState(() {});
     }).onError((error, stackTrace) {
       showDialog(
         context: context,
@@ -209,20 +227,22 @@ class _AddUserDialogState extends State<AddUserDialog> {
     super.initState();
     initListRole().then((value) {
       if (widget.isEdit) {
+        print(widget.user.role);
         _nip.text = widget.user.nip;
         _fullName.text = widget.user.name;
         _site.text = "${widget.user.siteId} - ${widget.user.siteName}";
         selectedSite = widget.user.siteId;
         selectedRole = widget.user.role;
         _role.text = widget.user.role;
-        for (var element in role) {
-          for (var roleSel in widget.user.roleList) {
-            if (element.name == roleSel["Role"]) {
-              element.isChecked = true;
-              addRoleSelected(element);
-            }
-          }
-        }
+        // for (var element in role) {
+        //   for (var roleSel in widget.user.roleList) {
+        //     if (element.name == roleSel["Role"]) {
+        //       element.isChecked = true;
+        //       addRoleSelected(element);
+        //     }
+        //   }
+        // }
+        setState(() {});
       } else {}
     });
   }
@@ -332,6 +352,71 @@ class _AddUserDialogState extends State<AddUserDialog> {
                       height: 20,
                     ),
                     inputField(
+                      'Role',
+                      widget: SizedBox(
+                        width: 250,
+                        child: Container(
+                          // key: roleKey,
+                          // onTap: () {},
+                          child: BlackDropdown(
+                            focusNode: roleNode,
+                            hintText: 'Choose',
+                            enabled: false,
+                            value: widget.isEdit ? selectedRole : null,
+                            onChanged: (value) {
+                              selectedRole = value;
+                              setState(() {});
+                            },
+                            suffixIcon: const Icon(
+                              Icons.keyboard_arrow_down_outlined,
+                              color: eerieBlack,
+                            ),
+                            validator: (value) =>
+                                value == "" ? "This field is required" : null,
+                            items: roleList
+                                .map(
+                                  (e) => DropdownMenuItem(
+                                    value: e["Value"],
+                                    child: Text(
+                                      e["Name"],
+                                      style: helveticaText.copyWith(),
+                                    ),
+                                  ),
+                                )
+                                .toList(),
+                            // child: CompositedTransformTarget(
+                            //   link: roleLayerLink,
+                            //   child: CustomInputField(
+                            //     controller: _role,
+                            //     focusNode: roleNode,
+                            //     enabled: true,
+                            //     hintText: 'Choose Role',
+                            //     suffixIcon: const Icon(
+                            //       Icons.keyboard_arrow_down_outlined,
+                            //       color: eerieBlack,
+                            //     ),
+                            //     onTap: () {
+                            //       if (isOverlayRoleOpen) {
+                            //         isOverlayRoleOpen = false;
+                            //         if (roleOverlayEntry!.mounted) {
+                            //           roleOverlayEntry!.remove();
+                            //         }
+                            //       } else {
+                            //         roleOverlayEntry = roleOverlay();
+                            //         Overlay.of(context).insert(roleOverlayEntry!);
+                            //         isOverlayRoleOpen = true;
+                            //       }
+                            //       setState(() {});
+                            //     },
+                            //   ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    inputField(
                       'Site',
                       // widget: Expanded(
                       //   child: LayoutBuilder(builder: (context, constraint) {
@@ -372,64 +457,28 @@ class _AddUserDialogState extends State<AddUserDialog> {
                             child: CustomInputField(
                               controller: _site,
                               focusNode: siteNode,
-                              enabled: true,
+                              enabled: selectedRole == "" ? false : true,
                               hintText: 'Choose Site',
                               suffixIcon: const Icon(
                                 Icons.keyboard_arrow_down_outlined,
                                 color: eerieBlack,
                               ),
-                              onTap: () {
-                                if (isOverlaySiteOpen) {
-                                  isOverlaySiteOpen = false;
-                                  if (siteOverlayEntry!.mounted) {
-                                    siteOverlayEntry!.remove();
-                                  }
-                                } else {
-                                  siteOverlayEntry = siteOverlay();
-                                  Overlay.of(context).insert(siteOverlayEntry!);
-                                  isOverlaySiteOpen = true;
-                                }
-                                setState(() {});
-                              },
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    inputField(
-                      'Role',
-                      widget: SizedBox(
-                        width: 250,
-                        child: Container(
-                          key: roleKey,
-                          // onTap: () {},
-                          child: CompositedTransformTarget(
-                            link: roleLayerLink,
-                            child: CustomInputField(
-                              controller: _role,
-                              focusNode: roleNode,
-                              enabled: true,
-                              hintText: 'Choose Role',
-                              suffixIcon: const Icon(
-                                Icons.keyboard_arrow_down_outlined,
-                                color: eerieBlack,
-                              ),
-                              onTap: () {
-                                if (isOverlayRoleOpen) {
-                                  isOverlayRoleOpen = false;
-                                  if (roleOverlayEntry!.mounted) {
-                                    roleOverlayEntry!.remove();
-                                  }
-                                } else {
-                                  roleOverlayEntry = roleOverlay();
-                                  Overlay.of(context).insert(roleOverlayEntry!);
-                                  isOverlayRoleOpen = true;
-                                }
-                                setState(() {});
-                              },
+                              onTap: selectedRole == ""
+                                  ? () {}
+                                  : () {
+                                      if (isOverlaySiteOpen) {
+                                        isOverlaySiteOpen = false;
+                                        if (siteOverlayEntry!.mounted) {
+                                          siteOverlayEntry!.remove();
+                                        }
+                                      } else {
+                                        siteOverlayEntry = siteOverlay();
+                                        Overlay.of(context)
+                                            .insert(siteOverlayEntry!);
+                                        isOverlaySiteOpen = true;
+                                      }
+                                      setState(() {});
+                                    },
                             ),
                           ),
                         ),
@@ -465,6 +514,7 @@ class _AddUserDialogState extends State<AddUserDialog> {
                               userSave.siteId = selectedSite;
                               userSave.role = selectedRole;
                               userSave.roleList = selectedRoleList;
+                              userSave.compId = compId;
                               if (widget.isEdit) {
                                 userSave.oldNip = widget.user.nip;
                                 apiService.updateUser(userSave).then((value) {
@@ -580,9 +630,11 @@ class SiteSearchContainer extends StatefulWidget {
     super.key,
     this.siteID = "",
     this.onClick,
+    this.selectedRole = "",
   });
   String siteID;
   Function? onClick;
+  String selectedRole;
 
   @override
   State<SiteSearchContainer> createState() => _SiteSearchContainerState();
@@ -597,7 +649,9 @@ class _SiteSearchContainerState extends State<SiteSearchContainer> {
   onChange(String value) {
     siteList.clear();
     print(value);
-    apiService.getSiteListDropdown(value).then((value) {
+    apiService
+        .getSiteListDropdownByRole(widget.selectedRole, value)
+        .then((value) {
       if (value['Status'].toString() == "200") {
         siteList = value['Data'];
         setState(() {});
@@ -608,7 +662,7 @@ class _SiteSearchContainerState extends State<SiteSearchContainer> {
   @override
   void initState() {
     super.initState();
-    apiService.getSiteListDropdown("").then((value) {
+    apiService.getSiteListDropdownByRole(widget.selectedRole, "").then((value) {
       if (value['Status'].toString() == "200") {
         siteList = value['Data'];
         setState(() {});
@@ -641,7 +695,7 @@ class _SiteSearchContainerState extends State<SiteSearchContainer> {
             TextFormField(
               controller: _search,
               cursorColor: davysGray,
-              onChanged: (value) {
+              onFieldSubmitted: (value) {
                 onChange(value);
               },
               decoration: const InputDecoration(
@@ -684,11 +738,14 @@ class _SiteSearchContainerState extends State<SiteSearchContainer> {
                           ),
                           child: InkWell(
                             onTap: () {
-                              widget.onClick!(siteList[index]['SiteID'],
-                                  siteList[index]['SiteName']);
+                              widget.onClick!(
+                                siteList[index]['ID'],
+                                siteList[index]['Name'],
+                                siteList[index]['CompanyID'],
+                              );
                             },
                             child: Text(
-                              '${siteList[index]["SiteID"]} - ${siteList[index]["SiteName"]}',
+                              '${siteList[index]["ID"]} - ${siteList[index]["Name"]}',
                               style: helveticaText.copyWith(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w300,
