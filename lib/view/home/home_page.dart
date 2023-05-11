@@ -48,6 +48,10 @@ class _HomePageState extends State<HomePage> {
         role = value["Data"]["Role"];
         photo = value["Data"]["Photo"];
         // isSystemAdmin = value['Data']['SystemAdmin'];
+        settingAccess = value["Data"]["SettingAccess"];
+        if (value["Data"]["Role"] == "System Admin") {
+          isSystemAdmin = true;
+        }
         setState(() {});
       } else {}
     }).onError((error, stackTrace) {

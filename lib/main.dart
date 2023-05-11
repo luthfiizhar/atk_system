@@ -39,6 +39,9 @@ void main() async {
       // print(value);
       if (value['Status'].toString() == "200") {
         settingAccess = value['Data']['SettingAccess'];
+        if (value["Data"]["Role"] == "System Admin") {
+          isSystemAdmin = true;
+        }
       }
       runApp(MyApp());
     });

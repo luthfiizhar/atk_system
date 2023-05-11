@@ -82,16 +82,17 @@ class _AdminMenuSearchBarState extends State<AdminMenuSearchBar> {
     indexColor = _random.nextInt(color.length);
     selectedColor = color[indexColor];
     ApiService apiService = ApiService();
-    apiService.getUserData().then((value) {
-      if (value["Status"].toString() == "200") {
-        role = value["Data"]["Role"];
-      }
-    });
-    for (var element in widget.menuList!) {
-      if (element.value == "BusinessUnit") {
-        element.isShowed = role == "System Admin" ? true : false;
-      }
-    }
+    // apiService.getUserData().then((value) {
+    //   if (value["Status"].toString() == "200") {
+    //     role = value["Data"]["Role"];
+    //   }
+    // });
+    // for (var element in widget.menuList!) {
+    //   if (element.value == "BusinessUnit") {
+    //     element.isShowed = role == "System Admin" ? true : false;
+    //   }
+    // }
+    // setState(() {});
   }
 
   @override
