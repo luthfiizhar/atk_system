@@ -120,6 +120,20 @@ class _NavigationBarWebState extends State<NavigationBarWeb> {
                 ),
               ),
               Visibility(
+                visible: dashboardAccess,
+                child: Padding(
+                  padding: const EdgeInsets.only(
+                    right: 50,
+                  ),
+                  child: NavigationItem(
+                    title: 'Dashboard',
+                    routeName: 'dashboard',
+                    selected: index == 2,
+                    onHighlight: onHighlight,
+                  ),
+                ),
+              ),
+              Visibility(
                 visible: settingAccess,
                 child: Padding(
                   padding: const EdgeInsets.only(
@@ -146,6 +160,7 @@ class _NavigationBarWebState extends State<NavigationBarWeb> {
                   isSysAdmin = false;
                   isSystemAdmin = false;
                   settingAccess = false;
+                  dashboardAccess = false;
                   context.go('/login');
                   setState(() {});
                 },
