@@ -1,3 +1,15 @@
+class AdminMenu {
+  String name;
+  String value;
+  bool isShowed;
+
+  AdminMenu({
+    this.name = "",
+    this.value = "",
+    this.isShowed = true,
+  });
+}
+
 class Site {
   Site({
     this.siteId = "",
@@ -50,6 +62,8 @@ class User {
     this.role = "",
     this.oldNip = "",
     this.siteName = "",
+    this.compName = "",
+    this.compId = "",
     this.isExpanded = false,
     List? roleList,
   }) : roleList = roleList ?? [];
@@ -60,6 +74,8 @@ class User {
   String role;
   String oldNip;
   String siteName;
+  String compName; //Business Unit
+  String compId;
   bool isExpanded;
   List roleList;
 
