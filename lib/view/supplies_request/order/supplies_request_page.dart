@@ -526,7 +526,53 @@ class _SuppliesRequestPageState extends State<SuppliesRequestPage> {
                             text: "Cancel",
                             disabled: false,
                             padding: ButtonSize().mediumSize(),
-                            onTap: () async {},
+                            onTap: () async {
+                              showDialog(
+                                context: context,
+                                builder: (context) => ConfirmDialogBlack(
+                                  title: "Confirmation",
+                                  contentText:
+                                      "Are you sure want to cancel this request?",
+                                ),
+                              ).then((value) {
+                                if (value == 1) {
+                                  apiService
+                                      .cancelTransaction(widget.formId)
+                                      .then((value) {
+                                    if (value["Status"].toString() == "200") {
+                                      showDialog(
+                                        context: context,
+                                        builder: (context) => AlertDialogBlack(
+                                          title: value["Title"],
+                                          contentText: value["Message"],
+                                          isSuccess: false,
+                                        ),
+                                      ).then((value) {
+                                        context.goNamed("home");
+                                      });
+                                    } else {
+                                      showDialog(
+                                        context: context,
+                                        builder: (context) => AlertDialogBlack(
+                                          title: value["Title"],
+                                          contentText: value["Message"],
+                                          isSuccess: false,
+                                        ),
+                                      );
+                                    }
+                                  }).onError((error, stackTrace) {
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) => AlertDialogBlack(
+                                        title: "Error cancelTransaction",
+                                        contentText: error.toString(),
+                                        isSuccess: false,
+                                      ),
+                                    );
+                                  });
+                                }
+                              });
+                            },
                           ),
                           const SizedBox(
                             width: 20,
