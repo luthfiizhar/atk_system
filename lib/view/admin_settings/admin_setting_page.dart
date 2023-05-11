@@ -251,6 +251,7 @@ class _AdminSettingPageState extends State<AdminSettingPage> {
                 category: element["Category"],
                 unit: element["Unit"],
                 basePrice: element["Price"],
+                buList: element["Business"],
               ));
             }
             setState(() {});

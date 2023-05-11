@@ -164,8 +164,8 @@ class _AddItemDialogState extends State<AddItemDialog> {
     });
   }
 
-  initBuList() {
-    apiService.getBUListDropdown().then((value) {
+  Future initBuList() {
+    return apiService.getBUListDropdown().then((value) {
       if (value["Status"].toString() == "200") {
         List resultData = value["Data"];
 
@@ -183,17 +183,25 @@ class _AddItemDialogState extends State<AddItemDialog> {
   void initState() {
     super.initState();
     initUnitList();
-    initBuList();
-    if (widget.isEdit) {
-      _itemName.text = widget.item.itemName;
-      _price.value = ThousandsSeparatorInputFormatter().formatEditUpdate(
-          TextEditingValue.empty,
-          TextEditingValue(
-            text: widget.item.basePrice.toString(),
-          ));
-      selectedCategory = widget.item.category;
-      selectedUnit = widget.item.unit;
-    }
+    initBuList().then((value) {
+      if (widget.isEdit) {
+        _itemName.text = widget.item.itemName;
+        _price.value = ThousandsSeparatorInputFormatter().formatEditUpdate(
+            TextEditingValue.empty,
+            TextEditingValue(
+              text: widget.item.basePrice.toString(),
+            ));
+        selectedCategory = widget.item.category;
+        selectedUnit = widget.item.unit;
+      }
+      for (var element in widget.item.buList) {
+        for (var bu in buList) {
+          if (bu.businessUnitId == element) {
+            bu.isSelected = true;
+          }
+        }
+      }
+    });
 
     _price.addListener(() {
       if (_price.text == "") {
