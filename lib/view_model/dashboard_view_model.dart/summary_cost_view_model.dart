@@ -45,31 +45,30 @@ class TotalCostStatModel extends ChangeNotifier {
             '${globalModel.businessUnit}/${globalModel.role}/MonthlyCost/${globalModel.areaId}/${globalModel.year}/${globalModel.month}/Request')
         .onValue
         .listen((event) {
-      CostSummaryCard requestValue;
-      print(event.snapshot.value);
-      final jsonString = event.snapshot.value;
-      final result = Map<String, dynamic>.from(jsonString as dynamic);
-      // print(result);
-      requestValue =
-          CostSummaryCard.fromJson(jsonString as Map<String, dynamic>);
-      // print(budgetValue.toString());
-      requestValue
-        ..title = "Total Cost Requested"
-        ..from = "from last month";
-      addCostSummaryList(requestValue);
+      CostSummaryCard requestValue = CostSummaryCard();
+
       // _costSummaryList!.add(budgetValue);
       setIsLoading(false);
-    });
-
-    _totalReqListener!.onError((value) {
-      setIsLoading(false);
-      CostSummaryCard requestValue = CostSummaryCard();
-      requestValue
-        ..value = 0
-        ..percentage = 0
-        ..title = "Total Cost Requested"
-        ..from = "from last month";
-      addCostSummaryList(requestValue);
+      if (event.snapshot.exists) {
+        print(event.snapshot.value);
+        final jsonString = event.snapshot.value;
+        final result = Map<String, dynamic>.from(jsonString as dynamic);
+        // print(result);
+        requestValue =
+            CostSummaryCard.fromJson(jsonString as Map<String, dynamic>);
+        // print(budgetValue.toString());
+        requestValue
+          ..title = "Total Cost Requested"
+          ..from = "from last month";
+        addCostSummaryList(requestValue);
+      } else {
+        requestValue
+          ..value = 0
+          ..percentage = 0
+          ..title = "Total Cost Requested"
+          ..from = "from last month";
+        addCostSummaryList(requestValue);
+      }
     });
 
     _totalSettleListener = databaseRef
@@ -77,20 +76,29 @@ class TotalCostStatModel extends ChangeNotifier {
             '${globalModel.businessUnit}/${globalModel.role}/MonthlyCost/${globalModel.areaId}/${globalModel.year}/${globalModel.month}/Settlement')
         .onValue
         .listen((event) {
-      CostSummaryCard settlementValue;
-      print(event.snapshot.value);
-      final jsonString = event.snapshot.value;
-      final result = Map<String, dynamic>.from(jsonString as dynamic);
-      // print(result);
-      settlementValue =
-          CostSummaryCard.fromJson(jsonString as Map<String, dynamic>);
-      // print(budgetValue.toString());
-      settlementValue
-        ..title = "Cost Settled"
-        ..from = "from last month";
-      addCostSummaryList(settlementValue);
+      CostSummaryCard settlementValue = CostSummaryCard();
+
       // _costSummaryList!.add(budgetValue);
       setIsLoading(false);
+      if (event.snapshot.exists) {
+        final jsonString = event.snapshot.value;
+        final result = Map<String, dynamic>.from(jsonString as dynamic);
+        // print(result);
+        settlementValue =
+            CostSummaryCard.fromJson(jsonString as Map<String, dynamic>);
+        // print(budgetValue.toString());
+        settlementValue
+          ..title = "Cost Settled"
+          ..from = "from last month";
+        addCostSummaryList(settlementValue);
+      } else {
+        settlementValue
+          ..value = 0
+          ..percentage = 0
+          ..title = "Total Cost Settled"
+          ..from = "from last month";
+        addCostSummaryList(settlementValue);
+      }
     });
 
     _totalSettleListener!.onError((value) {
@@ -99,7 +107,7 @@ class TotalCostStatModel extends ChangeNotifier {
       requestValue
         ..value = 0
         ..percentage = 0
-        ..title = "Total Cost Requested"
+        ..title = "Total Cost Settled"
         ..from = "from last month";
       addCostSummaryList(requestValue);
     });
@@ -109,31 +117,30 @@ class TotalCostStatModel extends ChangeNotifier {
             '${globalModel.businessUnit}/${globalModel.role}/MonthlyCost/${globalModel.areaId}/${globalModel.year}/${globalModel.month}/Budget')
         .onValue
         .listen((event) {
-      CostSummaryCard budgetValue;
-      print(event.snapshot.value);
-      final jsonString = event.snapshot.value;
-      final result = Map<String, dynamic>.from(jsonString as dynamic);
-      // print(result);
-      budgetValue =
-          CostSummaryCard.fromJson(jsonString as Map<String, dynamic>);
-      // print(budgetValue.toString());
-      budgetValue
-        ..title = "Budget"
-        ..from = "from last month";
-      addCostSummaryList(budgetValue);
-      // _costSummaryList!.add(budgetValue);
-      setIsLoading(false);
-    });
-
-    _totalBudgetListener!.onError((value) {
-      setIsLoading(false);
-      CostSummaryCard requestValue = CostSummaryCard();
-      requestValue
-        ..value = 0
-        ..percentage = 0
-        ..title = "Total Cost Requested"
-        ..from = "from last month";
-      addCostSummaryList(requestValue);
+      CostSummaryCard budgetValue = CostSummaryCard();
+      // print(event.snapshot.exists);
+      if (event.snapshot.exists) {
+        final jsonString = event.snapshot.value;
+        final result = Map<String, dynamic>.from(jsonString as dynamic);
+        // print(result);
+        budgetValue =
+            CostSummaryCard.fromJson(jsonString as Map<String, dynamic>);
+        // print(budgetValue.toString());
+        budgetValue
+          ..title = "Budget"
+          ..from = "from last month";
+        addCostSummaryList(budgetValue);
+        // _costSummaryList!.add(budgetValue);
+        setIsLoading(false);
+      } else {
+        setIsLoading(false);
+        budgetValue
+          ..value = 0
+          ..percentage = 0
+          ..title = "Budget"
+          ..from = "from last month";
+        addCostSummaryList(budgetValue);
+      }
     });
   }
 

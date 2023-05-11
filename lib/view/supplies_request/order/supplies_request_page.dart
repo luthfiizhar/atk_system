@@ -523,6 +523,15 @@ class _SuppliesRequestPageState extends State<SuppliesRequestPage> {
                             width: 20,
                           ),
                           RegularButton(
+                            text: "Cancel",
+                            disabled: false,
+                            padding: ButtonSize().mediumSize(),
+                            onTap: () async {},
+                          ),
+                          const SizedBox(
+                            width: 20,
+                          ),
+                          RegularButton(
                             text:
                                 isSendBack ? 'Submit Revise' : 'Submit Request',
                             disabled: false,

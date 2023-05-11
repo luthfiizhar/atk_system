@@ -37,18 +37,22 @@ class TopReqItemsViewModel extends ChangeNotifier {
             '${globalModel.businessUnit}/${globalModel.role}/TopRequestedItem/${globalModel.areaId}/${globalModel.year}/${globalModel.month}')
         .onValue
         .listen((event) {
-      final jsonString = event.snapshot.value;
-      dynamic result = List<dynamic>.from(jsonString as dynamic);
-      List<TopRequestedItems> list =
-          (result as List).map((e) => TopRequestedItems.fromJson(e)).toList();
-      print(list);
-      setTopReqItems(list);
+      if (event.snapshot.exists) {
+        final jsonString = event.snapshot.value;
+        dynamic result = List<dynamic>.from(jsonString as dynamic);
+        List<TopRequestedItems> list =
+            (result as List).map((e) => TopRequestedItems.fromJson(e)).toList();
+        print(list);
+        setTopReqItems(list);
+      } else {
+        setTopReqItems([]);
+      }
+
       setIsLoading(false);
     });
 
     _topReqStream!.onError((value) {
       setIsLoading(false);
-      setTopReqItems([]);
     });
   }
 

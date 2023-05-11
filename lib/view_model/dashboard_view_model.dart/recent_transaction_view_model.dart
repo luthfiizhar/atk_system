@@ -35,20 +35,19 @@ class RecentTransactionViewModel extends ChangeNotifier {
             '${globalModel.businessUnit}/${globalModel.role}/RecentTransaction/${globalModel.areaId}/${globalModel.year}/${globalModel.month}')
         .onValue
         .listen((event) {
-      final jsonString = event.snapshot.value;
+      if (event.snapshot.exists) {
+        final jsonString = event.snapshot.value;
 
-      dynamic result = List<dynamic>.from(jsonString as dynamic);
-      List<RecentTransactionTable> list = (result as List)
-          .map((e) => RecentTransactionTable.fromJson(e))
-          .toList();
+        dynamic result = List<dynamic>.from(jsonString as dynamic);
+        List<RecentTransactionTable> list = (result as List)
+            .map((e) => RecentTransactionTable.fromJson(e))
+            .toList();
 
-      setRecentTransaction(list);
+        setRecentTransaction(list);
+      } else {
+        setRecentTransaction([]);
+      }
       setIsLoading(false);
-    });
-
-    _recentStream!.onError((value) {
-      setIsLoading(false);
-      setRecentTransaction([]);
     });
   }
 

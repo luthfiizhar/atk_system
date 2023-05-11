@@ -43,32 +43,31 @@ class ActualPriceItemViewModel extends ChangeNotifier {
             '${globalModel.businessUnit}/${globalModel.role}/ItemAveragePrice/${globalModel.areaId}/${globalModel.year}/${globalModel.month}')
         .onValue
         .listen((event) {
-      final jsonString = event.snapshot.value;
-      dynamic result = List<dynamic>.from(jsonString as dynamic);
-      List<ActualPriceItem> list =
-          (result as List).map((e) => ActualPriceItem.fromJson(e)).toList();
-      // print(list);
-      setActualPriceItemList(list);
+      setIsLoading(false);
+      if (event.snapshot.exists) {
+        final jsonString = event.snapshot.value;
+        dynamic result = List<dynamic>.from(jsonString as dynamic);
+        List<ActualPriceItem> list =
+            (result as List).map((e) => ActualPriceItem.fromJson(e)).toList();
+        // print(list);
+        setActualPriceItemList(list);
 
-      List<List<ActualPriceItem>> newList = [];
-      for (var i = 0; i < _itemList.length; i++) {
-        int end = i + 3;
-        if (end > _itemList.length) {
-          end = _itemList.length;
+        List<List<ActualPriceItem>> newList = [];
+        for (var i = 0; i < _itemList.length; i++) {
+          int end = i + 3;
+          if (end > _itemList.length) {
+            end = _itemList.length;
+          }
+          List<ActualPriceItem> subList = itemList.sublist(
+              i, i + 3 > itemList.length ? itemList.length : i += 3);
+          if (!newList.contains(subList)) {
+            newList.add(subList);
+          }
         }
-        List<ActualPriceItem> subList = itemList.sublist(
-            i, i + 3 > itemList.length ? itemList.length : i += 3);
-        if (!newList.contains(subList)) {
-          newList.add(subList);
-        }
+        setActualPriceSlider(newList);
+      } else {
+        setActualPriceItemList([]);
       }
-      setActualPriceSlider(newList);
-      setIsLoading(false);
-    });
-
-    _actPriceStream!.onError((value) {
-      setIsLoading(false);
-      setActualPriceItemList([]);
     });
   }
 
