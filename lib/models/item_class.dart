@@ -18,7 +18,8 @@ class Item {
     this.isDefault = false,
     this.itemInfo = "",
     this.itemListId = "",
-  });
+    List? buList,
+  }) : buList = buList ?? [];
 
   String itemId;
   String itemName;
@@ -38,6 +39,7 @@ class Item {
   bool isExpanded;
   bool isChecked;
   bool isDefault;
+  List buList;
 
   Map<String, dynamic> toJson() => {
         '"ItemID"': '"$itemId"',
