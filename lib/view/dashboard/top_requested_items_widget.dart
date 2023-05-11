@@ -172,7 +172,7 @@ class TopReqItemsContainer extends StatelessWidget {
         ),
         RichText(
           text: TextSpan(
-              text: formatCurrency.format(items.qty),
+              text: formatCurrency.format(int.parse(items.qty)),
               style: helveticaText.copyWith(
                 fontSize: 14,
                 fontWeight: FontWeight.w300,
