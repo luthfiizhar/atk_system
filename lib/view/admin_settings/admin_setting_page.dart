@@ -475,6 +475,8 @@ class _AdminSettingPageState extends State<AdminSettingPage> {
         .where((element) => element.value == "BusinessUnit")
         .first
         .isShowed = isSystemAdmin ? true : false;
+    menuList.where((element) => element.value == "Item").first.isShowed =
+        isSystemAdmin ? true : false;
   }
 
   @override
