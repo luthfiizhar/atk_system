@@ -365,6 +365,8 @@ class _AddUserDialogState extends State<AddUserDialog> {
                             value: widget.isEdit ? selectedRole : null,
                             onChanged: (value) {
                               selectedRole = value;
+                              selectedSite = "";
+                              _site.text = "";
                               setState(() {});
                             },
                             suffixIcon: const Icon(
