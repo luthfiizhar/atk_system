@@ -2,6 +2,8 @@ import 'dart:math';
 
 import 'package:atk_system_ga/constant/colors.dart';
 import 'package:atk_system_ga/constant/text_style.dart';
+import 'package:atk_system_ga/functions/api_request.dart';
+import 'package:atk_system_ga/models/admin_page_class.dart';
 import 'package:atk_system_ga/widgets/search_input_field.dart';
 import 'package:flutter/material.dart';
 
@@ -17,7 +19,7 @@ class AdminMenuSearchBar extends StatefulWidget {
 
   Function? updateList;
   Function? search;
-  List? menuList;
+  List<AdminMenu>? menuList;
   String? type;
   TextEditingController? searchController;
 
@@ -34,6 +36,8 @@ class _AdminMenuSearchBarState extends State<AdminMenuSearchBar> {
   late int indexColor;
   late Color selectedColor = blueAccent;
   final _random = Random();
+
+  String role = "";
 
   void onHighlight(String type) {
     switch (type) {
@@ -77,6 +81,17 @@ class _AdminMenuSearchBarState extends State<AdminMenuSearchBar> {
     menuValue = widget.type;
     indexColor = _random.nextInt(color.length);
     selectedColor = color[indexColor];
+    ApiService apiService = ApiService();
+    apiService.getUserData().then((value) {
+      if (value["Status"].toString() == "200") {
+        role = value["Data"]["Role"];
+      }
+    });
+    for (var element in widget.menuList!) {
+      if (element.value == "BusinessUnit") {
+        element.isShowed = role == "System Admin" ? true : false;
+      }
+    }
   }
 
   @override
@@ -113,17 +128,20 @@ class _AdminMenuSearchBarState extends State<AdminMenuSearchBar> {
                     // width: 500,
                     child: Row(
                       children: widget.menuList!.map((e) {
-                        return Padding(
-                          padding: const EdgeInsets.only(
-                            right: 50,
-                          ),
-                          child: AdminMenuSearchBarItem(
-                            title: e['name'],
-                            type: e['value'],
-                            bookingCount: e['Total'].toString(),
-                            onHighlight: onHighlight,
-                            color: selectedColor,
-                            selected: menuValue == e['value'],
+                        return Visibility(
+                          visible: e.isShowed,
+                          child: Padding(
+                            padding: const EdgeInsets.only(
+                              right: 50,
+                            ),
+                            child: AdminMenuSearchBarItem(
+                              title: e.name,
+                              type: e.value,
+                              bookingCount: 0.toString(),
+                              onHighlight: onHighlight,
+                              color: selectedColor,
+                              selected: menuValue == e.value,
+                            ),
                           ),
                         );
                       }).toList(),

@@ -139,9 +139,10 @@ class MyApp extends StatelessWidget {
         },
         redirect: (context, state) {
           final adminPage = state.subloc == '/admin_setting';
-          if (!isSystemAdmin) {
+          if (!settingAccess) {
             return adminPage ? '/home' : null;
           }
+
           return null;
         },
       ),

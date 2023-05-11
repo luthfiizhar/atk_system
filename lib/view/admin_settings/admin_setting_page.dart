@@ -5,6 +5,7 @@ import 'package:atk_system_ga/constant/constraints.dart';
 import 'package:atk_system_ga/constant/text_style.dart';
 import 'package:atk_system_ga/functions/api_request.dart';
 import 'package:atk_system_ga/layout/layout_page.dart';
+import 'package:atk_system_ga/main.dart';
 import 'package:atk_system_ga/models/admin_page_class.dart';
 import 'package:atk_system_ga/models/item_class.dart';
 import 'package:atk_system_ga/models/main_page_model.dart';
@@ -61,14 +62,46 @@ class _AdminSettingPageState extends State<AdminSettingPage> {
   String role = "";
 
   String menu = "Site";
-  List menuList = [
-    {"value": "Site", "name": "Site List"},
-    {"value": "User", "name": "User List"},
-    {"value": "Item", "name": "Item List"},
-    {"value": "BusinessUnit", "name": "Business Unit List"},
-    {"value": "Region", "name": "Region List"},
-    {"value": "Area", "name": "Area List"},
+  List<AdminMenu> menuList = [
+    AdminMenu(
+      name: "Site List",
+      value: "Site",
+      isShowed: true,
+    ),
+    AdminMenu(
+      name: "User List",
+      value: "User",
+      isShowed: true,
+    ),
+    AdminMenu(
+      name: "Item List",
+      value: "Item",
+      isShowed: true,
+    ),
+    AdminMenu(
+      name: "Busines Unit List",
+      value: "BusinessUnit",
+      isShowed: isSystemAdmin ? true : false,
+    ),
+    AdminMenu(
+      name: "Region List",
+      value: "Region",
+      isShowed: true,
+    ),
+    AdminMenu(
+      name: "Area List",
+      value: "Area",
+      isShowed: true,
+    ),
   ];
+  // List menuList = [
+  //   {"value": "Site", "name": "Site List"},
+  //   {"value": "User", "name": "User List"},
+  //   {"value": "Item", "name": "Item List"},
+  //   {"value": "BusinessUnit", "name": "Business Unit List"},
+  //   {"value": "Region", "name": "Region List"},
+  //   {"value": "Area", "name": "Area List"},
+  // ];
 
   final TextEditingController textEditingController = TextEditingController();
 

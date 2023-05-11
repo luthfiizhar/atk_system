@@ -47,7 +47,7 @@ class _HomePageState extends State<HomePage> {
         nip = value["Data"]["EmpNIP"];
         role = value["Data"]["Role"];
         photo = value["Data"]["Photo"];
-        isSystemAdmin = value['Data']['SystemAdmin'];
+        // isSystemAdmin = value['Data']['SystemAdmin'];
         setState(() {});
       } else {}
     }).onError((error, stackTrace) {

@@ -120,7 +120,7 @@ class _NavigationBarWebState extends State<NavigationBarWeb> {
                 ),
               ),
               Visibility(
-                visible: isSystemAdmin,
+                visible: settingAccess,
                 child: Padding(
                   padding: const EdgeInsets.only(
                     right: 50,

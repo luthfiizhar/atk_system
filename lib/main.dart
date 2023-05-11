@@ -9,6 +9,8 @@ import 'package:firebase_core/firebase_core.dart';
 String? jwtToken = "";
 bool isTokenValid = false;
 bool isSystemAdmin = false;
+bool settingAccess = false;
+bool isOps = false;
 
 loginCheck() async {
   var box = await Hive.openBox('userLogin');
@@ -36,7 +38,7 @@ void main() async {
     apiService.getUserData().then((value) {
       // print(value);
       if (value['Status'].toString() == "200") {
-        isSystemAdmin = value['Data']['SystemAdmin'];
+        settingAccess = value['Data']['SettingAccess'];
       }
       runApp(MyApp());
     });
