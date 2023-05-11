@@ -489,8 +489,6 @@ class RecentTransactionItems extends StatelessWidget {
       onTap: () {
         final host = html.window.location.host;
         final path = html.window.location.pathname;
-        print(host);
-        print(path);
         html.WindowBase popUpWindow;
         if (recents.type == "Monthly Supply Request" ||
             recents.type == "Monthly Additional Request") {
