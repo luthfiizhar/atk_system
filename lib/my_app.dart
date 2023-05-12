@@ -17,6 +17,7 @@ import 'package:atk_system_ga/view_model/dashboard_view_model.dart/recent_transa
 import 'package:atk_system_ga/view_model/dashboard_view_model.dart/summary_cost_view_model.dart';
 import 'package:atk_system_ga/view_model/dashboard_view_model.dart/total_requested_item_view_model.dart';
 import 'package:atk_system_ga/view_model/global_model.dart';
+import 'package:atk_system_ga/view/error_page.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -227,6 +228,12 @@ class MyApp extends StatelessWidget {
         return login ? '/home' : null;
       }
       return null;
+    },
+    errorPageBuilder: (context, state) {
+      return NoTransitionPage<void>(
+        key: state.pageKey,
+        child: const ErrorPage(),
+      );
     },
   );
   // This widget is the root of your application.

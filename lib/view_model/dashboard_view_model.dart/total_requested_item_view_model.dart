@@ -42,7 +42,7 @@ class TopReqItemsViewModel extends ChangeNotifier {
         dynamic result = List<dynamic>.from(jsonString as dynamic);
         List<TopRequestedItems> list =
             (result as List).map((e) => TopRequestedItems.fromJson(e)).toList();
-        print(list);
+        // print(list);
         setTopReqItems(list);
       } else {
         setTopReqItems([]);
