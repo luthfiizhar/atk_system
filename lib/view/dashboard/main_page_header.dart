@@ -129,8 +129,7 @@ class _DashboardHeaderState extends State<DashboardHeader> {
             value["Data"]["DashboardRole"],
             value["Data"]["Site"],
             value['Data']['SiteName']);
-        Provider.of<GlobalModel>(context, listen: false)
-            .setUrlLogo(value['Data']['CompanyLogo']);
+        globalModel.setUrlLogo("${value['Data']['CompanyLogo']}");
         month = DateFormat("MMM").format(DateTime.now());
         year = DateTime.now().year;
         setMonthName(month);
@@ -259,9 +258,9 @@ class _DashboardHeaderState extends State<DashboardHeader> {
                   color: platinum,
                   width: 1,
                 )),
-            child: globalModel.logoUrl != ""
+            child: globalModel.urlLogo != ""
                 ? CachedNetworkImage(
-                    imageUrl: globalModel.logoUrl,
+                    imageUrl: globalModel.urlLogo,
                     fit: BoxFit.contain,
                   )
                 : Image.asset(
