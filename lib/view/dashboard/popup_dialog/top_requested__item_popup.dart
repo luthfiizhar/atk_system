@@ -100,6 +100,7 @@ class _TopRequestedItemPopupState extends State<TopRequestedItemPopup> {
               rank: element["Order"].toString(),
               name: element["ItemName"],
               qty: element["TotalRequested"].toString(),
+              totalCost: element["TotalCost"].toString(),
             ),
           );
         }
