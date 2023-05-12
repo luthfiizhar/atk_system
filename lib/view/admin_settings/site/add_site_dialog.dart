@@ -317,8 +317,8 @@ class _AddSiteDialogState extends State<AddSiteDialog> {
                         enabled: true,
                         hintText: 'Latitude here...',
                         maxLines: 1,
-                        validator: (value) =>
-                            value == "" ? "This field is required." : null,
+                        // validator: (value) =>
+                        //     value == "" ? "This field is required." : null,
                         onSaved: (newValue) {
                           latitude = newValue.toString();
                         },
@@ -338,8 +338,8 @@ class _AddSiteDialogState extends State<AddSiteDialog> {
                         enabled: true,
                         hintText: 'Longitude here...',
                         maxLines: 1,
-                        validator: (value) =>
-                            value == "" ? "This field is required." : null,
+                        // validator: (value) =>
+                        //     value == "" ? "This field is required." : null,
                         onSaved: (newValue) {
                           longitude = newValue.toString();
                         },
