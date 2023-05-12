@@ -6,6 +6,7 @@ import 'package:atk_system_ga/view_model/global_model.dart';
 import 'package:atk_system_ga/widgets/dialogs.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:provider/provider.dart';
 
 class DashboardHeader extends StatefulWidget {
@@ -35,6 +36,8 @@ class _DashboardHeaderState extends State<DashboardHeader> {
   String month = "";
   String monthName = "";
   int year = 2023;
+
+  String userRole = "";
 
   String greeting = "";
 
@@ -112,7 +115,9 @@ class _DashboardHeaderState extends State<DashboardHeader> {
       setGreeting('Good Night');
     }
     apiService.getUserData().then((value) {
+      print("UserData -> ${value['Data']['CompanyLogo']}");
       if (value["Status"].toString() == "200") {
+        userRole = value["Data"]["Role"];
         globalModel.setEmpName(value["Data"]["EmpName"]);
         globalModel.setCompanyName(value["Data"]["CompanyName"]);
         globalModel.setRole(value["Data"]["DashboardRole"]);
@@ -124,6 +129,8 @@ class _DashboardHeaderState extends State<DashboardHeader> {
             value["Data"]["DashboardRole"],
             value["Data"]["Site"],
             value['Data']['SiteName']);
+        Provider.of<GlobalModel>(context, listen: false)
+            .setUrlLogo(value['Data']['CompanyLogo']);
         month = DateFormat("MMM").format(DateTime.now());
         year = DateTime.now().year;
         setMonthName(month);
@@ -158,7 +165,6 @@ class _DashboardHeaderState extends State<DashboardHeader> {
             children: [
               greetingsAndName(model.empName),
               Builder(builder: (context) {
-                setMonthName(model.empName);
                 return companyAndDate(model, monthName, model.year);
               }),
             ],
@@ -175,7 +181,7 @@ class _DashboardHeaderState extends State<DashboardHeader> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          '$greeting,',
+          '$greeting, $userRole',
           style: helveticaText.copyWith(
             fontSize: 18,
             fontWeight: FontWeight.w300,
@@ -253,10 +259,19 @@ class _DashboardHeaderState extends State<DashboardHeader> {
                   color: platinum,
                   width: 1,
                 )),
-            child: Image.asset(
-              'assets/ace_logo.png',
-              fit: BoxFit.contain,
-            ),
+            child: globalModel.logoUrl != ""
+                ? CachedNetworkImage(
+                    imageUrl: globalModel.logoUrl,
+                    fit: BoxFit.contain,
+                  )
+                : Image.asset(
+                    'assets/error.png',
+                    fit: BoxFit.scaleDown,
+                  ),
+            // child: Image.asset(
+            //   'assets/ace_logo.png',
+            //   fit: BoxFit.contain,
+            // ),
           ),
         )
       ],

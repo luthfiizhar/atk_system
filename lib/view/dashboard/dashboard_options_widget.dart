@@ -24,6 +24,7 @@ class _DashboardOptionsWidgetState extends State<DashboardOptionsWidget> {
   late GlobalModel globalModel;
   List<BusinessUnit> businessUnit = [];
   String selectedBusinessUnit = "";
+  String selectedBuLogo = "";
   String selectedRole = "";
   String selectedAreaName = "";
   String initRole = "";
@@ -148,6 +149,7 @@ class _DashboardOptionsWidgetState extends State<DashboardOptionsWidget> {
       if (element.businessUnitId == id) {
         element.isSelected = true;
         selectedBusinessUnit = id.toString();
+        selectedBuLogo = element.photo;
       }
     }
     print(selectedBusinessUnit);
@@ -458,6 +460,7 @@ class _DashboardOptionsWidgetState extends State<DashboardOptionsWidget> {
                       globalModel.setAreaId(selectedArea.toString());
                       globalModel.setRole(selectedRole.toString());
                       globalModel.setAreaName(selectedAreaName.toString());
+                      globalModel.setUrlLogo(selectedBuLogo);
                       Navigator.of(context).pop();
                     },
                     padding: ButtonSize().mediumSize(),

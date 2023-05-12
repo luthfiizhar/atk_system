@@ -82,7 +82,6 @@ class CostSummaryBarChartModel extends ChangeNotifier {
             '${globalModel.businessUnit}/${globalModel.role}/Chart/${globalModel.areaId}/${globalModel.year}/Data')
         .onValue
         .listen((event) {
-      print("CHART VALUE -> ${event.snapshot.value}");
       if (event.snapshot.exists) {
         final jsonString = event.snapshot.value;
         dynamic result = List<dynamic>.from(jsonString as dynamic);
