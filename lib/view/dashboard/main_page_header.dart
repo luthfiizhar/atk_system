@@ -117,9 +117,9 @@ class _DashboardHeaderState extends State<DashboardHeader> {
         globalModel.setCompanyName(value["Data"]["CompanyName"]);
         globalModel.setRole(value["Data"]["DashboardRole"]);
         globalModel.setAreaId(value["Data"]["Site"]);
+        globalModel.setAreaName(value["Data"]["SiteName"]);
         month = DateFormat("MMM").format(DateTime.now());
         year = DateTime.now().year;
-        print(year);
         setMonthName(month);
         globalModel.setMonth(month);
         globalModel.setYear(year.toString());
@@ -204,7 +204,7 @@ class _DashboardHeaderState extends State<DashboardHeader> {
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             Text(
-              region,
+              globalModel.siteName,
               style: helveticaText.copyWith(
                 fontSize: 18,
                 fontWeight: FontWeight.w300,

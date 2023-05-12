@@ -1,6 +1,7 @@
 import 'package:atk_system_ga/constant/colors.dart';
 import 'package:atk_system_ga/constant/text_style.dart';
 import 'package:atk_system_ga/functions/api_request.dart';
+import 'package:atk_system_ga/models/admin_page_class.dart';
 import 'package:atk_system_ga/models/item_class.dart';
 import 'package:atk_system_ga/widgets/buttons.dart';
 import 'package:atk_system_ga/widgets/dialogs.dart';
@@ -29,11 +30,13 @@ class _AddItemDialogState extends State<AddItemDialog> {
 
   TextEditingController _itemName = TextEditingController();
   TextEditingController _price = TextEditingController();
+  TextEditingController _businessUnit = TextEditingController();
 
   FocusNode itemNameNode = FocusNode();
   FocusNode priceNode = FocusNode();
   FocusNode unitNode = FocusNode();
   FocusNode categoryNode = FocusNode();
+  FocusNode buNode = FocusNode();
 
   String itemName = "";
   int price = 0;
@@ -42,6 +45,97 @@ class _AddItemDialogState extends State<AddItemDialog> {
 
   List unitList = [];
   List categoryList = [];
+
+  List<BusinessUnit> buList = [];
+  OverlayEntry? buOverlayEntry;
+  GlobalKey buKey = GlobalKey();
+  LayerLink buLayerLink = LayerLink();
+  bool isBuOverlayOpen = false;
+
+  String selectedRole = "";
+  List selectedBuList = [];
+  List selectedIDBuList = [];
+
+  changeFieldRole() {
+    if (selectedBuList.length > 1) {
+      for (var i = 0; i < selectedBuList.length; i++) {
+        if (i == selectedRole.length - 1) {
+          _businessUnit.text +=
+              selectedBuList[i].toString().replaceAll('"', "");
+        } else {
+          _businessUnit.text +=
+              "${selectedBuList[i].toString().replaceAll('"', "")}, ";
+        }
+      }
+    } else {
+      _businessUnit.text = selectedBuList
+          .toString()
+          .replaceAll('"', "")
+          .replaceAll("[", "")
+          .replaceAll("]", "");
+    }
+  }
+
+  addBu(BusinessUnit unit) {
+    _businessUnit.text = "";
+    selectedBuList.add('"${unit.name}"');
+    selectedIDBuList.add('"${unit.businessUnitId}"');
+    changeFieldRole();
+
+    print(selectedIDBuList);
+  }
+
+  removeBu(BusinessUnit unit) {
+    _businessUnit.text = "";
+    selectedBuList.remove('"${unit.name}"');
+    selectedIDBuList.remove('"${unit.businessUnitId}"');
+    changeFieldRole();
+    print(selectedIDBuList);
+  }
+
+  OverlayEntry buOverlay() {
+    RenderBox? renderBox =
+        buKey.currentContext!.findRenderObject() as RenderBox?;
+    var size = renderBox!.size;
+    var offset = renderBox.localToGlobal(Offset.zero);
+
+    return OverlayEntry(
+        builder: (context) => Stack(
+              children: [
+                ModalBarrier(
+                  onDismiss: () {
+                    if (isBuOverlayOpen) {
+                      isBuOverlayOpen = false;
+                      if (buOverlayEntry!.mounted) {
+                        buOverlayEntry!.remove();
+                      }
+                    }
+                  },
+                ),
+                Positioned(
+                    // left: offset.dx,
+                    // top: offset.dy + size.height + 10,
+                    width: size.width,
+                    child: CompositedTransformFollower(
+                      showWhenUnlinked: false,
+                      offset: Offset(0.0, size.height - 77.0),
+                      link: buLayerLink,
+                      child: Material(
+                        elevation: 4.0,
+                        color: white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: BusinessUnitPickerContainer(
+                          buList: buList,
+                          check: addBu,
+                          removeBu: removeBu,
+                        ),
+                      ),
+                    )),
+              ],
+            ));
+  }
 
   initUnitList() {
     apiService.getUnitList().then((value) {
@@ -70,20 +164,45 @@ class _AddItemDialogState extends State<AddItemDialog> {
     });
   }
 
+  Future initBuList() {
+    return apiService.getBUListDropdown().then((value) {
+      if (value["Status"].toString() == "200") {
+        List resultData = value["Data"];
+
+        for (var element in resultData) {
+          buList.add(BusinessUnit(
+            name: element["CompanyName"],
+            businessUnitId: element["ID"].toString(),
+          ));
+        }
+      }
+    });
+  }
+
   @override
   void initState() {
     super.initState();
     initUnitList();
-    if (widget.isEdit) {
-      _itemName.text = widget.item.itemName;
-      _price.value = ThousandsSeparatorInputFormatter().formatEditUpdate(
-          TextEditingValue.empty,
-          TextEditingValue(
-            text: widget.item.basePrice.toString(),
-          ));
-      selectedCategory = widget.item.category;
-      selectedUnit = widget.item.unit;
-    }
+    initBuList().then((value) {
+      if (widget.isEdit) {
+        _itemName.text = widget.item.itemName;
+        _price.value = ThousandsSeparatorInputFormatter().formatEditUpdate(
+            TextEditingValue.empty,
+            TextEditingValue(
+              text: widget.item.basePrice.toString(),
+            ));
+        selectedCategory = widget.item.category;
+        selectedUnit = widget.item.unit;
+      }
+      for (var element in widget.item.buList) {
+        for (var bu in buList) {
+          if (bu.businessUnitId == element) {
+            bu.isSelected = true;
+            addBu(bu);
+          }
+        }
+      }
+    });
 
     _price.addListener(() {
       if (_price.text == "") {
@@ -239,6 +358,43 @@ class _AddItemDialogState extends State<AddItemDialog> {
                       ),
                     ),
                   ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  inputField(
+                    "Business Unit",
+                    widget: Expanded(
+                      child: Container(
+                        key: buKey,
+                        child: CompositedTransformTarget(
+                          link: buLayerLink,
+                          child: CustomInputField(
+                            controller: _businessUnit,
+                            focusNode: buNode,
+                            enabled: true,
+                            hintText: 'Choose Role',
+                            suffixIcon: const Icon(
+                              Icons.keyboard_arrow_down_outlined,
+                              color: eerieBlack,
+                            ),
+                            onTap: () {
+                              if (isBuOverlayOpen) {
+                                isBuOverlayOpen = false;
+                                if (buOverlayEntry!.mounted) {
+                                  buOverlayEntry!.remove();
+                                }
+                              } else {
+                                buOverlayEntry = buOverlay();
+                                Overlay.of(context).insert(buOverlayEntry!);
+                                isBuOverlayOpen = true;
+                              }
+                              setState(() {});
+                            },
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
                   // const SizedBox(
                   //   height: 20,
                   // ),
@@ -303,6 +459,7 @@ class _AddItemDialogState extends State<AddItemDialog> {
                             itemSave.itemName = itemName.replaceAll('"', '\\"');
                             itemSave.basePrice = price;
                             itemSave.unit = selectedUnit;
+                            itemSave.buList = selectedIDBuList;
                             if (widget.isEdit) {
                               itemSave.itemId = widget.item.itemId;
                               apiService.updateItem(itemSave).then((value) {
@@ -405,6 +562,128 @@ class _AddItemDialogState extends State<AddItemDialog> {
           ),
         ),
         widget!,
+      ],
+    );
+  }
+}
+
+class BusinessUnitPickerContainer extends StatefulWidget {
+  BusinessUnitPickerContainer({
+    super.key,
+    List<BusinessUnit>? buList,
+    this.check,
+    this.removeBu,
+  }) : buList = buList ?? [];
+
+  List<BusinessUnit> buList;
+  Function? check;
+  Function? removeBu;
+
+  @override
+  State<BusinessUnitPickerContainer> createState() =>
+      _BusinessUnitPickerContainerState();
+}
+
+class _BusinessUnitPickerContainerState
+    extends State<BusinessUnitPickerContainer> {
+  List<CheckContainer> checkBoxList = [];
+  @override
+  void initState() {
+    super.initState();
+    for (var element in widget.buList) {
+      checkBoxList.add(
+        CheckContainer(
+          businessUnit: element,
+          check: widget.check,
+          removeBu: widget.removeBu,
+        ),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      constraints: const BoxConstraints(
+        minWidth: 185,
+        maxWidth: 185,
+        minHeight: 275,
+        maxHeight: 275,
+      ),
+      padding: const EdgeInsets.symmetric(
+        horizontal: 25,
+        vertical: 20,
+      ),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        color: white,
+      ),
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: checkBoxList
+              .asMap()
+              .entries
+              .map((e) => Padding(
+                  padding: EdgeInsets.only(
+                    top: e.key == 0 ? 0 : 15,
+                  ),
+                  child: e.value))
+              .toList(),
+        ),
+      ),
+    );
+  }
+}
+
+class CheckContainer extends StatefulWidget {
+  CheckContainer({
+    super.key,
+    BusinessUnit? businessUnit,
+    this.check,
+    this.removeBu,
+  }) : businessUnit = businessUnit ?? BusinessUnit();
+
+  BusinessUnit businessUnit;
+  Function? check;
+  Function? removeBu;
+
+  @override
+  State<CheckContainer> createState() => _CheckContainerState();
+}
+
+class _CheckContainerState extends State<CheckContainer> {
+  @override
+  Widget build(BuildContext context) {
+    return Wrap(
+      runAlignment: WrapAlignment.center,
+      crossAxisAlignment: WrapCrossAlignment.center,
+      spacing: 10,
+      children: [
+        Checkbox(
+          value: widget.businessUnit.isSelected,
+          onChanged: (value) {
+            if (widget.businessUnit.isSelected) {
+              widget.businessUnit.isSelected = false;
+              widget.removeBu!(widget.businessUnit);
+            } else {
+              widget.businessUnit.isSelected = true;
+              widget.check!(widget.businessUnit);
+            }
+            setState(() {});
+          },
+          activeColor: eerieBlack,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(2.5)),
+        ),
+        Text(
+          widget.businessUnit.name,
+          style: helveticaText.copyWith(
+            fontSize: 14,
+            fontWeight: FontWeight.w300,
+            color: davysGray,
+          ),
+        )
       ],
     );
   }

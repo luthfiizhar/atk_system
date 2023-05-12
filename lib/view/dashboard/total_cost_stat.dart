@@ -2,8 +2,8 @@ import 'package:atk_system_ga/constant/colors.dart';
 import 'package:atk_system_ga/constant/constraints.dart';
 import 'package:atk_system_ga/constant/text_style.dart';
 import 'package:atk_system_ga/models/main_page_model.dart';
+import 'package:atk_system_ga/view_model/dashboard_view_model.dart/summary_cost_view_model.dart';
 import 'package:atk_system_ga/view_model/global_model.dart';
-import 'package:atk_system_ga/view_model/main_page_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -35,6 +35,7 @@ class _TotalCostStatisticState extends State<TotalCostStatistic> {
   void dispose() {
     super.dispose();
     globalModel.removeListener(() {});
+    totalCostStatModel.closeListener();
   }
 
   @override
@@ -76,7 +77,7 @@ class _TotalCostStatisticState extends State<TotalCostStatistic> {
         index == 0
             ? const SizedBox()
             : const Padding(
-                padding: EdgeInsets.symmetric(vertical: 20),
+                padding: EdgeInsets.symmetric(vertical: 16),
                 child: Divider(
                   color: grayx11,
                   thickness: 0.5,
@@ -109,17 +110,18 @@ class _TotalCostStatisticState extends State<TotalCostStatistic> {
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 info.dir == "up"
                     ? const Icon(
                         Icons.arrow_drop_up,
                         color: orangeAccent,
-                        size: 18,
+                        size: 24,
                       )
                     : const Icon(
                         Icons.arrow_drop_down,
                         color: greenAcent,
-                        size: 18,
+                        size: 24,
                       ),
                 const SizedBox(
                   width: 5,
@@ -133,7 +135,7 @@ class _TotalCostStatisticState extends State<TotalCostStatistic> {
                   ),
                 ),
                 const SizedBox(
-                  width: 15,
+                  width: 5,
                 ),
                 Text(
                   "from last month",

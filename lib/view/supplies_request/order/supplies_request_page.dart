@@ -523,6 +523,62 @@ class _SuppliesRequestPageState extends State<SuppliesRequestPage> {
                             width: 20,
                           ),
                           RegularButton(
+                            text: "Cancel Request",
+                            disabled: false,
+                            padding: ButtonSize().mediumSize(),
+                            onTap: () async {
+                              showDialog(
+                                context: context,
+                                builder: (context) => const ConfirmDialogBlack(
+                                  title: "Confirmation",
+                                  contentText:
+                                      "Are you sure want to cancel this request?",
+                                ),
+                              ).then((value) {
+                                if (value == 1) {
+                                  apiService
+                                      .cancelTransaction(widget.formId)
+                                      .then((value) {
+                                    print(value);
+                                    if (value["Status"].toString() == "200") {
+                                      showDialog(
+                                        context: context,
+                                        builder: (context) => AlertDialogBlack(
+                                          title: value["Title"],
+                                          contentText: value["Message"],
+                                          isSuccess: true,
+                                        ),
+                                      ).then((value) {
+                                        context.goNamed("home");
+                                      });
+                                    } else {
+                                      showDialog(
+                                        context: context,
+                                        builder: (context) => AlertDialogBlack(
+                                          title: value["Title"],
+                                          contentText: value["Message"],
+                                          isSuccess: false,
+                                        ),
+                                      );
+                                    }
+                                  }).onError((error, stackTrace) {
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) => AlertDialogBlack(
+                                        title: "Error cancelTransaction",
+                                        contentText: error.toString(),
+                                        isSuccess: false,
+                                      ),
+                                    );
+                                  });
+                                }
+                              });
+                            },
+                          ),
+                          const SizedBox(
+                            width: 20,
+                          ),
+                          RegularButton(
                             text:
                                 isSendBack ? 'Submit Revise' : 'Submit Request',
                             disabled: false,

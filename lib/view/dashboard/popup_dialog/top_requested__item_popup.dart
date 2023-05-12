@@ -146,7 +146,7 @@ class _TopRequestedItemPopupState extends State<TopRequestedItemPopup> {
         for (var element in listResult) {
           itemResult.add(
             TopRequestedItems(
-              rank: element["Order"] ?? 1,
+              rank: element["Order"].toString(),
               name: element["ItemName"],
               qty: element["TotalRequested"].toString(),
             ),
@@ -223,7 +223,7 @@ class _TopRequestedItemPopupState extends State<TopRequestedItemPopup> {
                             '${globalModel.month} ${globalModel.year}, ${globalModel.areaId}',
                             style: helveticaText.copyWith(
                               fontSize: 20,
-                              fontWeight: FontWeight.w300,
+                              fontWeight: FontWeight.w400,
                               color: davysGray,
                             ),
                           ),
@@ -267,7 +267,7 @@ class _TopRequestedItemPopupState extends State<TopRequestedItemPopup> {
                                     color: grayx11,
                                   ),
                             Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 20),
+                              padding: const EdgeInsets.symmetric(vertical: 15),
                               child: TopRequestedItemPopupContainer(
                                 item: listItem[index],
                               ),
@@ -503,6 +503,8 @@ class _TopRequestedItemPopupState extends State<TopRequestedItemPopup> {
                 width: 110,
                 child: BlackDropdown(
                   focusNode: showPerRowsNode,
+                  dropdownWidth: 110,
+                  width: 75,
                   onChanged: (value) {
                     setState(() {
                       currentPaginatedPage = 1;

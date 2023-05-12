@@ -481,7 +481,7 @@ class ConfirmDialogBlack extends StatelessWidget {
     return ConstrainedBox(
       constraints: const BoxConstraints(
         maxWidth: 560,
-        minWidth: 380,
+        minWidth: 395,
         minHeight: 200,
         maxHeight: double.infinity,
       ),

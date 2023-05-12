@@ -6,8 +6,9 @@ import 'package:atk_system_ga/view/dashboard/popup_dialog/export_dialog.dart';
 import 'package:atk_system_ga/view/dashboard/popup_dialog/top_requested__item_popup.dart';
 import 'package:atk_system_ga/view/dashboard/show_more_icon.dart';
 import 'package:atk_system_ga/view/dashboard/widget_icon.dart';
+import 'package:atk_system_ga/view_model/dashboard_view_model.dart/total_requested_item_view_model.dart';
 import 'package:atk_system_ga/view_model/global_model.dart';
-import 'package:atk_system_ga/view_model/main_page_view_model.dart';
+import 'package:atk_system_ga/widgets/empty_table.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
@@ -57,6 +58,13 @@ class _TopReqItemsWidgetState extends State<TopReqItemsWidget> {
   }
 
   @override
+  void dispose() {
+    super.dispose();
+    globalModel.removeListener(() {});
+    topReqViewModel.closeListener();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider.value(
       value: topReqViewModel,
@@ -97,38 +105,42 @@ class _TopReqItemsWidgetState extends State<TopReqItemsWidget> {
               const SizedBox(
                 height: 30,
               ),
-              model.topReqItems.isEmpty
+              model.isLoading
                   ? const Center(
                       child: CircularProgressIndicator(
                         color: eerieBlack,
                       ),
                     )
-                  : ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: model.topReqItems.take(5).length,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemBuilder: (context, index) {
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            index == 0
-                                ? const SizedBox()
-                                : const Padding(
-                                    padding: EdgeInsets.symmetric(
-                                      vertical: 18,
-                                    ),
-                                    child: Divider(
-                                      thickness: 0.5,
-                                      color: grayx11,
-                                    ),
-                                  ),
-                            TopReqItemsContainer(
-                              items: model.topReqItems[index],
-                            ),
-                          ],
-                        );
-                      },
-                    ),
+                  : model.topReqItems.isEmpty
+                      ? EmptyTable(
+                          text: "No item available right now",
+                        )
+                      : ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: model.topReqItems.take(5).length,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemBuilder: (context, index) {
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                index == 0
+                                    ? const SizedBox()
+                                    : const Padding(
+                                        padding: EdgeInsets.symmetric(
+                                          vertical: 18,
+                                        ),
+                                        child: Divider(
+                                          thickness: 0.5,
+                                          color: grayx11,
+                                        ),
+                                      ),
+                                TopReqItemsContainer(
+                                  items: model.topReqItems[index],
+                                ),
+                              ],
+                            );
+                          },
+                        ),
             ],
           ),
         );
@@ -160,7 +172,7 @@ class TopReqItemsContainer extends StatelessWidget {
         ),
         RichText(
           text: TextSpan(
-              text: items.qty,
+              text: formatThousand.format(int.parse(items.qty)),
               style: helveticaText.copyWith(
                 fontSize: 14,
                 fontWeight: FontWeight.w300,

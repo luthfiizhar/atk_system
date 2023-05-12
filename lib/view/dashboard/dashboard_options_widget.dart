@@ -1,6 +1,7 @@
 import 'package:atk_system_ga/constant/colors.dart';
 import 'package:atk_system_ga/constant/text_style.dart';
 import 'package:atk_system_ga/functions/api_request.dart';
+import 'package:atk_system_ga/models/admin_page_class.dart';
 import 'package:atk_system_ga/models/main_page_model.dart';
 import 'package:atk_system_ga/view_model/global_model.dart';
 import 'package:atk_system_ga/widgets/buttons.dart';
@@ -23,8 +24,9 @@ class _DashboardOptionsWidgetState extends State<DashboardOptionsWidget> {
   late GlobalModel globalModel;
   List<BusinessUnit> businessUnit = [];
   String selectedBusinessUnit = "";
+  String selectedRole = "";
 
-  int selectedArea = 1;
+  String selectedArea = "";
   List areaList = [
     {"value": 1, "name": "All Indonesia Region"},
     {"value": 2, "name": "Region ABC"},
@@ -34,39 +36,23 @@ class _DashboardOptionsWidgetState extends State<DashboardOptionsWidget> {
 
   String selectedMonthName = "";
   String selectedMonth = "Jan";
-  List monthList = [
-    {"value": "Jan", "name": "January"},
-    {"value": "Feb", "name": "February"},
-    {"value": "Mar", "name": "Maret"},
-    {"value": "Apr", "name": "April"},
-    {"value": "May", "name": "May"},
-    {"value": "Jun", "name": "June"},
-    {"value": "Jul", "name": "July"},
-    {"value": "Aug", "name": "August"},
-    {"value": "Sep", "name": "September"},
-    {"value": "Oct", "name": "October"},
-    {"value": "Nov", "name": "November"},
-    {"value": "Dec", "name": "December"},
-    {"value": "Q1", "name": "Q1"},
-    {"value": "Q2", "name": "Q2"},
-    {"value": "Q3", "name": "Q3"},
-    {"value": "Q4", "name": "Q4"}
-  ];
+  List monthList = [];
 
   String selectedYearName = "";
   String selectedYear = "2023";
-  List yearList = [
-    {"value": "2023", "name": "2023"},
-    {"value": "2022", "name": "2022"},
-    {"value": "2021", "name": "2021"},
-    {"value": "2020", "name": "2020"},
-  ];
+  List yearList = [];
 
   TextEditingController _area = TextEditingController();
   OverlayEntry? areaOverlayEntry;
   GlobalKey areaKey = GlobalKey();
   LayerLink areaLayerLink = LayerLink();
   bool isOverlayAreaOpen = false;
+
+  onClickArea(String id, String name, String role) {
+    selectedArea = id;
+    _area.text = name;
+    selectedRole = role;
+  }
 
   OverlayEntry areaOverlay() {
     RenderBox? renderBox =
@@ -89,22 +75,24 @@ class _DashboardOptionsWidgetState extends State<DashboardOptionsWidget> {
                   },
                 ),
                 Positioned(
-                    // left: offset.dx,
-                    // top: offset.dy + size.height + 10,
-                    width: 200,
-                    child: CompositedTransformFollower(
-                      showWhenUnlinked: false,
-                      offset: Offset(0.0, size.height + 5.0),
-                      link: areaLayerLink,
-                      child: Material(
-                        elevation: 4.0,
-                        color: white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: AreaSettingContainer(),
+                  // left: offset.dx,
+                  // top: offset.dy + size.height + 10,
+                  width: size.width,
+                  child: CompositedTransformFollower(
+                    showWhenUnlinked: false,
+                    offset: Offset(0.0, size.height + 5.0),
+                    link: areaLayerLink,
+                    child: Material(
+                      elevation: 4.0,
+                      color: white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
                       ),
-                    )),
+                      child: AreaSettingContainer(
+                          onClick: onClickArea, closeOverlay: closeOverlay),
+                    ),
+                  ),
+                ),
               ],
             ));
   }
@@ -156,11 +144,83 @@ class _DashboardOptionsWidgetState extends State<DashboardOptionsWidget> {
     setState(() {});
   }
 
+  closeOverlay() {
+    if (isOverlayAreaOpen) {
+      if (areaOverlayEntry!.mounted) {
+        areaOverlayEntry!.remove();
+      }
+      // areaNode.unfocus();
+      isOverlayAreaOpen = false;
+    }
+  }
+
+  initMonthList() {
+    apiService.dashboardOptMonthList(globalModel.businessUnit).then((value) {
+      if (value["Status"].toString() == "200") {
+        monthList = value["Data"];
+      } else {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialogBlack(
+            title: value["Title"],
+            contentText: value["Message"],
+            isSuccess: false,
+          ),
+        );
+      }
+      setState(() {});
+    }).onError((error, stackTrace) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialogBlack(
+          title: "Error getMonthList",
+          contentText: error.toString(),
+          isSuccess: false,
+        ),
+      );
+    });
+  }
+
+  initYearList() {
+    apiService.dashboardOptYearList(globalModel.businessUnit).then((value) {
+      if (value["Status"].toString() == "200") {
+        yearList = value["Data"];
+      } else {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialogBlack(
+            title: value["Title"],
+            contentText: value["Message"],
+            isSuccess: false,
+          ),
+        );
+      }
+      setState(() {});
+    }).onError((error, stackTrace) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialogBlack(
+          title: "Error getMonthList",
+          contentText: error.toString(),
+          isSuccess: false,
+        ),
+      );
+    });
+  }
+
   @override
   void initState() {
     super.initState();
     globalModel = Provider.of<GlobalModel>(context, listen: false);
     initBusinessUnitList();
+    initMonthList();
+    initYearList();
+    _area.text = globalModel.siteName;
+    selectedBusinessUnit = globalModel.businessUnit;
+    selectedRole = globalModel.role;
+    selectedMonth = globalModel.month;
+    selectedYear = globalModel.year;
+    selectedArea = globalModel.areaId;
   }
 
   @override
@@ -313,9 +373,9 @@ class _DashboardOptionsWidgetState extends State<DashboardOptionsWidget> {
                       maxHeight: 300,
                       items: monthList
                           .map((e) => DropdownMenuItem(
-                                value: e["value"],
+                                value: e["MonthName"],
                                 child: Text(
-                                  e["name"],
+                                  e["MonthFullName"],
                                   style: helveticaText.copyWith(),
                                 ),
                               ))
@@ -338,15 +398,15 @@ class _DashboardOptionsWidgetState extends State<DashboardOptionsWidget> {
                       child: BlackDropdown(
                         items: yearList
                             .map((e) => DropdownMenuItem(
-                                  value: e["value"],
+                                  value: e["Year"].toString(),
                                   child: Text(
-                                    e["name"],
+                                    e["Year"].toString(),
                                     style: helveticaText.copyWith(),
                                   ),
                                 ))
                             .toList(),
                         onChanged: (value) {
-                          selectedYear = value;
+                          selectedYear = value.toString();
                           setState(() {});
                         },
                         hintText: "Choose Year",
@@ -381,6 +441,9 @@ class _DashboardOptionsWidgetState extends State<DashboardOptionsWidget> {
                       globalModel.setBusinessUnit(selectedBusinessUnit);
                       globalModel.setMonth(selectedMonth.toString());
                       globalModel.setYear(selectedYear.toString());
+                      globalModel.setAreaId(selectedArea.toString());
+                      globalModel.setRole(selectedRole.toString());
+                      Navigator.of(context).pop();
                     },
                     padding: ButtonSize().mediumSize(),
                   )
@@ -439,10 +502,15 @@ class BusinessUnitSelection extends StatelessWidget {
 class AreaSettingContainer extends StatefulWidget {
   AreaSettingContainer({
     super.key,
-    this.onCLick,
-  });
+    Function? onClick,
+    Function? closeOverlay,
+    this.maxWidth = 200,
+  })  : onClick = onClick ?? (() {}),
+        closeOverlay = closeOverlay ?? (() {});
 
-  Function? onCLick;
+  Function onClick;
+  Function closeOverlay;
+  double maxWidth;
 
   @override
   State<AreaSettingContainer> createState() => _AreaSettingContainerState();
@@ -472,6 +540,10 @@ class _AreaSettingContainerState extends State<AreaSettingContainer> {
     }).onError((error, stackTrace) {});
   }
 
+  search() {
+    getData();
+  }
+
   @override
   void initState() {
     super.initState();
@@ -482,9 +554,9 @@ class _AreaSettingContainerState extends State<AreaSettingContainer> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      constraints: const BoxConstraints(
+      constraints: BoxConstraints(
         minWidth: 200,
-        maxWidth: 200,
+        maxWidth: 500,
         maxHeight: 300,
       ),
       padding: const EdgeInsets.symmetric(
@@ -498,30 +570,33 @@ class _AreaSettingContainerState extends State<AreaSettingContainer> {
           TextFormField(
             controller: _search,
             cursorColor: davysGray,
-            onChanged: (value) {
-              // widget.onCLick!(value);
+            onFieldSubmitted: (value) {
+              search();
             },
-            decoration: const InputDecoration(
-              enabledBorder: UnderlineInputBorder(
-                borderSide: BorderSide(
-                  color: davysGray,
+            decoration: InputDecoration(
+                enabledBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: sonicSilver, width: 0.5),
                 ),
-              ),
-              focusedBorder: UnderlineInputBorder(
-                borderSide: BorderSide(
-                  color: davysGray,
+                focusedBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(
+                    color: sonicSilver,
+                    width: 0.5,
+                  ),
                 ),
-              ),
-              prefixIcon: Icon(
-                Icons.search,
-                color: davysGray,
-              ),
-              contentPadding: EdgeInsets.symmetric(
-                vertical: 15,
-                horizontal: 0,
-              ),
-              hintText: 'Search here ...',
-            ),
+                prefixIcon: Icon(
+                  Icons.search,
+                  weight: 300,
+                ),
+                contentPadding: EdgeInsets.symmetric(
+                  vertical: 15,
+                  horizontal: 0,
+                ),
+                hintText: 'Search here ...',
+                hintStyle: helveticaText.copyWith(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w300,
+                  color: sonicSilver,
+                )),
           ),
           Expanded(
             child: SingleChildScrollView(
@@ -537,7 +612,13 @@ class _AreaSettingContainerState extends State<AreaSettingContainer> {
                           vertical: 15,
                         ),
                         child: InkWell(
-                          onTap: () {},
+                          onTap: () {
+                            widget.onClick(
+                                areaList[index]["ID"],
+                                areaList[index]["Name"],
+                                areaList[index]["Role"]);
+                            widget.closeOverlay();
+                          },
                           child: Text(
                             areaList[index]["Name"],
                             style: helveticaText.copyWith(

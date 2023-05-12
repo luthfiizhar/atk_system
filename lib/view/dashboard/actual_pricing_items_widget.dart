@@ -6,8 +6,9 @@ import 'package:atk_system_ga/view/dashboard/popup_dialog/actual_price_item_popu
 import 'package:atk_system_ga/view/dashboard/popup_dialog/export_dialog.dart';
 import 'package:atk_system_ga/view/dashboard/show_more_icon.dart';
 import 'package:atk_system_ga/view/dashboard/widget_icon.dart';
+import 'package:atk_system_ga/view_model/dashboard_view_model.dart/actual_price_item_view_model.dart';
 import 'package:atk_system_ga/view_model/global_model.dart';
-import 'package:atk_system_ga/view_model/main_page_view_model.dart';
+import 'package:atk_system_ga/widgets/empty_table.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
@@ -39,7 +40,7 @@ class _ActualPricingItemWidgetState extends State<ActualPricingItemWidget> {
     showDialog(
       context: context,
       builder: (context) => ExportDashboardPopup(
-        dataType: "Actual Price Item",
+        dataType: "Item Actual Pricing",
       ),
     );
   }
@@ -53,6 +54,13 @@ class _ActualPricingItemWidgetState extends State<ActualPricingItemWidget> {
       actualPriceItemViewModel.closeStream();
       actualPriceItemViewModel.getActualPriceItem(globalModel);
     });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    globalModel.removeListener(() {});
+    actualPriceItemViewModel.closeStream();
   }
 
   @override
@@ -83,7 +91,7 @@ class _ActualPricingItemWidgetState extends State<ActualPricingItemWidget> {
                         icon: "assets/icons/item_actual_icon.png",
                       ),
                       Text(
-                        "Item Actual Price",
+                        "Item Actual Pricing",
                         style: cardTitle,
                       ),
                     ],
@@ -97,38 +105,45 @@ class _ActualPricingItemWidgetState extends State<ActualPricingItemWidget> {
               const SizedBox(
                 height: 30,
               ),
-              model.sliderList.isEmpty
+              model.isLoading
                   ? const Center(
                       child: CircularProgressIndicator(
                         color: eerieBlack,
                       ),
                     )
-                  : CarouselSlider(
-                      carouselController: carouselController,
-                      disableGesture: true,
-                      items: model.sliderList
-                          .asMap()
-                          .map(
-                            (index, value) => MapEntry(
-                              index,
-                              ActualPriceItemContainer(
-                                list: value,
-                              ),
+                  : model.sliderList.isEmpty
+                      ? SizedBox(
+                          height: 150,
+                          child: EmptyTable(
+                            text: "Item price not available right now",
+                          ),
+                        )
+                      : CarouselSlider(
+                          carouselController: carouselController,
+                          disableGesture: true,
+                          items: model.sliderList
+                              .asMap()
+                              .map(
+                                (index, value) => MapEntry(
+                                  index,
+                                  ActualPriceItemContainer(
+                                    list: value,
+                                  ),
+                                ),
+                              )
+                              .values
+                              .toList(),
+                          options: CarouselOptions(
+                            viewportFraction: 1,
+                            scrollPhysics: const NeverScrollableScrollPhysics(),
+                            // autoPlayAnimationDuration: const Duration(seconds: 15),
+                            autoPlayInterval: const Duration(
+                              seconds: 10,
                             ),
-                          )
-                          .values
-                          .toList(),
-                      options: CarouselOptions(
-                        viewportFraction: 1,
-                        scrollPhysics: const NeverScrollableScrollPhysics(),
-                        // autoPlayAnimationDuration: const Duration(seconds: 15),
-                        autoPlayInterval: const Duration(
-                          seconds: 10,
+                            autoPlay: true,
+                            height: 375,
+                          ),
                         ),
-                        autoPlay: true,
-                        height: 375,
-                      ),
-                    ),
               // const SizedBox(
               //   height: 25,
               // ),
@@ -139,12 +154,18 @@ class _ActualPricingItemWidgetState extends State<ActualPricingItemWidget> {
                       onTap: () {
                         carouselController.previousPage();
                       },
-                      child: const Icon(Icons.chevron_left_sharp)),
+                      child: const Icon(
+                        Icons.chevron_left_sharp,
+                        size: 30,
+                      )),
                   InkWell(
                       onTap: () {
                         carouselController.nextPage();
                       },
-                      child: const Icon(Icons.chevron_right_sharp))
+                      child: const Icon(
+                        Icons.chevron_right_sharp,
+                        size: 30,
+                      ))
                 ],
               )
             ],

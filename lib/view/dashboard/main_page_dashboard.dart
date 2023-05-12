@@ -166,12 +166,9 @@ class _DashboardPageState extends State<DashboardPage> {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider.value(
       value: globalModel,
-      child: GestureDetector(
-        onTap: () {
-          closeOptions();
-        },
-        child: LayoutPageWeb(
-          index: 0,
+      child: Consumer<GlobalModel>(builder: (context, model, child) {
+        return LayoutPageWeb(
+          index: 2,
           child: ConstrainedBox(
             constraints: pageContstraint,
             child: Align(
@@ -217,7 +214,10 @@ class _DashboardPageState extends State<DashboardPage> {
                             TopReqItemsWidget(),
                             ActualPricingItemWidget(),
                             RecentTransactionWidget(),
-                            SiteRankingWidget(),
+                            Visibility(
+                                visible:
+                                    model.role != "StoreManager" ? true : false,
+                                child: SiteRankingWidget()),
                           ],
                         ),
                         const SizedBox(
@@ -241,8 +241,8 @@ class _DashboardPageState extends State<DashboardPage> {
               ),
             ),
           ),
-        ),
-      ),
+        );
+      }),
     );
   }
 }

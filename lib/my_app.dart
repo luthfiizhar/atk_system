@@ -12,8 +12,11 @@ import 'package:atk_system_ga/view/supplies_request/approval/approval_supplies_r
 import 'package:atk_system_ga/view/supplies_request/detail/supplies_req_detail_page.dart';
 import 'package:atk_system_ga/view/supplies_request/order/supplies_request_page.dart';
 import 'package:atk_system_ga/view/transaction_list/transaction_list_page.dart';
+import 'package:atk_system_ga/view_model/dashboard_view_model.dart/chart_view_model.dart';
+import 'package:atk_system_ga/view_model/dashboard_view_model.dart/recent_transaction_view_model.dart';
+import 'package:atk_system_ga/view_model/dashboard_view_model.dart/summary_cost_view_model.dart';
+import 'package:atk_system_ga/view_model/dashboard_view_model.dart/total_requested_item_view_model.dart';
 import 'package:atk_system_ga/view_model/global_model.dart';
-import 'package:atk_system_ga/view_model/main_page_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -136,19 +139,29 @@ class MyApp extends StatelessWidget {
         },
         redirect: (context, state) {
           final adminPage = state.subloc == '/admin_setting';
-          if (!isSystemAdmin) {
+          if (!settingAccess) {
             return adminPage ? '/home' : null;
           }
+
           return null;
         },
       ),
       GoRoute(
         path: '/dashboard',
+        name: 'dashboard',
         pageBuilder: (context, state) {
           return NoTransitionPage<void>(
             key: state.pageKey,
             child: const DashboardPage(),
           );
+        },
+        redirect: (context, state) {
+          final dashboardPage = state.subloc == '/dashboard';
+          if (!dashboardAccess) {
+            return dashboardPage ? '/home' : null;
+          }
+
+          return null;
         },
       ),
       // GoRoute(

@@ -1,28 +1,3 @@
-class BusinessUnit {
-  String name;
-  String photo;
-  String businessUnitId;
-  bool isSelected;
-  BusinessUnit({
-    this.name = "",
-    this.businessUnitId = "",
-    this.photo = "",
-    this.isSelected = false,
-  });
-
-  Map<String, String> toJson() => {
-        "Name": name,
-        "BusinessUnitID": businessUnitId,
-        "Photo": photo,
-        "isSelected": isSelected.toString()
-      };
-
-  @override
-  String toString() {
-    return toJson.toString();
-  }
-}
-
 class CostSummaryCard {
   String title;
   int value;
@@ -61,11 +36,13 @@ class CostSummaryCard {
 
 class CostSummBarChart {
   String month;
+  String year;
   int budget;
   int cost;
 
   CostSummBarChart({
     this.month = "",
+    this.year = "",
     this.budget = 0,
     this.cost = 0,
   });
@@ -73,12 +50,14 @@ class CostSummBarChart {
   CostSummBarChart.fromJson(Map<String, dynamic> json)
       : month = json["Month"],
         budget = json["Budget"],
-        cost = json["Cost"];
+        cost = json["Cost"],
+        year = json["Year"] ?? "";
 
   Map<String, String> toJson() => {
         "Month": month,
         "Budget": budget.toString(),
         "Cost": cost.toString(),
+        "Year": year
       };
 
   @override
@@ -94,6 +73,7 @@ class RecentTransactionTable {
   String date;
   String time;
   String formId;
+  String approveDate;
 
   RecentTransactionTable({
     this.siteName = "",
@@ -102,6 +82,7 @@ class RecentTransactionTable {
     this.date = "",
     this.time = "",
     this.formId = "",
+    this.approveDate = "",
   });
 
   RecentTransactionTable.fromJson(Map<String, dynamic> json)
@@ -110,7 +91,8 @@ class RecentTransactionTable {
         cost = json["Cost"] ?? "0",
         date = json["Date"] ?? "",
         time = json["Time"] ?? "",
-        formId = json["FormID"] ?? "";
+        formId = json["FormID"] ?? "",
+        approveDate = json["ApproveDate"] ?? "";
 
   Map<String, String> toJson() => {
         "SiteName": siteName,

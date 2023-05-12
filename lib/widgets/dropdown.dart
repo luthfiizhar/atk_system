@@ -17,6 +17,7 @@ class BlackDropdown extends StatelessWidget {
     this.customHeights,
     this.width = 120,
     this.customButton,
+    this.dropdownWidth,
     this.maxHeight,
   }) : focusNode = focusNode ?? FocusNode();
 
@@ -31,6 +32,7 @@ class BlackDropdown extends StatelessWidget {
   final dynamic value;
   final List<double>? customHeights;
   double width;
+  double? dropdownWidth;
   double? maxHeight;
   Widget? customButton;
 
@@ -38,26 +40,31 @@ class BlackDropdown extends StatelessWidget {
   Widget build(BuildContext context) {
     return DropdownButtonFormField2(
       buttonStyleData: ButtonStyleData(
-          width: width,
-          height: 39,
-          overlayColor: MaterialStateProperty.resolveWith<Color>((states) {
+        width: width,
+        height: 39,
+        overlayColor: MaterialStateProperty.resolveWith<Color>(
+          (states) {
             return Colors.transparent;
-          })),
+          },
+        ),
+      ),
       // buttonWidth: 120,
       // buttonHeight: 39,
+      isExpanded: true,
       value: value,
       focusNode: focusNode,
       // isExpanded: true,
       items: items,
       dropdownStyleData: DropdownStyleData(
         maxHeight: maxHeight,
+        width: dropdownWidth,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
           border: Border.all(
-            color: sonicSilver,
+            color: platinum,
             width: 1,
           ),
-          color: culturedWhite,
+          color: white,
         ),
       ),
       menuItemStyleData: MenuItemStyleData(
@@ -76,28 +83,28 @@ class BlackDropdown extends StatelessWidget {
       onChanged: onChanged,
       decoration: InputDecoration(
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(5),
+          borderRadius: BorderRadius.circular(7.5),
           borderSide: const BorderSide(
-            color: davysGray,
+            color: grayx11,
             width: 1,
           ),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(5),
+          borderRadius: BorderRadius.circular(7.5),
           borderSide: const BorderSide(
-            color: davysGray,
+            color: grayx11,
             width: 1,
           ),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(5),
+          borderRadius: BorderRadius.circular(7.5),
           borderSide: const BorderSide(
-            color: davysGray,
-            width: 2,
+            color: grayx11,
+            width: 1,
           ),
         ),
         disabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(5),
+          borderRadius: BorderRadius.circular(7.5),
           borderSide: const BorderSide(
             color: grayx11,
             width: 1,
@@ -105,14 +112,14 @@ class BlackDropdown extends StatelessWidget {
         ),
         // fillColor: enabled!
         //     ? focusNode!.hasFocus
-        //         ? culturedWhite
+        //         ? white
         //         : Colors.transparent
         //     : platinum,
         fillColor: Colors.transparent,
         filled: true,
         isDense: true,
         // isCollapsed: true,
-        focusColor: culturedWhite,
+        focusColor: white,
         hintText: hintText,
         hintStyle: const TextStyle(
           fontSize: 16,
@@ -151,9 +158,9 @@ class BlackDropdown extends StatelessWidget {
 class SearchDropDown extends StatelessWidget {
   SearchDropDown({
     super.key,
-    required List<DropdownMenuItem<String>>? items,
-    required this.value,
-    required this.onChanged,
+    List<DropdownMenuItem<String>>? items,
+    this.value,
+    this.onChanged,
     this.hintText = "Choose",
     this.suffixIcon,
     this.width = 300,
@@ -183,15 +190,15 @@ class SearchDropDown extends StatelessWidget {
       iconStyleData: IconStyleData(
         icon: suffixIcon!,
       ),
-      // hint: Text(
-      //   hintText,
-      //   style: const TextStyle(
-      //     fontFamily: 'Helvetica',
-      //     fontSize: 16,
-      //     fontWeight: FontWeight.w300,
-      //     color: sonicSilver,
-      //   ),
-      // ),
+      buttonStyleData: ButtonStyleData(
+        width: width,
+        height: 39,
+        overlayColor: MaterialStateProperty.resolveWith<Color>(
+          (states) {
+            return Colors.transparent;
+          },
+        ),
+      ),
       style: const TextStyle(
         fontSize: 16,
         fontWeight: FontWeight.w300,
@@ -229,20 +236,16 @@ class SearchDropDown extends StatelessWidget {
             width: 1,
           ),
         ),
-        fillColor: enabled
-            ? focusNode.hasFocus
-                ? culturedWhite
-                : Colors.transparent
-            : platinum,
+        fillColor: Colors.transparent,
         filled: true,
         isDense: true,
         // isCollapsed: true,
-        focusColor: culturedWhite,
+        focusColor: white,
         hintText: hintText,
         hintStyle: const TextStyle(
           fontSize: 16,
           fontWeight: FontWeight.w300,
-          color: sonicSilver,
+          color: lightGray,
         ),
         contentPadding: const EdgeInsets.only(
           right: 15,
@@ -252,18 +255,11 @@ class SearchDropDown extends StatelessWidget {
         ),
         // suffixIcon: suffixIcon,
         suffixIconColor: eerieBlack,
-      ),
-      buttonStyleData: const ButtonStyleData(
-        // width: width,
-        height: 39,
+        enabled: enabled,
       ),
       dropdownStyleData: DropdownStyleData(
         // width: width,
         maxHeight: 300,
-        // padding: const EdgeInsets.symmetric(
-        //   vertical: 20,
-        //   horizontal: 15,
-        // ),
         offset: const Offset(0, -5),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
@@ -271,7 +267,7 @@ class SearchDropDown extends StatelessWidget {
             color: sonicSilver,
             width: 1,
           ),
-          color: culturedWhite,
+          color: white,
         ),
       ),
       menuItemStyleData: MenuItemStyleData(
@@ -291,8 +287,7 @@ class SearchDropDown extends StatelessWidget {
             right: 20,
           ),
           child: TextFormField(
-            expands: true,
-            maxLines: null,
+            maxLines: 1,
             controller: searchController,
             decoration: InputDecoration(
               prefixIcon: const Icon(
@@ -339,6 +334,7 @@ class TransparentDropdown extends StatelessWidget {
     this.onTap,
     this.value,
     this.customHeights,
+    this.dropdownWidth = 100,
   }) : focusNode = focusNode ?? FocusNode();
 
   final List<DropdownMenuItem<dynamic>>? items;
@@ -350,6 +346,7 @@ class TransparentDropdown extends StatelessWidget {
   bool? enabled;
   final VoidCallback? onTap;
   final dynamic value;
+  final double dropdownWidth;
   final List<double>? customHeights;
 
   @override
@@ -363,13 +360,14 @@ class TransparentDropdown extends StatelessWidget {
       focusNode: focusNode,
       items: items,
       dropdownStyleData: DropdownStyleData(
+        width: dropdownWidth,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
           border: Border.all(
-            color: sonicSilver,
+            color: platinum,
             width: 1,
           ),
-          color: culturedWhite,
+          color: white,
         ),
       ),
       menuItemStyleData: MenuItemStyleData(
@@ -405,7 +403,9 @@ class TransparentDropdown extends StatelessWidget {
       onChanged: onChanged,
       decoration: InputDecoration(
         border: const OutlineInputBorder(
-          borderSide: BorderSide.none,
+          borderSide: BorderSide(
+            color: platinum,
+          ),
         ),
         enabledBorder: const OutlineInputBorder(
           borderSide: BorderSide.none,
@@ -418,13 +418,13 @@ class TransparentDropdown extends StatelessWidget {
         ),
         fillColor: enabled!
             ? focusNode!.hasFocus
-                ? culturedWhite
+                ? white
                 : Colors.transparent
             : platinum,
         filled: true,
         isDense: true,
         // isCollapsed: true,
-        focusColor: culturedWhite,
+        focusColor: white,
         hintText: hintText,
         hintStyle: helveticaText.copyWith(
           fontSize: 16,
@@ -432,8 +432,8 @@ class TransparentDropdown extends StatelessWidget {
           color: lightGray,
         ),
         contentPadding: const EdgeInsets.only(
-          right: 15,
-          left: 15,
+          right: 0,
+          left: 0,
           top: 0,
           bottom: 12,
         ),

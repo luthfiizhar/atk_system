@@ -4,6 +4,7 @@ import 'package:atk_system_ga/functions/api_request.dart';
 import 'package:atk_system_ga/models/admin_page_class.dart';
 import 'package:atk_system_ga/widgets/buttons.dart';
 import 'package:atk_system_ga/widgets/dialogs.dart';
+import 'package:atk_system_ga/widgets/dropdown.dart';
 import 'package:atk_system_ga/widgets/input_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -44,14 +45,45 @@ class _AddSiteDialogState extends State<AddSiteDialog> {
   String siteId = "";
   String siteName = "";
   double siteArea = 0;
-  double latitude = 0.0;
-  double longitude = 0.0;
+  String latitude = "";
+  String longitude = "";
   int monthlyBudget = 0;
   int additionalBudget = 0;
+  String selectedArea = "0";
+
+  List areaList = [];
+
+  initAreaList() {
+    apiService.getAreaListDropdown().then((value) {
+      if (value["Status"].toString() == "200") {
+        areaList = value["Data"];
+      } else {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialogBlack(
+            title: value["Title"],
+            contentText: value["Message"],
+            isSuccess: false,
+          ),
+        );
+      }
+      setState(() {});
+    }).onError((error, stackTrace) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialogBlack(
+          title: "Error areaDropdown",
+          contentText: error.toString(),
+          isSuccess: false,
+        ),
+      );
+    });
+  }
 
   @override
   void initState() {
     super.initState();
+    initAreaList();
     if (widget.isEdit) {
       widget.site.oldSiteId = widget.site.siteId;
       _siteId.text = widget.site.siteId;
@@ -59,6 +91,7 @@ class _AddSiteDialogState extends State<AddSiteDialog> {
       _latitude.text = widget.site.latitude.toString();
       _longitude.text = widget.site.longitude.toString();
       _siteArea.text = widget.site.siteArea.toString();
+      selectedArea = widget.site.areaId;
       // _monthlyBudget.text = widget.site.monthlyBudget.toString();
       // _additionalBudget.text = widget.site.additionalBudget.toString();
       // _siteArea.value = ThousandsSeparatorInputFormatter().formatEditUpdate(
@@ -101,11 +134,11 @@ class _AddSiteDialogState extends State<AddSiteDialog> {
       setState(() {});
     });
     _siteArea.addListener(() {
-      if (_siteArea.text == "") {
-        _siteArea.text = "0";
-        _siteArea.selection = TextSelection.fromPosition(
-            TextPosition(offset: _siteArea.text.length));
-      }
+      // if (_siteArea.text == "") {
+      //   _siteArea.text = "0";
+      //   _siteArea.selection = TextSelection.fromPosition(
+      //       TextPosition(offset: _siteArea.text.length));
+      // }
       setState(() {});
     });
   }
@@ -221,6 +254,39 @@ class _AddSiteDialogState extends State<AddSiteDialog> {
                     height: 20,
                   ),
                   inputField(
+                    'Area Name',
+                    widget: Expanded(
+                      child: BlackDropdown(
+                        items: areaList
+                            .map((e) => DropdownMenuItem(
+                                  value: e["AreaID"],
+                                  child: Text(
+                                    e["AreaName"],
+                                    style: helveticaText.copyWith(),
+                                  ),
+                                ))
+                            .toList(),
+                        suffixIcon: const Icon(
+                          Icons.keyboard_arrow_down_sharp,
+                        ),
+                        enabled: true,
+                        hintText: 'Choose',
+                        value: widget.isEdit ? widget.site.areaId : null,
+                        onChanged: (value) {
+                          selectedArea = value;
+                        },
+                        // validator: (value) =>
+                        //     value == "0" ? "This field is required." : null,
+                        // onSaved: (newValue) {
+                        //   siteArea = double.parse(newValue.toString());
+                        // },
+                      ),
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  inputField(
                     'Site Area (m2)',
                     widget: SizedBox(
                       width: 200,
@@ -254,7 +320,7 @@ class _AddSiteDialogState extends State<AddSiteDialog> {
                         validator: (value) =>
                             value == "" ? "This field is required." : null,
                         onSaved: (newValue) {
-                          latitude = double.parse(newValue.toString());
+                          latitude = newValue.toString();
                         },
                       ),
                     ),
@@ -275,7 +341,7 @@ class _AddSiteDialogState extends State<AddSiteDialog> {
                         validator: (value) =>
                             value == "" ? "This field is required." : null,
                         onSaved: (newValue) {
-                          longitude = double.parse(newValue.toString());
+                          longitude = newValue.toString();
                         },
                       ),
                     ),
@@ -406,6 +472,7 @@ class _AddSiteDialogState extends State<AddSiteDialog> {
                                 saveSite.additionalBudget = additionalBudget;
                                 saveSite.latitude = latitude;
                                 saveSite.longitude = longitude;
+                                saveSite.areaId = selectedArea;
                                 if (widget.isEdit) {
                                   saveSite.oldSiteId = widget.site.oldSiteId;
                                   apiService.updateSite(saveSite).then((value) {

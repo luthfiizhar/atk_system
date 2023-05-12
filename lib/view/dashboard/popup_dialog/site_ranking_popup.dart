@@ -9,6 +9,7 @@ import 'package:atk_system_ga/view_model/global_model.dart';
 import 'package:atk_system_ga/widgets/buttons.dart';
 import 'package:atk_system_ga/widgets/dialogs.dart';
 import 'package:atk_system_ga/widgets/dropdown.dart';
+import 'package:atk_system_ga/widgets/empty_table.dart';
 import 'package:atk_system_ga/widgets/search_input_field.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -31,6 +32,9 @@ class _SiteRankingPopupState extends State<SiteRankingPopup> {
   TextEditingController _search = TextEditingController();
   late GlobalModel globalModel;
   FocusNode showPerRowsNode = FocusNode();
+  FocusNode optionsNode = FocusNode();
+
+  bool isLoading = true;
 
   double rowPerPage = 10;
   double firstPaginated = 0;
@@ -41,6 +45,18 @@ class _SiteRankingPopupState extends State<SiteRankingPopup> {
   int resultRows = 0;
 
   String dataType = "Lowes Cost";
+
+  int selectedSort = 7;
+
+  List sortOptions = [
+    {"value": 7, "title": "Cost vs Budget"},
+    {"value": 1, "title": "Highest Cost"},
+    {"value": 2, "title": "Lowest Cost"},
+    {"value": 3, "title": "Highest Budget"},
+    {"value": 4, "title": "Lowest Budget"},
+    {"value": 5, "title": "Fastest Leadtime"},
+    {"value": 6, "title": "Slowest Leadtime"},
+  ];
 
   List<SiteRanking> itemList = [];
   onTapHeader(String orderBy) {
@@ -122,7 +138,7 @@ class _SiteRankingPopupState extends State<SiteRankingPopup> {
   }
 
   setDataType() {
-    switch (widget.option) {
+    switch (selectedSort) {
       case 1:
         dataType = "Highest Cost";
         break;
@@ -150,10 +166,13 @@ class _SiteRankingPopupState extends State<SiteRankingPopup> {
   }
 
   Future getData() {
+    isLoading = true;
     setDataType();
+    setState(() {});
     return apiService
         .dashboardSiteRanking(searchTerm, globalModel, dataType)
         .then((value) {
+      isLoading = false;
       if (value["Status"].toString() == "200") {
         List<SiteRanking> temp = [];
         List itemResult = value["Data"]["List"];
@@ -191,7 +210,10 @@ class _SiteRankingPopupState extends State<SiteRankingPopup> {
         });
       }
       // setState(() {});
-    }).onError((error, stackTrace) {});
+    }).onError((error, stackTrace) {
+      isLoading = false;
+      setState(() {});
+    });
   }
 
   countPagination(int totalRow) {
@@ -214,6 +236,7 @@ class _SiteRankingPopupState extends State<SiteRankingPopup> {
   void initState() {
     super.initState();
     globalModel = Provider.of<GlobalModel>(context, listen: false);
+    selectedSort = widget.option;
     getData().then((value) {
       countPagination(resultRows);
     });
@@ -263,7 +286,7 @@ class _SiteRankingPopupState extends State<SiteRankingPopup> {
                               '-',
                               style: helveticaText.copyWith(
                                 fontSize: 20,
-                                fontWeight: FontWeight.w300,
+                                fontWeight: FontWeight.w400,
                                 color: davysGray,
                               ),
                             ),
@@ -272,7 +295,7 @@ class _SiteRankingPopupState extends State<SiteRankingPopup> {
                             '${globalModel.month} ${globalModel.year}, ${globalModel.areaId}',
                             style: helveticaText.copyWith(
                               fontSize: 20,
-                              fontWeight: FontWeight.w300,
+                              fontWeight: FontWeight.w400,
                               color: davysGray,
                             ),
                           ),
@@ -295,30 +318,41 @@ class _SiteRankingPopupState extends State<SiteRankingPopup> {
                 height: 30,
               ),
               headerTable(),
-              ListView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: itemList.length,
-                itemBuilder: (context, index) {
-                  return Column(
-                    children: [
-                      index == 0
-                          ? const SizedBox()
-                          : const Divider(
-                              thickness: 0.5,
-                              color: grayx11,
-                            ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 20),
-                        child: SiteRankDetailListContainer(
-                          item: itemList[index],
-                          option: widget.option,
-                        ),
+              isLoading
+                  ? const Center(
+                      child: CircularProgressIndicator(
+                        color: eerieBlack,
                       ),
-                    ],
-                  );
-                },
-              ),
+                    )
+                  : itemList.isEmpty
+                      ? EmptyTable(
+                          text: "Item rank is not available right now",
+                        )
+                      : ListView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: itemList.length,
+                          itemBuilder: (context, index) {
+                            return Column(
+                              children: [
+                                index == 0
+                                    ? const SizedBox()
+                                    : const Divider(
+                                        thickness: 0.5,
+                                        color: grayx11,
+                                      ),
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 15),
+                                  child: SiteRankDetailListContainer(
+                                    item: itemList[index],
+                                    option: selectedSort,
+                                  ),
+                                ),
+                              ],
+                            );
+                          },
+                        ),
               const SizedBox(
                 height: 50,
               ),
@@ -348,7 +382,7 @@ class _SiteRankingPopupState extends State<SiteRankingPopup> {
                             showDialog(
                               context: context,
                               builder: (context) => ExportDashboardPopup(
-                                dataType: dataType,
+                                dataType: "Site Ranking - $dataType",
                               ),
                             );
                           },
@@ -367,7 +401,7 @@ class _SiteRankingPopupState extends State<SiteRankingPopup> {
   }
 
   Widget headerTable() {
-    switch (widget.option) {
+    switch (selectedSort) {
       case 1:
         return costHeader();
       case 2:
@@ -1285,7 +1319,7 @@ class SiteRankDetailListContainer extends StatelessWidget {
                         width: double.infinity,
                         height: double.infinity,
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(3),
+                          borderRadius: BorderRadius.circular(5.5),
                           color: platinumDark,
                         ),
                       ),
@@ -1295,11 +1329,8 @@ class SiteRankDetailListContainer extends StatelessWidget {
                             (item.percentageCompare! / 100),
                         decoration: BoxDecoration(
                           borderRadius: item.percentageCompare! < 100
-                              ? const BorderRadius.only(
-                                  topLeft: Radius.circular(3),
-                                  bottomLeft: Radius.circular(3),
-                                )
-                              : BorderRadius.circular(3),
+                              ? BorderRadius.circular(5.5)
+                              : BorderRadius.circular(5.5),
                           color: orangeAccent,
                         ),
                       ),
