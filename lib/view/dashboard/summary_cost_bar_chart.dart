@@ -279,7 +279,7 @@ class _SummCostBarChartState extends State<SummCostBarChart> {
               Container(
                   height: 280,
                   width: double.infinity,
-                  child: model.summCostBarChart.isEmpty
+                  child: model.isLoading
                       ? const Center(
                           child: CircularProgressIndicator(
                             color: eerieBlack,
@@ -416,8 +416,12 @@ class _SummCostBarChartState extends State<SummCostBarChart> {
                             axisLine: const AxisLine(
                               color: Colors.transparent,
                             ),
-                            maximum: model.maxY.toDouble(),
-                            interval: model.maxY / 5,
+                            maximum: model.maxY.toDouble() > 0
+                                ? model.maxY.toDouble()
+                                : 100,
+                            interval: model.maxY.toDouble() > 0
+                                ? model.maxY / 5
+                                : 100 / 5,
                             borderColor: Colors.transparent,
                             majorGridLines: const MajorGridLines(
                               color: grayx11,

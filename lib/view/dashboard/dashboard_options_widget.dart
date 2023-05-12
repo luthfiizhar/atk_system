@@ -225,7 +225,7 @@ class _DashboardOptionsWidgetState extends State<DashboardOptionsWidget> {
     initBusinessUnitList();
     initMonthList();
     initYearList();
-    _area.text = globalModel.siteName;
+    _area.text = globalModel.initAreaName;
     selectedBusinessUnit = globalModel.businessUnit;
     selectedRole = globalModel.role;
     selectedMonth = globalModel.month;

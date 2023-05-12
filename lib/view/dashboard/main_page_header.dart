@@ -119,8 +119,11 @@ class _DashboardHeaderState extends State<DashboardHeader> {
         globalModel.setAreaId(value["Data"]["Site"]);
         globalModel.setAreaName(value["Data"]["SiteName"]);
         globalModel.setBusinessUnit(value["Data"]["CompanyID"]);
-        globalModel.setInitGlobal(value["Data"]["CompanyID"],
-            value["Data"]["DashboardRole"], value["Data"]["Site"]);
+        globalModel.setInitGlobal(
+            value["Data"]["CompanyID"],
+            value["Data"]["DashboardRole"],
+            value["Data"]["Site"],
+            value['Data']['SiteName']);
         month = DateFormat("MMM").format(DateTime.now());
         year = DateTime.now().year;
         setMonthName(month);

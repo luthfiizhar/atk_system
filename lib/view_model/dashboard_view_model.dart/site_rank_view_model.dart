@@ -47,18 +47,18 @@ class SiteRankViewModel extends ChangeNotifier {
             '${globalModel.businessUnit}/${globalModel.role}/SiteRanking/BudgetCost/${globalModel.areaId}/${globalModel.year}/${globalModel.month}')
         .onValue
         .listen((event) {
-      final jsonString = event.snapshot.value;
-      dynamic result = List<dynamic>.from(jsonString as dynamic);
-      List<SiteRanking> list =
-          (result as List).map((e) => SiteRanking.fromJson(e)).toList();
+      if (event.snapshot.exists) {
+        final jsonString = event.snapshot.value;
+        dynamic result = List<dynamic>.from(jsonString as dynamic);
+        List<SiteRanking> list =
+            (result as List).map((e) => SiteRanking.fromJson(e)).toList();
 
-      setRankList(list);
-      setIsLoading(false);
-    });
+        setRankList(list);
+      } else {
+        setRankList([]);
+      }
 
-    _rankSiteStream!.onError((value) {
       setIsLoading(false);
-      setRankList([]);
     });
   }
 
@@ -69,18 +69,18 @@ class SiteRankViewModel extends ChangeNotifier {
             '${globalModel.businessUnit}/${globalModel.role}/SiteRanking/HighestCost/${globalModel.areaId}/${globalModel.year}/${globalModel.month}')
         .onValue
         .listen((event) {
-      final jsonString = event.snapshot.value;
-      dynamic result = List<dynamic>.from(jsonString as dynamic);
-      List<SiteRanking> list =
-          (result as List).map((e) => SiteRanking.fromJson(e)).toList();
+      if (event.snapshot.exists) {
+        final jsonString = event.snapshot.value;
+        dynamic result = List<dynamic>.from(jsonString as dynamic);
+        List<SiteRanking> list =
+            (result as List).map((e) => SiteRanking.fromJson(e)).toList();
 
-      setRankList(list);
-      setIsLoading(false);
-    });
+        setRankList(list);
+      } else {
+        setRankList([]);
+      }
 
-    _rankSiteStream!.onError((value) {
       setIsLoading(false);
-      setRankList([]);
     });
   }
 
@@ -91,18 +91,18 @@ class SiteRankViewModel extends ChangeNotifier {
             '${globalModel.businessUnit}/${globalModel.role}/SiteRanking/LowestCost/${globalModel.areaId}/${globalModel.year}/${globalModel.month}')
         .onValue
         .listen((event) {
-      final jsonString = event.snapshot.value;
-      dynamic result = List<dynamic>.from(jsonString as dynamic);
-      List<SiteRanking> list =
-          (result as List).map((e) => SiteRanking.fromJson(e)).toList();
+      if (event.snapshot.exists) {
+        final jsonString = event.snapshot.value;
+        dynamic result = List<dynamic>.from(jsonString as dynamic);
+        List<SiteRanking> list =
+            (result as List).map((e) => SiteRanking.fromJson(e)).toList();
 
-      setRankList(list);
-      setIsLoading(false);
-    });
+        setRankList(list);
+      } else {
+        setRankList([]);
+      }
 
-    _rankSiteStream!.onError((value) {
       setIsLoading(false);
-      setRankList([]);
     });
   }
 
@@ -113,18 +113,18 @@ class SiteRankViewModel extends ChangeNotifier {
             '${globalModel.businessUnit}/${globalModel.role}/SiteRanking/HighestBudget/${globalModel.areaId}/${globalModel.year}/${globalModel.month}')
         .onValue
         .listen((event) {
-      final jsonString = event.snapshot.value;
-      dynamic result = List<dynamic>.from(jsonString as dynamic);
-      List<SiteRanking> list =
-          (result as List).map((e) => SiteRanking.fromJson(e)).toList();
+      if (event.snapshot.exists) {
+        final jsonString = event.snapshot.value;
+        dynamic result = List<dynamic>.from(jsonString as dynamic);
+        List<SiteRanking> list =
+            (result as List).map((e) => SiteRanking.fromJson(e)).toList();
 
-      setRankList(list);
-      setIsLoading(false);
-    });
+        setRankList(list);
+      } else {
+        setRankList([]);
+      }
 
-    _rankSiteStream!.onError((value) {
       setIsLoading(false);
-      setRankList([]);
     });
   }
 
@@ -135,18 +135,18 @@ class SiteRankViewModel extends ChangeNotifier {
             '${globalModel.businessUnit}/${globalModel.role}/SiteRanking/LowestBudget/${globalModel.areaId}/${globalModel.year}/${globalModel.month}')
         .onValue
         .listen((event) {
-      final jsonString = event.snapshot.value;
-      dynamic result = List<dynamic>.from(jsonString as dynamic);
-      List<SiteRanking> list =
-          (result as List).map((e) => SiteRanking.fromJson(e)).toList();
+      if (event.snapshot.exists) {
+        final jsonString = event.snapshot.value;
+        dynamic result = List<dynamic>.from(jsonString as dynamic);
+        List<SiteRanking> list =
+            (result as List).map((e) => SiteRanking.fromJson(e)).toList();
 
-      setRankList(list);
-      setIsLoading(false);
-    });
+        setRankList(list);
+      } else {
+        setRankList([]);
+      }
 
-    _rankSiteStream!.onError((value) {
       setIsLoading(false);
-      setRankList([]);
     });
   }
 
@@ -157,18 +157,18 @@ class SiteRankViewModel extends ChangeNotifier {
             '${globalModel.businessUnit}/${globalModel.role}/SiteRanking/FastestLeadTime/${globalModel.areaId}/${globalModel.year}/${globalModel.month}')
         .onValue
         .listen((event) {
-      final jsonString = event.snapshot.value;
-      dynamic result = List<dynamic>.from(jsonString as dynamic);
-      List<SiteRanking> list =
-          (result as List).map((e) => SiteRanking.fromJson(e)).toList();
+      if (event.snapshot.exists) {
+        final jsonString = event.snapshot.value;
+        dynamic result = List<dynamic>.from(jsonString as dynamic);
+        List<SiteRanking> list =
+            (result as List).map((e) => SiteRanking.fromJson(e)).toList();
 
-      setRankList(list);
-      setIsLoading(false);
-    });
+        setRankList(list);
+      } else {
+        setRankList([]);
+      }
 
-    _rankSiteStream!.onError((value) {
       setIsLoading(false);
-      setRankList([]);
     });
   }
 
@@ -179,18 +179,17 @@ class SiteRankViewModel extends ChangeNotifier {
             '${globalModel.businessUnit}/${globalModel.role}/SiteRanking/SlowestLeadTime/${globalModel.areaId}/${globalModel.year}/${globalModel.month}')
         .onValue
         .listen((event) {
-      final jsonString = event.snapshot.value;
-      dynamic result = List<dynamic>.from(jsonString as dynamic);
-      List<SiteRanking> list =
-          (result as List).map((e) => SiteRanking.fromJson(e)).toList();
+      if (event.snapshot.exists) {
+        final jsonString = event.snapshot.value;
+        dynamic result = List<dynamic>.from(jsonString as dynamic);
+        List<SiteRanking> list =
+            (result as List).map((e) => SiteRanking.fromJson(e)).toList();
 
-      setRankList(list);
+        setRankList(list);
+      } else {
+        setRankList([]);
+      }
       setIsLoading(false);
-    });
-
-    _rankSiteStream!.onError((value) {
-      setIsLoading(false);
-      setRankList([]);
     });
   }
 
