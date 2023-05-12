@@ -32,7 +32,7 @@ class RecentTransactionViewModel extends ChangeNotifier {
     setIsLoading(true);
     _recentStream = databaseRef
         .child(
-            '${globalModel.businessUnit}/${globalModel.role}/RecentTransaction/${globalModel.areaId}/${globalModel.year}/${globalModel.month}')
+            '${globalModel.businessUnit}/${globalModel.role}/RecentTransaction/${globalModel.areaId}/List')
         .onValue
         .listen((event) {
       if (event.snapshot.exists) {
