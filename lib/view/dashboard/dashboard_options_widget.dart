@@ -24,7 +24,12 @@ class _DashboardOptionsWidgetState extends State<DashboardOptionsWidget> {
   late GlobalModel globalModel;
   List<BusinessUnit> businessUnit = [];
   String selectedBusinessUnit = "";
+  String selectedBuLogo = "";
   String selectedRole = "";
+  String selectedAreaName = "";
+  String initRole = "";
+  String initArea = "";
+  String initBu = "";
 
   String selectedArea = "";
   List areaList = [
@@ -52,6 +57,7 @@ class _DashboardOptionsWidgetState extends State<DashboardOptionsWidget> {
     selectedArea = id;
     _area.text = name;
     selectedRole = role;
+    selectedAreaName = name;
   }
 
   OverlayEntry areaOverlay() {
@@ -89,7 +95,12 @@ class _DashboardOptionsWidgetState extends State<DashboardOptionsWidget> {
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: AreaSettingContainer(
-                          onClick: onClickArea, closeOverlay: closeOverlay),
+                        onClick: onClickArea,
+                        closeOverlay: closeOverlay,
+                        initArea: initArea,
+                        initBU: initBu,
+                        initRole: initRole,
+                      ),
                     ),
                   ),
                 ),
@@ -138,6 +149,7 @@ class _DashboardOptionsWidgetState extends State<DashboardOptionsWidget> {
       if (element.businessUnitId == id) {
         element.isSelected = true;
         selectedBusinessUnit = id.toString();
+        selectedBuLogo = element.photo;
       }
     }
     print(selectedBusinessUnit);
@@ -215,12 +227,16 @@ class _DashboardOptionsWidgetState extends State<DashboardOptionsWidget> {
     initBusinessUnitList();
     initMonthList();
     initYearList();
-    _area.text = globalModel.siteName;
+    _area.text = globalModel.initAreaName;
     selectedBusinessUnit = globalModel.businessUnit;
     selectedRole = globalModel.role;
     selectedMonth = globalModel.month;
     selectedYear = globalModel.year;
     selectedArea = globalModel.areaId;
+    selectedAreaName = globalModel.siteName;
+    initRole = globalModel.initRole;
+    initArea = globalModel.initAreaId;
+    initBu = globalModel.initBusinessUnit;
   }
 
   @override
@@ -443,6 +459,8 @@ class _DashboardOptionsWidgetState extends State<DashboardOptionsWidget> {
                       globalModel.setYear(selectedYear.toString());
                       globalModel.setAreaId(selectedArea.toString());
                       globalModel.setRole(selectedRole.toString());
+                      globalModel.setAreaName(selectedAreaName.toString());
+                      globalModel.setUrlLogo(selectedBuLogo);
                       Navigator.of(context).pop();
                     },
                     padding: ButtonSize().mediumSize(),
@@ -504,6 +522,9 @@ class AreaSettingContainer extends StatefulWidget {
     super.key,
     Function? onClick,
     Function? closeOverlay,
+    this.initRole = "",
+    this.initBU = "",
+    this.initArea = "",
     this.maxWidth = 200,
   })  : onClick = onClick ?? (() {}),
         closeOverlay = closeOverlay ?? (() {});
@@ -511,6 +532,9 @@ class AreaSettingContainer extends StatefulWidget {
   Function onClick;
   Function closeOverlay;
   double maxWidth;
+  String initRole;
+  String initBU;
+  String initArea;
 
   @override
   State<AreaSettingContainer> createState() => _AreaSettingContainerState();
@@ -523,7 +547,10 @@ class _AreaSettingContainerState extends State<AreaSettingContainer> {
   List areaList = [];
 
   getData() {
-    apiService.dashboardOptAreaList(globalModel, _search.text).then((value) {
+    apiService
+        .dashboardOptAreaList(
+            widget.initRole, widget.initArea, widget.initBU, _search.text)
+        .then((value) {
       if (value["Status"].toString() == "200") {
         areaList = value["Data"];
       } else {

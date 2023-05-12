@@ -10,15 +10,35 @@ class GlobalModel extends ChangeNotifier {
   String? _year;
   String? _month;
   String? _siteName;
+  String? _logoUrl;
+
+  String? _initAreaId;
+  String? _initBusinessUnit;
+  String? _initRole;
+  String? _initAreaName;
 
   String get businessUnit => _businessUnit ?? "1";
   String get companyName => _companyName ?? "";
   String get empName => _empName ?? "";
-  String get role => _role ?? "RegionalManager";
-  String get areaId => _areaId ?? "RM1";
+  String get role => _role ?? "OperationHO";
+  String get areaId => _areaId ?? "HO";
   String get year => _year ?? DateTime.now().year.toString();
   String get month => _month ?? DateFormat("MMM").format(DateTime.now());
-  String get siteName => _siteName ?? "All Regional";
+  String get siteName => _siteName ?? "All Indonesia Region";
+  String get logoUrl => _logoUrl ?? "";
+
+  String get initAreaId => _initAreaId ?? "HO";
+  String get initRole => _initRole ?? "Operation";
+  String get initBusinessUnit => _initBusinessUnit ?? "1";
+  String get initAreaName => _initAreaName ?? "All Indonesia Region";
+
+  void setInitGlobal(String bu, String role, String area, String areaName) {
+    _initBusinessUnit = bu;
+    _initRole = role;
+    _initAreaId = area;
+    _initAreaName = areaName;
+    notifyListeners();
+  }
 
   void setCompanyName(String value) {
     _companyName = value;
@@ -57,6 +77,12 @@ class GlobalModel extends ChangeNotifier {
 
   void setMonth(String value) {
     _month = value;
+    notifyListeners();
+  }
+
+  void setUrlLogo(String value) {
+    print("setLogo $value");
+    _logoUrl = value;
     notifyListeners();
   }
 

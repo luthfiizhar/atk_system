@@ -1880,7 +1880,7 @@ class ApiService {
         "CompID": "${globalModel.businessUnit}",
         "Role" : "${globalModel.role}",
         "Site" : "${globalModel.areaId}",
-        "Month" : 4,
+        "Month" : ${globalModel.month},
         "Year" : "${globalModel.year}",
         "Keywords" : "${searchTerm.keywords}",
         "PageNumber" : ${searchTerm.pageNumber},
@@ -1925,7 +1925,7 @@ class ApiService {
         "CompID": "${globalModel.businessUnit}",
         "Role" : "${globalModel.role}",
         "Site" : "${globalModel.areaId}",
-        "Month" : 4,
+        "Month" : ${globalModel.month},
         "Year" : "${globalModel.year}",
         "Keywords" : "${searchTerm.keywords}",
         "PageNumber" : ${searchTerm.pageNumber},
@@ -1970,7 +1970,7 @@ class ApiService {
         "CompID": "${globalModel.businessUnit}",
         "Role" : "${globalModel.role}",
         "Site" : "${globalModel.areaId}",
-        "Month" : 4,
+        "Month" : ${globalModel.month},
         "Year" : "${globalModel.year}",
         "Keywords" : "${searchTerm.keywords}",
         "PageNumber" : ${searchTerm.pageNumber},
@@ -2036,7 +2036,7 @@ class ApiService {
         "CompID": "${globalModel.businessUnit}",
         "Role" : "${globalModel.role}",
         "Site" : "${globalModel.areaId}",
-        "Month" : 4,
+        "Month" : ${globalModel.month},
         "Year" : "${globalModel.year}",
         "Keywords" : "${searchTerm.keywords}",
         "PageNumber" : ${searchTerm.pageNumber},
@@ -2106,7 +2106,8 @@ class ApiService {
     }
   }
 
-  Future dashboardOptAreaList(GlobalModel globalModel, String search) async {
+  Future dashboardOptAreaList(
+      String role, String area, String businessUnit, String search) async {
     var box = await Hive.openBox('userLogin');
     var jwt = box.get('jwTtoken') != "" ? box.get('jwtToken') : "";
 
@@ -2121,10 +2122,10 @@ class ApiService {
 
     var bodySend = """
     {
-        "Role" : "${globalModel.role}",
-        "Site" : "${globalModel.areaId}",
+        "Role" : "$role",
+        "Site" : "$area",
         "Keyword" : "$search",
-        "BusinessID" : ${globalModel.businessUnit}
+        "BusinessID" : $businessUnit
     }
     """;
 

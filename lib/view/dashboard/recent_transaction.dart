@@ -23,38 +23,14 @@ class RecentTransactionWidget extends StatefulWidget {
 }
 
 class _RecentTransactionWidgetState extends State<RecentTransactionWidget> {
-  SearchTerm searchTerm = SearchTerm();
+  SearchTerm searchTerm = SearchTerm(orderBy: "SiteName", orderDir: "ASC");
   RecentTransactionViewModel recentTransactionViewModel =
       RecentTransactionViewModel();
   late GlobalModel globalModel;
 
   GlobalKey iconKey = GlobalKey();
 
-  List<RecentTransactionTable> recTransList = [
-    RecentTransactionTable(
-      siteName: "ST INFORMA PURI MALL JKT",
-      type: "Additional Settlement",
-      cost: "30000000",
-      date: "24 Sep 2023",
-      time: "12:07",
-    ),
-    RecentTransactionTable(
-      siteName: "ST INFORMA PURI MALL JKT",
-      type: "Additional Settlement",
-      cost: "30000000",
-      date: "24 Sep 2023",
-      time: "12:07",
-    ),
-    RecentTransactionTable(
-      siteName: "ST INFORMA PURI MALL JKT",
-      type: "Additional Settlement",
-      cost: "30000000",
-      date: "24 Sep 2023",
-      time: "12:07",
-    ),
-  ];
-
-  onTapHeader(String orderBy) {
+  onTapHeader(String orderBy, RecentTransactionViewModel model) {
     setState(() {
       // tempItems = items;
       if (searchTerm.orderBy == orderBy) {
@@ -68,65 +44,53 @@ class _RecentTransactionWidgetState extends State<RecentTransactionWidget> {
           default:
         }
       }
-
-      // switch (orderBy) {
-      //   case "Price":
-      //     if (searchTerm.orderDir == "ASC") {
-      //       requestViewModel.filterItemsContainer.sort(
-      //         (a, b) => a.item.basePrice.compareTo(b.item.basePrice),
-      //       );
-      //     } else {
-      //       requestViewModel.filterItemsContainer.sort(
-      //         (a, b) => b.item.basePrice.compareTo(a.item.basePrice),
-      //       );
-      //     }
-      //     break;
-      //   case "ItemName":
-      //     if (searchTerm.orderDir == "ASC") {
-      //       requestViewModel.filterItemsContainer.sort(
-      //         (a, b) => a.item.itemName.compareTo(b.item.itemName),
-      //       );
-      //     } else {
-      //       requestViewModel.filterItemsContainer.sort(
-      //         (a, b) => b.item.itemName.compareTo(a.item.itemName),
-      //       );
-      //     }
-      //     break;
-      //   case "Quantity":
-      //     if (searchTerm.orderDir == "ASC") {
-      //       requestViewModel.filterItemsContainer.sort(
-      //         (a, b) => a.item.qty.compareTo(b.item.qty),
-      //       );
-      //     } else {
-      //       requestViewModel.filterItemsContainer.sort(
-      //         (a, b) => b.item.qty.compareTo(a.item.qty),
-      //       );
-      //     }
-      //     break;
-      //   case "TotalPrice":
-      //     if (searchTerm.orderDir == "ASC") {
-      //       requestViewModel.filterItemsContainer.sort(
-      //         (a, b) => a.item.totalPrice.compareTo(b.item.totalPrice),
-      //       );
-      //     } else {
-      //       requestViewModel.filterItemsContainer.sort(
-      //         (a, b) => b.item.totalPrice.compareTo(a.item.totalPrice),
-      //       );
-      //     }
-      //     break;
-      //   case "Unit":
-      //     if (searchTerm.orderDir == "ASC") {
-      //       requestViewModel.filterItemsContainer.sort(
-      //         (a, b) => a.item.unit.compareTo(b.item.unit),
-      //       );
-      //     } else {
-      //       requestViewModel.filterItemsContainer.sort(
-      //         (a, b) => b.item.unit.compareTo(a.item.unit),
-      //       );
-      //     }
-      //     break;
-      //   default:
-      // }
+      switch (orderBy) {
+        case "SiteName":
+          if (searchTerm.orderDir == "ASC") {
+            model.listRecTransaction.sort(
+              (a, b) => a.siteName.compareTo(b.siteName),
+            );
+          } else {
+            model.listRecTransaction.sort(
+              (a, b) => b.siteName.compareTo(a.siteName),
+            );
+          }
+          break;
+        case "Type":
+          if (searchTerm.orderDir == "ASC") {
+            model.listRecTransaction.sort(
+              (a, b) => a.type.compareTo(b.type),
+            );
+          } else {
+            model.listRecTransaction.sort(
+              (a, b) => b.type.compareTo(a.type),
+            );
+          }
+          break;
+        case "Cost":
+          if (searchTerm.orderDir == "ASC") {
+            model.listRecTransaction.sort(
+              (a, b) => a.cost.compareTo(b.cost),
+            );
+          } else {
+            model.listRecTransaction.sort(
+              (a, b) => b.cost.compareTo(a.cost),
+            );
+          }
+          break;
+        case "DateTime":
+          if (searchTerm.orderDir == "ASC") {
+            model.listRecTransaction.sort(
+              (a, b) => a.date.compareTo(b.date),
+            );
+          } else {
+            model.listRecTransaction.sort(
+              (a, b) => b.date.compareTo(a.date),
+            );
+          }
+          break;
+        default:
+      }
       searchTerm.orderBy = orderBy;
       // updateTable().then((value) {});
     });
@@ -264,7 +228,7 @@ class _RecentTransactionWidgetState extends State<RecentTransactionWidget> {
               const SizedBox(
                 height: 30,
               ),
-              headerTable(),
+              headerTable(model),
               model.isLoading
                   ? const Center(
                       child: CircularProgressIndicator(
@@ -278,7 +242,7 @@ class _RecentTransactionWidgetState extends State<RecentTransactionWidget> {
                       : ListView.builder(
                           shrinkWrap: true,
                           physics: const NeverScrollableScrollPhysics(),
-                          itemCount: model.listRecTransaction.take(5).length,
+                          itemCount: model.listRecTransaction.length,
                           itemBuilder: (context, index) {
                             return Column(
                               children: [
@@ -306,7 +270,7 @@ class _RecentTransactionWidgetState extends State<RecentTransactionWidget> {
     );
   }
 
-  Widget headerTable() {
+  Widget headerTable(RecentTransactionViewModel model) {
     return Column(
       children: [
         Row(
@@ -315,7 +279,7 @@ class _RecentTransactionWidgetState extends State<RecentTransactionWidget> {
               flex: 2,
               child: InkWell(
                 onTap: () {
-                  onTapHeader("SiteName");
+                  onTapHeader("SiteName", model);
                 },
                 child: Row(
                   children: [
@@ -337,7 +301,7 @@ class _RecentTransactionWidgetState extends State<RecentTransactionWidget> {
               width: 250,
               child: InkWell(
                 onTap: () {
-                  onTapHeader("Type");
+                  onTapHeader("Type", model);
                 },
                 child: Row(
                   children: [
@@ -359,7 +323,7 @@ class _RecentTransactionWidgetState extends State<RecentTransactionWidget> {
               width: 190,
               child: InkWell(
                 onTap: () {
-                  onTapHeader("Cost");
+                  onTapHeader("Cost", model);
                 },
                 child: Row(
                   children: [
@@ -381,17 +345,17 @@ class _RecentTransactionWidgetState extends State<RecentTransactionWidget> {
               width: 175,
               child: InkWell(
                 onTap: () {
-                  onTapHeader("DateTime");
+                  onTapHeader("Date", model);
                 },
                 child: Row(
                   children: [
                     Expanded(
                       child: Text(
-                        'DateTime',
+                        'Date Time',
                         style: headerTableTextStyle,
                       ),
                     ),
-                    iconSort("DateTime"),
+                    iconSort("Date"),
                     const SizedBox(
                       width: 20,
                     ),
@@ -521,7 +485,7 @@ class RecentTransactionItems extends StatelessWidget {
           SizedBox(
             width: 190,
             child: Text(
-              formatCurrency.format(int.parse(recents.cost)),
+              formatCurrency.format(recents.cost),
               style: light,
             ),
           ),

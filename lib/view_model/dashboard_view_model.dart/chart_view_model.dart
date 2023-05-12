@@ -16,6 +16,8 @@ class CostSummaryBarChartModel extends ChangeNotifier {
 
   List<CostSummBarChart>? _summCostBarChartResult = [];
 
+  bool _isLoading = true;
+
   List? _resultsData;
   List? _yearsList;
   int? _maxY;
@@ -26,10 +28,17 @@ class CostSummaryBarChartModel extends ChangeNotifier {
   List<CostSummBarChart> get summCostBarChart => _summCostBarChartResult ?? [];
   List get resultsData => _resultsData ?? [];
   List get yearsList => _yearsList ?? [];
-  int get maxY => _maxY ?? 1000000;
+  int get maxY => _maxY ?? 100;
 
   bool get isTouched => _isTouched;
   bool get showPercentage => _showPercentage;
+
+  bool get isLoading => _isLoading;
+
+  void setIsLoading(bool value) {
+    _isLoading = value;
+    notifyListeners();
+  }
 
   void setIsTouched(bool value) {
     _isTouched = value;
@@ -53,14 +62,19 @@ class CostSummaryBarChartModel extends ChangeNotifier {
   }
 
   Future getSumCostBar(GlobalModel globalModel) async {
+    setIsLoading(true);
     _chartSettingStream = databaseRef
         .child(
             '${globalModel.businessUnit}/${globalModel.role}/Chart/${globalModel.areaId}/${globalModel.year}/ChartSetting')
         .onValue
         .listen((event) {
-      final jsonString = event.snapshot.value;
-      dynamic result = Map<String, dynamic>.from(jsonString as dynamic);
-      setMaxY(result['Max']);
+      if (event.snapshot.exists) {
+        final jsonString = event.snapshot.value;
+        dynamic result = Map<String, dynamic>.from(jsonString as dynamic);
+        setMaxY(result['Max']);
+      } else {
+        setMaxY(100);
+      }
     });
 
     _chartDataStream = databaseRef
@@ -68,11 +82,89 @@ class CostSummaryBarChartModel extends ChangeNotifier {
             '${globalModel.businessUnit}/${globalModel.role}/Chart/${globalModel.areaId}/${globalModel.year}/Data')
         .onValue
         .listen((event) {
-      final jsonString = event.snapshot.value;
-      dynamic result = List<dynamic>.from(jsonString as dynamic);
-      List<CostSummBarChart> list =
-          (result as List).map((e) => CostSummBarChart.fromJson(e)).toList();
-      setResultsData(list);
+      if (event.snapshot.exists) {
+        final jsonString = event.snapshot.value;
+        dynamic result = List<dynamic>.from(jsonString as dynamic);
+        List<CostSummBarChart> list =
+            (result as List).map((e) => CostSummBarChart.fromJson(e)).toList();
+        setResultsData(list);
+      } else {
+        setResultsData([
+          CostSummBarChart(
+            month: "Jan",
+            budget: 0,
+            cost: 0,
+            year: globalModel.year,
+          ),
+          CostSummBarChart(
+            month: "Feb",
+            budget: 0,
+            cost: 0,
+            year: globalModel.year,
+          ),
+          CostSummBarChart(
+            month: "Mar",
+            budget: 0,
+            cost: 0,
+            year: globalModel.year,
+          ),
+          CostSummBarChart(
+            month: "Apr",
+            budget: 0,
+            cost: 0,
+            year: globalModel.year,
+          ),
+          CostSummBarChart(
+            month: "May",
+            budget: 0,
+            cost: 0,
+            year: globalModel.year,
+          ),
+          CostSummBarChart(
+            month: "Jun",
+            budget: 0,
+            cost: 0,
+            year: globalModel.year,
+          ),
+          CostSummBarChart(
+            month: "Jul",
+            budget: 0,
+            cost: 0,
+            year: globalModel.year,
+          ),
+          CostSummBarChart(
+            month: "Aug",
+            budget: 0,
+            cost: 0,
+            year: globalModel.year,
+          ),
+          CostSummBarChart(
+            month: "Sep",
+            budget: 0,
+            cost: 0,
+            year: globalModel.year,
+          ),
+          CostSummBarChart(
+            month: "Okt",
+            budget: 0,
+            cost: 0,
+            year: globalModel.year,
+          ),
+          CostSummBarChart(
+            month: "Nov",
+            budget: 0,
+            cost: 0,
+            year: globalModel.year,
+          ),
+          CostSummBarChart(
+            month: "Dec",
+            budget: 0,
+            cost: 0,
+            year: globalModel.year,
+          ),
+        ]);
+      }
+      setIsLoading(false);
     });
   }
 

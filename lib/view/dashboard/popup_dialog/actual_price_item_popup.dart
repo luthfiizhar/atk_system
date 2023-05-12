@@ -56,67 +56,8 @@ class _ActualPriceItemPopupState extends State<ActualPriceItemPopup> {
           default:
         }
       }
-
-      // switch (orderBy) {
-      //   case "Price":
-      //     if (searchTerm.orderDir == "ASC") {
-      //       requestViewModel.filterItemsContainer.sort(
-      //         (a, b) => a.item.basePrice.compareTo(b.item.basePrice),
-      //       );
-      //     } else {
-      //       requestViewModel.filterItemsContainer.sort(
-      //         (a, b) => b.item.basePrice.compareTo(a.item.basePrice),
-      //       );
-      //     }
-      //     break;
-      //   case "ItemName":
-      //     if (searchTerm.orderDir == "ASC") {
-      //       requestViewModel.filterItemsContainer.sort(
-      //         (a, b) => a.item.itemName.compareTo(b.item.itemName),
-      //       );
-      //     } else {
-      //       requestViewModel.filterItemsContainer.sort(
-      //         (a, b) => b.item.itemName.compareTo(a.item.itemName),
-      //       );
-      //     }
-      //     break;
-      //   case "Quantity":
-      //     if (searchTerm.orderDir == "ASC") {
-      //       requestViewModel.filterItemsContainer.sort(
-      //         (a, b) => a.item.qty.compareTo(b.item.qty),
-      //       );
-      //     } else {
-      //       requestViewModel.filterItemsContainer.sort(
-      //         (a, b) => b.item.qty.compareTo(a.item.qty),
-      //       );
-      //     }
-      //     break;
-      //   case "TotalPrice":
-      //     if (searchTerm.orderDir == "ASC") {
-      //       requestViewModel.filterItemsContainer.sort(
-      //         (a, b) => a.item.totalPrice.compareTo(b.item.totalPrice),
-      //       );
-      //     } else {
-      //       requestViewModel.filterItemsContainer.sort(
-      //         (a, b) => b.item.totalPrice.compareTo(a.item.totalPrice),
-      //       );
-      //     }
-      //     break;
-      //   case "Unit":
-      //     if (searchTerm.orderDir == "ASC") {
-      //       requestViewModel.filterItemsContainer.sort(
-      //         (a, b) => a.item.unit.compareTo(b.item.unit),
-      //       );
-      //     } else {
-      //       requestViewModel.filterItemsContainer.sort(
-      //         (a, b) => b.item.unit.compareTo(a.item.unit),
-      //       );
-      //     }
-      //     break;
-      //   default:
-      // }
       searchTerm.orderBy = orderBy;
-      // updateTable().then((value) {});
+      getData().then((value) {});
     });
   }
 

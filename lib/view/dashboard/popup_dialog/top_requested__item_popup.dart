@@ -38,6 +38,16 @@ class _TopRequestedItemPopupState extends State<TopRequestedItemPopup> {
 
   bool isLoading = true;
 
+  search() {
+    currentPaginatedPage = 1;
+    searchTerm.keywords = _search.text;
+    searchTerm.pageNumber = currentPaginatedPage.toString();
+
+    getData().then((value) {
+      countPagination(resultRows);
+    });
+  }
+
   onTapHeader(String orderBy) {
     setState(() {
       // tempItems = items;
@@ -52,67 +62,8 @@ class _TopRequestedItemPopupState extends State<TopRequestedItemPopup> {
           default:
         }
       }
-
-      // switch (orderBy) {
-      //   case "Price":
-      //     if (searchTerm.orderDir == "ASC") {
-      //       requestViewModel.filterItemsContainer.sort(
-      //         (a, b) => a.item.basePrice.compareTo(b.item.basePrice),
-      //       );
-      //     } else {
-      //       requestViewModel.filterItemsContainer.sort(
-      //         (a, b) => b.item.basePrice.compareTo(a.item.basePrice),
-      //       );
-      //     }
-      //     break;
-      //   case "ItemName":
-      //     if (searchTerm.orderDir == "ASC") {
-      //       requestViewModel.filterItemsContainer.sort(
-      //         (a, b) => a.item.itemName.compareTo(b.item.itemName),
-      //       );
-      //     } else {
-      //       requestViewModel.filterItemsContainer.sort(
-      //         (a, b) => b.item.itemName.compareTo(a.item.itemName),
-      //       );
-      //     }
-      //     break;
-      //   case "Quantity":
-      //     if (searchTerm.orderDir == "ASC") {
-      //       requestViewModel.filterItemsContainer.sort(
-      //         (a, b) => a.item.qty.compareTo(b.item.qty),
-      //       );
-      //     } else {
-      //       requestViewModel.filterItemsContainer.sort(
-      //         (a, b) => b.item.qty.compareTo(a.item.qty),
-      //       );
-      //     }
-      //     break;
-      //   case "TotalPrice":
-      //     if (searchTerm.orderDir == "ASC") {
-      //       requestViewModel.filterItemsContainer.sort(
-      //         (a, b) => a.item.totalPrice.compareTo(b.item.totalPrice),
-      //       );
-      //     } else {
-      //       requestViewModel.filterItemsContainer.sort(
-      //         (a, b) => b.item.totalPrice.compareTo(a.item.totalPrice),
-      //       );
-      //     }
-      //     break;
-      //   case "Unit":
-      //     if (searchTerm.orderDir == "ASC") {
-      //       requestViewModel.filterItemsContainer.sort(
-      //         (a, b) => a.item.unit.compareTo(b.item.unit),
-      //       );
-      //     } else {
-      //       requestViewModel.filterItemsContainer.sort(
-      //         (a, b) => b.item.unit.compareTo(a.item.unit),
-      //       );
-      //     }
-      //     break;
-      //   default:
-      // }
       searchTerm.orderBy = orderBy;
-      // updateTable().then((value) {});
+      getData().then((value) {});
     });
   }
 
@@ -332,7 +283,7 @@ class _TopRequestedItemPopupState extends State<TopRequestedItemPopup> {
               width: 75,
               child: InkWell(
                 onTap: () {
-                  onTapHeader("Rank");
+                  onTapHeader("Order");
                 },
                 child: Row(
                   children: [
@@ -342,7 +293,7 @@ class _TopRequestedItemPopupState extends State<TopRequestedItemPopup> {
                         style: headerTableTextStyle,
                       ),
                     ),
-                    iconSort("Rank"),
+                    iconSort("Order"),
                     const SizedBox(
                       width: 20,
                     ),
@@ -354,17 +305,17 @@ class _TopRequestedItemPopupState extends State<TopRequestedItemPopup> {
               flex: 2,
               child: InkWell(
                 onTap: () {
-                  onTapHeader("SiteName");
+                  onTapHeader("ItemName");
                 },
                 child: Row(
                   children: [
                     Expanded(
                       child: Text(
-                        'Site Name',
+                        'Item Name',
                         style: headerTableTextStyle,
                       ),
                     ),
-                    iconSort("SiteName"),
+                    iconSort("ItemName"),
                     const SizedBox(
                       width: 20,
                     ),
@@ -375,7 +326,7 @@ class _TopRequestedItemPopupState extends State<TopRequestedItemPopup> {
             Expanded(
               child: InkWell(
                 onTap: () {
-                  onTapHeader("TotalReq");
+                  onTapHeader("TotalRequested");
                 },
                 child: Row(
                   children: [
@@ -385,7 +336,7 @@ class _TopRequestedItemPopupState extends State<TopRequestedItemPopup> {
                         style: headerTableTextStyle,
                       ),
                     ),
-                    iconSort("TotalReq"),
+                    iconSort("TotalRequested"),
                     const SizedBox(
                       width: 20,
                     ),

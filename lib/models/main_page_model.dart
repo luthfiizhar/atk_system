@@ -69,7 +69,7 @@ class CostSummBarChart {
 class RecentTransactionTable {
   String siteName;
   String type;
-  String cost;
+  int cost;
   String date;
   String time;
   String formId;
@@ -78,7 +78,7 @@ class RecentTransactionTable {
   RecentTransactionTable({
     this.siteName = "",
     this.type = "",
-    this.cost = "",
+    this.cost = 0,
     this.date = "",
     this.time = "",
     this.formId = "",
@@ -88,7 +88,7 @@ class RecentTransactionTable {
   RecentTransactionTable.fromJson(Map<String, dynamic> json)
       : siteName = json["SiteName"] ?? "",
         type = json["Type"] ?? "",
-        cost = json["Cost"] ?? "0",
+        cost = json["Cost"] ?? 0,
         date = json["Date"] ?? "",
         time = json["Time"] ?? "",
         formId = json["FormID"] ?? "",
