@@ -49,6 +49,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '215977533351',
     projectId: 'gss-project-prod',
     authDomain: 'gss-project-prod.firebaseapp.com',
+    databaseURL: 'https://gss-project-prod-default-rtdb.firebaseio.com',
     storageBucket: 'gss-project-prod.appspot.com',
     measurementId: 'G-VV0LJCSTSX',
   );
@@ -58,6 +59,7 @@ class DefaultFirebaseOptions {
     appId: '1:215977533351:android:c03468c9c747262eef2082',
     messagingSenderId: '215977533351',
     projectId: 'gss-project-prod',
+    databaseURL: 'https://gss-project-prod-default-rtdb.firebaseio.com',
     storageBucket: 'gss-project-prod.appspot.com',
   );
 
@@ -66,6 +68,7 @@ class DefaultFirebaseOptions {
     appId: '1:215977533351:ios:da58d58df223b7cbef2082',
     messagingSenderId: '215977533351',
     projectId: 'gss-project-prod',
+    databaseURL: 'https://gss-project-prod-default-rtdb.firebaseio.com',
     storageBucket: 'gss-project-prod.appspot.com',
     iosClientId: '215977533351-67t53n6olqhl0dp37kcshnfbnb4q5f87.apps.googleusercontent.com',
     iosBundleId: 'com.example.atkSystemGa',
@@ -76,6 +79,7 @@ class DefaultFirebaseOptions {
     appId: '1:215977533351:ios:da58d58df223b7cbef2082',
     messagingSenderId: '215977533351',
     projectId: 'gss-project-prod',
+    databaseURL: 'https://gss-project-prod-default-rtdb.firebaseio.com',
     storageBucket: 'gss-project-prod.appspot.com',
     iosClientId: '215977533351-67t53n6olqhl0dp37kcshnfbnb4q5f87.apps.googleusercontent.com',
     iosBundleId: 'com.example.atkSystemGa',

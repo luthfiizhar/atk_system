@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "215977533351",
+    "firebase_url": "https://gss-project-prod-default-rtdb.firebaseio.com",
     "project_id": "gss-project-prod",
     "storage_bucket": "gss-project-prod.appspot.com"
   },
@@ -29,6 +30,13 @@
             {
               "client_id": "215977533351-5l3ir3kra4rskipua37g3o70hd5n97n5.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "215977533351-67t53n6olqhl0dp37kcshnfbnb4q5f87.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.atkSystemGa"
+              }
             }
           ]
         }
