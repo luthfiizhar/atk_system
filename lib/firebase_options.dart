@@ -44,44 +44,40 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyAGN2Ra2qMFbfXDntNREKbSX_FCIVjOY24',
-    appId: '1:859847250491:web:01da83d273e3fbdc83021e',
-    messagingSenderId: '859847250491',
-    projectId: 'gss-project-dev',
-    authDomain: 'gss-project-dev.firebaseapp.com',
-    databaseURL: 'https://gss-project-dev-default-rtdb.firebaseio.com',
-    storageBucket: 'gss-project-dev.appspot.com',
-    measurementId: 'G-H4YP5V6XC8',
+    apiKey: 'AIzaSyBqLrJzDSYGnFf6IhXHxFsn7x2reYLXQAk',
+    appId: '1:215977533351:web:e360ef9aae86a75cef2082',
+    messagingSenderId: '215977533351',
+    projectId: 'gss-project-prod',
+    authDomain: 'gss-project-prod.firebaseapp.com',
+    storageBucket: 'gss-project-prod.appspot.com',
+    measurementId: 'G-VV0LJCSTSX',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyBMgjj_0qP8PAPR5iGom_mgx799RTdFDXo',
-    appId: '1:859847250491:android:9482fffc7d0550da83021e',
-    messagingSenderId: '859847250491',
-    projectId: 'gss-project-dev',
-    databaseURL: 'https://gss-project-dev-default-rtdb.firebaseio.com',
-    storageBucket: 'gss-project-dev.appspot.com',
+    apiKey: 'AIzaSyAFXid8iVxuZ4HBaa92ruzj_P7Xm1YXVtw',
+    appId: '1:215977533351:android:c03468c9c747262eef2082',
+    messagingSenderId: '215977533351',
+    projectId: 'gss-project-prod',
+    storageBucket: 'gss-project-prod.appspot.com',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyDmmTXkFN6ibDwS152J69K5PdGc3LQfE7g',
-    appId: '1:859847250491:ios:060d6bb2932d667483021e',
-    messagingSenderId: '859847250491',
-    projectId: 'gss-project-dev',
-    databaseURL: 'https://gss-project-dev-default-rtdb.firebaseio.com',
-    storageBucket: 'gss-project-dev.appspot.com',
-    iosClientId: '859847250491-9n11hbagarr8t98q8f0iqp9kr00lk9k2.apps.googleusercontent.com',
+    apiKey: 'AIzaSyAL4Q-amL-xGB9wDZS6u8qGzGueM1bGMbc',
+    appId: '1:215977533351:ios:da58d58df223b7cbef2082',
+    messagingSenderId: '215977533351',
+    projectId: 'gss-project-prod',
+    storageBucket: 'gss-project-prod.appspot.com',
+    iosClientId: '215977533351-67t53n6olqhl0dp37kcshnfbnb4q5f87.apps.googleusercontent.com',
     iosBundleId: 'com.example.atkSystemGa',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyDmmTXkFN6ibDwS152J69K5PdGc3LQfE7g',
-    appId: '1:859847250491:ios:060d6bb2932d667483021e',
-    messagingSenderId: '859847250491',
-    projectId: 'gss-project-dev',
-    databaseURL: 'https://gss-project-dev-default-rtdb.firebaseio.com',
-    storageBucket: 'gss-project-dev.appspot.com',
-    iosClientId: '859847250491-9n11hbagarr8t98q8f0iqp9kr00lk9k2.apps.googleusercontent.com',
+    apiKey: 'AIzaSyAL4Q-amL-xGB9wDZS6u8qGzGueM1bGMbc',
+    appId: '1:215977533351:ios:da58d58df223b7cbef2082',
+    messagingSenderId: '215977533351',
+    projectId: 'gss-project-prod',
+    storageBucket: 'gss-project-prod.appspot.com',
+    iosClientId: '215977533351-67t53n6olqhl0dp37kcshnfbnb4q5f87.apps.googleusercontent.com',
     iosBundleId: 'com.example.atkSystemGa',
   );
 }
