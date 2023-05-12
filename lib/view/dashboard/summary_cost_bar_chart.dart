@@ -236,39 +236,39 @@ class _SummCostBarChartState extends State<SummCostBarChart> {
                           ),
                         ],
                       ),
-                      const SizedBox(
-                        width: 50,
-                      ),
-                      SizedBox(
-                        width: 75,
-                        child: TransparentDropdown(
-                          items: yearOptions.map((e) {
-                            return DropdownMenuItem(
-                              value: e,
-                              child: Text(
-                                e.toString(),
-                                style: helveticaText.copyWith(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w300,
-                                  color: davysGray,
-                                ),
-                              ),
-                            );
-                          }).toList(),
-                          hintText: 'Choose Year',
-                          focusNode: yearOptionsNode,
-                          suffixIcon: const Icon(
-                            Icons.keyboard_arrow_down_sharp,
-                            weight: 300,
-                          ),
-                          onChanged: (value) {
-                            selectedYear = value;
-                            setState(() {});
-                          },
-                          enabled: true,
-                          value: selectedYear,
-                        ),
-                      )
+                      // const SizedBox(
+                      //   width: 50,
+                      // ),
+                      // SizedBox(
+                      //   width: 75,
+                      //   child: TransparentDropdown(
+                      //     items: yearOptions.map((e) {
+                      //       return DropdownMenuItem(
+                      //         value: e,
+                      //         child: Text(
+                      //           e.toString(),
+                      //           style: helveticaText.copyWith(
+                      //             fontSize: 16,
+                      //             fontWeight: FontWeight.w300,
+                      //             color: davysGray,
+                      //           ),
+                      //         ),
+                      //       );
+                      //     }).toList(),
+                      //     hintText: 'Choose Year',
+                      //     focusNode: yearOptionsNode,
+                      //     suffixIcon: const Icon(
+                      //       Icons.keyboard_arrow_down_sharp,
+                      //       weight: 300,
+                      //     ),
+                      //     onChanged: (value) {
+                      //       selectedYear = value;
+                      //       setState(() {});
+                      //     },
+                      //     enabled: true,
+                      //     value: selectedYear,
+                      //   ),
+                      // )
                     ],
                   ),
                 ],

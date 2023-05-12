@@ -10,7 +10,7 @@ class GlobalModel extends ChangeNotifier {
   String? _year;
   String? _month;
   String? _siteName;
-  String? _logoUrl;
+  String? _urlLogo;
 
   String? _initAreaId;
   String? _initBusinessUnit;
@@ -25,7 +25,7 @@ class GlobalModel extends ChangeNotifier {
   String get year => _year ?? DateTime.now().year.toString();
   String get month => _month ?? DateFormat("MMM").format(DateTime.now());
   String get siteName => _siteName ?? "All Indonesia Region";
-  String get logoUrl => _logoUrl ?? "";
+  String get urlLogo => _urlLogo ?? "";
 
   String get initAreaId => _initAreaId ?? "HO";
   String get initRole => _initRole ?? "Operation";
@@ -81,8 +81,7 @@ class GlobalModel extends ChangeNotifier {
   }
 
   void setUrlLogo(String value) {
-    print("setLogo $value");
-    _logoUrl = value;
+    _urlLogo = value;
     notifyListeners();
   }
 

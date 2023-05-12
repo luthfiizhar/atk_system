@@ -460,7 +460,7 @@ class _ConfirmDialogSettlementRequestState
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Text(
-          'Request Confirmation',
+          'Settlement Confirmation',
           style: dialogTitleText,
         ),
         Text(
