@@ -86,6 +86,7 @@ class _RecentTransactionPopUpState extends State<RecentTransactionPopUp> {
     }).onError((error, stackTrace) {
       isLoading = false;
       setState(() {});
+      print(error);
     });
   }
 

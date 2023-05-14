@@ -174,6 +174,16 @@ class _SiteRankingPopupState extends State<SiteRankingPopup> {
     });
   }
 
+  search() {
+    searchTerm.keywords = _search.text;
+    currentPaginatedPage = 1;
+    searchTerm.pageNumber = currentPaginatedPage.toString();
+
+    getData().then((value) {
+      countPagination(resultRows);
+    });
+  }
+
   @override
   void initState() {
     super.initState();
@@ -252,6 +262,10 @@ class _SiteRankingPopupState extends State<SiteRankingPopup> {
                       enabled: true,
                       prefixIcon: const Icon(Icons.search),
                       hintText: "Search here ...",
+                      maxLines: 1,
+                      onFieldSubmitted: (value) {
+                        search();
+                      },
                     ),
                   ),
                 ],
