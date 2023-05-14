@@ -23,7 +23,7 @@ class RecentTransactionPopUp extends StatefulWidget {
 
 class _RecentTransactionPopUpState extends State<RecentTransactionPopUp> {
   late GlobalModel globalModel;
-  SearchTerm searchTerm = SearchTerm();
+  SearchTerm searchTerm = SearchTerm(orderBy: "ApproveDate", orderDir: "ASC");
   TextEditingController _search = TextEditingController();
 
   ApiService apiService = ApiService();

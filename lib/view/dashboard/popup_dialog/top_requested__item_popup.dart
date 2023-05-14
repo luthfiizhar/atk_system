@@ -20,7 +20,8 @@ class TopRequestedItemPopup extends StatefulWidget {
 }
 
 class _TopRequestedItemPopupState extends State<TopRequestedItemPopup> {
-  SearchTerm searchTerm = SearchTerm();
+  SearchTerm searchTerm =
+      SearchTerm(orderBy: "TotalRequested", orderDir: "DESC");
   ApiService apiService = ApiService();
   TextEditingController _search = TextEditingController();
   late GlobalModel globalModel;

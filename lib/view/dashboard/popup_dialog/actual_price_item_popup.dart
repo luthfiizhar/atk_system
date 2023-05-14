@@ -23,6 +23,7 @@ class ActualPriceItemPopup extends StatefulWidget {
 class _ActualPriceItemPopupState extends State<ActualPriceItemPopup> {
   SearchTerm searchTerm = SearchTerm(
     orderBy: "Percentage",
+    orderDir: "DESC",
   );
   ApiService apiService = ApiService();
 
