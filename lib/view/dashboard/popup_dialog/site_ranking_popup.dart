@@ -61,6 +61,7 @@ class _SiteRankingPopupState extends State<SiteRankingPopup> {
   List<SiteRanking> itemList = [];
   onTapHeader(String orderBy) {
     setState(() {
+      setDataType();
       // tempItems = items;
       if (searchTerm.orderBy == orderBy) {
         switch (searchTerm.orderDir) {
@@ -83,38 +84,24 @@ class _SiteRankingPopupState extends State<SiteRankingPopup> {
     switch (selectedSort) {
       case 1:
         dataType = "Highest Cost";
-        searchTerm.orderBy = "TotalCost";
-        searchTerm.orderDir = "DESC";
         break;
       case 2:
         dataType = "Lowest Cost";
-        searchTerm.orderBy = "TotalCost";
-        searchTerm.orderDir = "ASC";
         break;
       case 3:
         dataType = "Highest Budget";
-        searchTerm.orderBy = "MonthlyBudget";
-        searchTerm.orderDir = "DESC";
         break;
       case 4:
         dataType = "Lowest Budget";
-        searchTerm.orderBy = "MonthlyBudget";
-        searchTerm.orderDir = "ASC";
         break;
       case 5:
         dataType = "Fastest Leadtime";
-        searchTerm.orderBy = "RequestTime";
-        searchTerm.orderDir = "ASC";
         break;
       case 6:
         dataType = "Slowest Leadtime";
-        searchTerm.orderBy = "RequestTime";
-        searchTerm.orderDir = "DESC";
         break;
       case 7:
         dataType = "Cost vs Budget";
-        searchTerm.orderBy = "Percentage";
-        searchTerm.orderDir = "DESC";
         break;
       default:
         dataType = "Cost vs Budget";
