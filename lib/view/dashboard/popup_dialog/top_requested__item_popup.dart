@@ -39,8 +39,8 @@ class _TopRequestedItemPopupState extends State<TopRequestedItemPopup> {
   bool isLoading = true;
 
   search() {
-    currentPaginatedPage = 1;
     searchTerm.keywords = _search.text;
+    currentPaginatedPage = 1;
     searchTerm.pageNumber = currentPaginatedPage.toString();
 
     getData().then((value) {
@@ -191,6 +191,9 @@ class _TopRequestedItemPopupState extends State<TopRequestedItemPopup> {
                       prefixIcon: const Icon(Icons.search),
                       hintText: "Search here ...",
                       maxLines: 1,
+                      onFieldSubmitted: (value) {
+                        search();
+                      },
                     ),
                   ),
                 ],
