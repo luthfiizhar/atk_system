@@ -465,6 +465,38 @@ class _SummCostBarChartState extends State<SummCostBarChart> {
                                 height: 250,
                                 shape: DataMarkerType.rectangle,
                               ),
+                              dataLabelSettings: DataLabelSettings(
+                                isVisible: true,
+                                labelPosition: ChartDataLabelPosition.outside,
+                                alignment: ChartAlignment.near,
+                                labelAlignment: ChartDataLabelAlignment.auto,
+                                textStyle: helveticaText.copyWith(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w400,
+                                  color: orangeAccent,
+                                ),
+                                offset: Offset.zero,
+                                builder: (data, point, series, pointIndex,
+                                    seriesIndex) {
+                                  CostSummBarChart dataLabel = data;
+                                  double percentage = 0;
+                                  percentage =
+                                      (dataLabel.cost / dataLabel.budget) * 100;
+                                  if (percentage.isInfinite) {
+                                    percentage = 0;
+                                  }
+                                  return percentage == 0
+                                      ? const SizedBox()
+                                      : Text(
+                                          "${percentage.toStringAsFixed(1)} %",
+                                          style: helveticaText.copyWith(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w400,
+                                            color: orangeAccent,
+                                          ),
+                                        );
+                                },
+                              ),
                             ),
                             // Render line series
                             LineSeries<CostSummBarChart, String>(
