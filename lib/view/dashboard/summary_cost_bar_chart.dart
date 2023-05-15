@@ -228,7 +228,7 @@ class _SummCostBarChartState extends State<SummCostBarChart> {
                         children: [
                           legend(
                             'Budget',
-                            spanishGray,
+                            greenAcent,
                           ),
                           legend(
                             'Cost',
@@ -480,6 +480,29 @@ class _SummCostBarChartState extends State<SummCostBarChart> {
                                 height: 4,
                                 width: 4,
                               ),
+                              // dataLabelSettings: DataLabelSettings(
+                              //   isVisible: true,
+                              //   labelPosition: ChartDataLabelPosition.outside,
+                              //   alignment: ChartAlignment.center,
+                              //   labelAlignment: ChartDataLabelAlignment.top,
+                              //   textStyle: helveticaText.copyWith(
+                              //     fontSize: 14,
+                              //     fontWeight: FontWeight.w300,
+                              //     color: davysGray,
+                              //   ),
+                              //   builder: (data, point, series, pointIndex,
+                              //       seriesIndex) {
+                              //     CostSummBarChart dataLabel = data;
+                              //     double percentage = 0;
+                              //     percentage =
+                              //         (dataLabel.cost / dataLabel.budget) * 100;
+                              //     if (percentage.isInfinite) {
+                              //       percentage = 0;
+                              //     }
+                              //     return Text(
+                              //         "${percentage.toStringAsFixed(1)} %");
+                              //   },
+                              // ),
                               // dataLabelSettings: DataLabelSettings(
                               //   isVisible: true,
                               // ),
