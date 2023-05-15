@@ -290,7 +290,7 @@ class _SummCostBarChartState extends State<SummCostBarChart> {
                           tooltipBehavior: TooltipBehavior(
                             activationMode: ActivationMode.singleTap,
                             color: white,
-                            duration: 5000,
+                            duration: 1500,
                             borderColor: white,
                             tooltipPosition: TooltipPosition.pointer,
                             enable: true,
