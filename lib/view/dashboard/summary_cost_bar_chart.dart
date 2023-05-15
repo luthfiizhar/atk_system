@@ -290,8 +290,9 @@ class _SummCostBarChartState extends State<SummCostBarChart> {
                           tooltipBehavior: TooltipBehavior(
                             activationMode: ActivationMode.singleTap,
                             color: white,
-                            duration: 10,
+                            duration: 5000,
                             borderColor: white,
+                            tooltipPosition: TooltipPosition.pointer,
                             enable: true,
                             elevation: 0,
                             borderWidth: 0,
@@ -456,6 +457,14 @@ class _SummCostBarChartState extends State<SummCostBarChart> {
                               ),
                               // width: 0.6,
                               spacing: 0.5,
+                              markerSettings: MarkerSettings(
+                                isVisible: false,
+                                color: Colors.transparent,
+                                borderWidth: 0,
+                                width: 16,
+                                height: 250,
+                                shape: DataMarkerType.rectangle,
+                              ),
                             ),
                             // Render line series
                             LineSeries<CostSummBarChart, String>(
