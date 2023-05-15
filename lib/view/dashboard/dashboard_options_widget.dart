@@ -234,6 +234,7 @@ class _DashboardOptionsWidgetState extends State<DashboardOptionsWidget> {
     selectedYear = globalModel.year;
     selectedArea = globalModel.areaId;
     selectedAreaName = globalModel.siteName;
+    selectedBuLogo = globalModel.urlLogo;
     initRole = globalModel.initRole;
     initArea = globalModel.initAreaId;
     initBu = globalModel.initBusinessUnit;
@@ -257,217 +258,220 @@ class _DashboardOptionsWidgetState extends State<DashboardOptionsWidget> {
             isOverlayAreaOpen = false;
           }
         },
-        child: Container(
-          constraints: const BoxConstraints(
-            minWidth: 495,
-            maxWidth: 495,
-          ),
-          decoration: BoxDecoration(
-            color: white,
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(
-              color: platinum,
-              width: 1,
+        child: SingleChildScrollView(
+          child: Container(
+            constraints: const BoxConstraints(
+              minWidth: 495,
+              maxWidth: 495,
             ),
-          ),
-          padding: const EdgeInsets.symmetric(
-            horizontal: 35,
-            vertical: 30,
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                'Business Unit Selection',
-                style: helveticaText.copyWith(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w700,
-                  color: eerieBlack,
-                ),
+            decoration: BoxDecoration(
+              color: white,
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(
+                color: platinum,
+                width: 1,
               ),
-              const SizedBox(
-                height: 15,
-              ),
-              Wrap(
-                spacing: 20,
-                runSpacing: 15,
-                children: businessUnit
-                    .asMap()
-                    .map((key, value) => MapEntry(
-                        key,
-                        BusinessUnitSelection(
-                          businessUnit: value,
-                          selectBu: selectBu,
-                        )))
-                    .values
-                    .toList(),
-              ),
-              const SizedBox(
-                height: 30,
-              ),
-              Text(
-                'Area Setting',
-                style: helveticaText.copyWith(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w700,
-                  color: eerieBlack,
-                ),
-              ),
-              const SizedBox(
-                height: 15,
-              ),
-              Container(
-                key: areaKey,
-                // onTap: () {},
-                child: CompositedTransformTarget(
-                  link: areaLayerLink,
-                  child: CustomInputField(
-                    controller: _area,
-                    // focusNode: siteNode,
-                    enabled: true,
-                    hintText: 'Choose Site',
-                    suffixIcon: const Icon(
-                      Icons.keyboard_arrow_down_outlined,
-                      color: eerieBlack,
-                    ),
-                    onTap: () {
-                      if (isOverlayAreaOpen) {
-                        isOverlayAreaOpen = false;
-                        if (areaOverlayEntry!.mounted) {
-                          areaOverlayEntry!.remove();
-                        }
-                      } else {
-                        areaOverlayEntry = areaOverlay();
-                        Overlay.of(context).insert(areaOverlayEntry!);
-                        isOverlayAreaOpen = true;
-                      }
-                      setState(() {});
-                    },
+            ),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 35,
+              vertical: 30,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Business Unit Selection',
+                  style: helveticaText.copyWith(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                    color: eerieBlack,
                   ),
                 ),
-              ),
-              // BlackDropdown(
-              //   width: double.infinity,
-              //   items: areaList
-              //       .map((e) => DropdownMenuItem(
-              //             value: e["value"],
-              //             child: Text(
-              //               e["name"],
-              //               style: helveticaText.copyWith(),
-              //             ),
-              //           ))
-              //       .toList(),
-              //   onChanged: (value) {
-              //     selectedArea = value;
-              //     setState(() {});
-              //   },
-              //   hintText: "Choose Area",
-              //   suffixIcon: const Icon(Icons.keyboard_arrow_down_sharp),
-              //   value: selectedArea,
-              // ),
-              const SizedBox(
-                height: 30,
-              ),
-              Text(
-                'Time Setting',
-                style: helveticaText.copyWith(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w700,
-                  color: eerieBlack,
+                const SizedBox(
+                  height: 15,
                 ),
-              ),
-              const SizedBox(
-                height: 15,
-              ),
-              Row(
-                children: [
-                  SizedBox(
-                    width: 250,
-                    child: BlackDropdown(
-                      maxHeight: 300,
-                      items: monthList
-                          .map((e) => DropdownMenuItem(
-                                value: e["MonthName"],
-                                child: Text(
-                                  e["MonthFullName"],
-                                  style: helveticaText.copyWith(),
-                                ),
-                              ))
-                          .toList(),
-                      onChanged: (value) {
-                        selectedMonth = value;
+                Wrap(
+                  spacing: 20,
+                  runSpacing: 15,
+                  children: businessUnit
+                      .asMap()
+                      .map((key, value) => MapEntry(
+                          key,
+                          BusinessUnitSelection(
+                            businessUnit: value,
+                            selectBu: selectBu,
+                          )))
+                      .values
+                      .toList(),
+                ),
+                const SizedBox(
+                  height: 30,
+                ),
+                Text(
+                  'Area Setting',
+                  style: helveticaText.copyWith(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                    color: eerieBlack,
+                  ),
+                ),
+                const SizedBox(
+                  height: 15,
+                ),
+                Container(
+                  key: areaKey,
+                  // onTap: () {},
+                  child: CompositedTransformTarget(
+                    link: areaLayerLink,
+                    child: CustomInputField(
+                      controller: _area,
+                      // focusNode: siteNode,
+                      enabled: true,
+                      hintText: 'Choose Site',
+                      suffixIcon: const Icon(
+                        Icons.keyboard_arrow_down_outlined,
+                        color: eerieBlack,
+                      ),
+                      onTap: () {
+                        if (isOverlayAreaOpen) {
+                          isOverlayAreaOpen = false;
+                          if (areaOverlayEntry!.mounted) {
+                            areaOverlayEntry!.remove();
+                          }
+                        } else {
+                          areaOverlayEntry = areaOverlay();
+                          Overlay.of(context).insert(areaOverlayEntry!);
+                          isOverlayAreaOpen = true;
+                        }
                         setState(() {});
                       },
-                      hintText: "Choose Month",
-                      suffixIcon: const Icon(Icons.keyboard_arrow_down_sharp),
-                      value: selectedMonth,
                     ),
                   ),
-                  const SizedBox(
-                    width: 15,
+                ),
+                // BlackDropdown(
+                //   width: double.infinity,
+                //   items: areaList
+                //       .map((e) => DropdownMenuItem(
+                //             value: e["value"],
+                //             child: Text(
+                //               e["name"],
+                //               style: helveticaText.copyWith(),
+                //             ),
+                //           ))
+                //       .toList(),
+                //   onChanged: (value) {
+                //     selectedArea = value;
+                //     setState(() {});
+                //   },
+                //   hintText: "Choose Area",
+                //   suffixIcon: const Icon(Icons.keyboard_arrow_down_sharp),
+                //   value: selectedArea,
+                // ),
+                const SizedBox(
+                  height: 30,
+                ),
+                Text(
+                  'Time Setting',
+                  style: helveticaText.copyWith(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                    color: eerieBlack,
                   ),
-                  Expanded(
-                    child: SizedBox(
-                      width: double.infinity,
+                ),
+                const SizedBox(
+                  height: 15,
+                ),
+                Row(
+                  children: [
+                    SizedBox(
+                      width: 250,
                       child: BlackDropdown(
-                        items: yearList
+                        maxHeight: 300,
+                        items: monthList
                             .map((e) => DropdownMenuItem(
-                                  value: e["Year"].toString(),
+                                  value: e["MonthName"],
                                   child: Text(
-                                    e["Year"].toString(),
+                                    e["MonthFullName"],
                                     style: helveticaText.copyWith(),
                                   ),
                                 ))
                             .toList(),
                         onChanged: (value) {
-                          selectedYear = value.toString();
+                          selectedMonth = value;
                           setState(() {});
                         },
-                        hintText: "Choose Year",
+                        hintText: "Choose Month",
                         suffixIcon: const Icon(Icons.keyboard_arrow_down_sharp),
-                        value: selectedYear,
+                        value: selectedMonth,
                       ),
                     ),
-                  ),
-                ],
-              ),
-              const SizedBox(
-                height: 30,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  TransparentButtonBlack(
-                    text: "Cancel",
-                    disabled: false,
-                    onTap: () {
-                      Navigator.of(context).pop(0);
-                    },
-                    padding: ButtonSize().mediumSize(),
-                  ),
-                  const SizedBox(
-                    width: 10,
-                  ),
-                  RegularButton(
-                    text: "Apply",
-                    disabled: false,
-                    onTap: () {
-                      globalModel.setBusinessUnit(selectedBusinessUnit);
-                      globalModel.setMonth(selectedMonth.toString());
-                      globalModel.setYear(selectedYear.toString());
-                      globalModel.setAreaId(selectedArea.toString());
-                      globalModel.setRole(selectedRole.toString());
-                      globalModel.setAreaName(selectedAreaName.toString());
-                      globalModel.setUrlLogo(selectedBuLogo);
-                      Navigator.of(context).pop();
-                    },
-                    padding: ButtonSize().mediumSize(),
-                  )
-                ],
-              )
-            ],
+                    const SizedBox(
+                      width: 15,
+                    ),
+                    Expanded(
+                      child: SizedBox(
+                        width: double.infinity,
+                        child: BlackDropdown(
+                          items: yearList
+                              .map((e) => DropdownMenuItem(
+                                    value: e["Year"].toString(),
+                                    child: Text(
+                                      e["Year"].toString(),
+                                      style: helveticaText.copyWith(),
+                                    ),
+                                  ))
+                              .toList(),
+                          onChanged: (value) {
+                            selectedYear = value.toString();
+                            setState(() {});
+                          },
+                          hintText: "Choose Year",
+                          suffixIcon:
+                              const Icon(Icons.keyboard_arrow_down_sharp),
+                          value: selectedYear,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(
+                  height: 30,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TransparentButtonBlack(
+                      text: "Cancel",
+                      disabled: false,
+                      onTap: () {
+                        Navigator.of(context).pop(0);
+                      },
+                      padding: ButtonSize().mediumSize(),
+                    ),
+                    const SizedBox(
+                      width: 10,
+                    ),
+                    RegularButton(
+                      text: "Apply",
+                      disabled: false,
+                      onTap: () {
+                        globalModel.setBusinessUnit(selectedBusinessUnit);
+                        globalModel.setMonth(selectedMonth.toString());
+                        globalModel.setYear(selectedYear.toString());
+                        globalModel.setAreaId(selectedArea.toString());
+                        globalModel.setRole(selectedRole.toString());
+                        globalModel.setAreaName(selectedAreaName.toString());
+                        globalModel.setUrlLogo(selectedBuLogo);
+                        Navigator.of(context).pop();
+                      },
+                      padding: ButtonSize().mediumSize(),
+                    )
+                  ],
+                )
+              ],
+            ),
           ),
         ),
       ),
