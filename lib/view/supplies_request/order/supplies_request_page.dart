@@ -512,7 +512,7 @@ class _SuppliesRequestPageState extends State<SuppliesRequestPage> {
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
                           TransparentButtonBlack(
-                            text: 'Cancel',
+                            text: 'Back',
                             disabled: false,
                             padding: ButtonSize().mediumSize(),
                             onTap: () {
