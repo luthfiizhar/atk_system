@@ -34,7 +34,7 @@ class TopReqItemsViewModel extends ChangeNotifier {
     // _topReqItems.clear();
     _topReqStream = databaseRef
         .child(
-            '${globalModel.businessUnit}/${globalModel.role}/TopRequestedItem/${globalModel.areaId}/${globalModel.year}/${globalModel.month}')
+            '${globalModel.businessUnit}/${globalModel.role}/TopRequestedItem/${globalModel.areaId}/${globalModel.year}/${globalModel.month}/List')
         .onValue
         .listen((event) {
       if (event.snapshot.exists) {
