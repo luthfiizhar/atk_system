@@ -40,7 +40,7 @@ class ActualPriceItemViewModel extends ChangeNotifier {
     setIsLoading(true);
     _actPriceStream = databaseRef
         .child(
-            '${globalModel.businessUnit}/${globalModel.role}/ItemAveragePrice/${globalModel.areaId}/${globalModel.year}/${globalModel.month}')
+            '${globalModel.businessUnit}/${globalModel.role}/ItemAveragePrice/${globalModel.areaId}/${globalModel.year}/${globalModel.month}/List')
         .onValue
         .listen((event) {
       setIsLoading(false);

@@ -44,7 +44,7 @@ class SiteRankViewModel extends ChangeNotifier {
     setIsLoading(true);
     _rankSiteStream = databaseRef
         .child(
-            '${globalModel.businessUnit}/${globalModel.role}/SiteRanking/BudgetCost/${globalModel.areaId}/${globalModel.year}/${globalModel.month}')
+            '${globalModel.businessUnit}/${globalModel.role}/SiteRanking/BudgetCost/${globalModel.areaId}/${globalModel.year}/${globalModel.month}/List')
         .onValue
         .listen((event) {
       if (event.snapshot.exists) {
@@ -66,7 +66,7 @@ class SiteRankViewModel extends ChangeNotifier {
     setIsLoading(true);
     _rankSiteStream = databaseRef
         .child(
-            '${globalModel.businessUnit}/${globalModel.role}/SiteRanking/HighestCost/${globalModel.areaId}/${globalModel.year}/${globalModel.month}')
+            '${globalModel.businessUnit}/${globalModel.role}/SiteRanking/HighestCost/${globalModel.areaId}/${globalModel.year}/${globalModel.month}/List')
         .onValue
         .listen((event) {
       if (event.snapshot.exists) {
@@ -88,7 +88,7 @@ class SiteRankViewModel extends ChangeNotifier {
     setIsLoading(true);
     _rankSiteStream = databaseRef
         .child(
-            '${globalModel.businessUnit}/${globalModel.role}/SiteRanking/LowestCost/${globalModel.areaId}/${globalModel.year}/${globalModel.month}')
+            '${globalModel.businessUnit}/${globalModel.role}/SiteRanking/LowestCost/${globalModel.areaId}/${globalModel.year}/${globalModel.month}/List')
         .onValue
         .listen((event) {
       if (event.snapshot.exists) {
@@ -110,7 +110,7 @@ class SiteRankViewModel extends ChangeNotifier {
     setIsLoading(true);
     _rankSiteStream = databaseRef
         .child(
-            '${globalModel.businessUnit}/${globalModel.role}/SiteRanking/HighestBudget/${globalModel.areaId}/${globalModel.year}/${globalModel.month}')
+            '${globalModel.businessUnit}/${globalModel.role}/SiteRanking/HighestBudget/${globalModel.areaId}/${globalModel.year}/${globalModel.month}/List')
         .onValue
         .listen((event) {
       if (event.snapshot.exists) {
@@ -132,7 +132,7 @@ class SiteRankViewModel extends ChangeNotifier {
     setIsLoading(true);
     _rankSiteStream = databaseRef
         .child(
-            '${globalModel.businessUnit}/${globalModel.role}/SiteRanking/LowestBudget/${globalModel.areaId}/${globalModel.year}/${globalModel.month}')
+            '${globalModel.businessUnit}/${globalModel.role}/SiteRanking/LowestBudget/${globalModel.areaId}/${globalModel.year}/${globalModel.month}/List')
         .onValue
         .listen((event) {
       if (event.snapshot.exists) {
@@ -154,7 +154,7 @@ class SiteRankViewModel extends ChangeNotifier {
     setIsLoading(true);
     _rankSiteStream = databaseRef
         .child(
-            '${globalModel.businessUnit}/${globalModel.role}/SiteRanking/FastestLeadTime/${globalModel.areaId}/${globalModel.year}/${globalModel.month}')
+            '${globalModel.businessUnit}/${globalModel.role}/SiteRanking/FastestLeadTime/${globalModel.areaId}/${globalModel.year}/${globalModel.month}/List')
         .onValue
         .listen((event) {
       if (event.snapshot.exists) {
@@ -176,7 +176,7 @@ class SiteRankViewModel extends ChangeNotifier {
     setIsLoading(true);
     _rankSiteStream = databaseRef
         .child(
-            '${globalModel.businessUnit}/${globalModel.role}/SiteRanking/SlowestLeadTime/${globalModel.areaId}/${globalModel.year}/${globalModel.month}')
+            '${globalModel.businessUnit}/${globalModel.role}/SiteRanking/SlowestLeadTime/${globalModel.areaId}/${globalModel.year}/${globalModel.month}/List')
         .onValue
         .listen((event) {
       if (event.snapshot.exists) {
