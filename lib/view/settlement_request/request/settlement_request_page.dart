@@ -98,7 +98,7 @@ class _SettlementRequestPageState extends State<SettlementRequestPage> {
               actualPrice: element['ActualPrice'],
               actualQty: element['ActualQuantity'],
               itemInfo: element['ItemInformation'],
-              itemListId: element['RowID'],
+              itemListId: element['RowID'].toString(),
             ),
           );
           transaction.items = items;
@@ -237,7 +237,7 @@ class _SettlementRequestPageState extends State<SettlementRequestPage> {
               actualPrice: element['ActualPrice'],
               actualQty: element['ActualQuantity'],
               itemInfo: element['ItemInformation'],
-              itemListId: element['RowID'],
+              itemListId: element['RowID'].toString(),
             ),
           );
 
@@ -273,7 +273,7 @@ class _SettlementRequestPageState extends State<SettlementRequestPage> {
           for (var element in resultActivity) {
             transactionActivity.add(
               TransactionActivity(
-                id: element['CommentID'],
+                id: element['CommentID'].toString(),
                 empName: element["EmpName"],
                 comment: element["CommentText"] ?? "-",
                 date: element["CommentDate"],
@@ -288,7 +288,7 @@ class _SettlementRequestPageState extends State<SettlementRequestPage> {
 
             for (var t in transactionActivity) {
               for (var element in attachmentResult) {
-                if (t.id == element['CommentID']) {
+                if (t.id == element['CommentID'].toString()) {
                   t.attachment.add(
                     Attachment(
                       file: element['ImageURL'],
@@ -307,6 +307,7 @@ class _SettlementRequestPageState extends State<SettlementRequestPage> {
         print("not success");
       }
     }).onError((error, stackTrace) {
+      print(error);
       showDialog(
         context: context,
         builder: (context) => const AlertDialogBlack(
