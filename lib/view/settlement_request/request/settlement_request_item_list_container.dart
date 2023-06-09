@@ -192,6 +192,7 @@ class _SettlementRequestItemListContainerState
                     controller: widget._qty,
                     focusNode: widget.qtyNode,
                     enabled: true,
+                    maxLength: 4,
                     inputFormatters: [
                       FilteringTextInputFormatter.digitsOnly,
                       FilteringTextInputFormatter.deny(RegExp(r'^0+')),
