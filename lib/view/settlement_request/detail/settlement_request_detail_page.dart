@@ -10,6 +10,7 @@ import 'package:atk_system_ga/view/settlement_request/approval/approval_settleme
 import 'package:atk_system_ga/widgets/buttons.dart';
 import 'package:atk_system_ga/widgets/dialogs.dart';
 import 'package:atk_system_ga/widgets/empty_table.dart';
+import 'package:atk_system_ga/widgets/rollback_dialog.dart';
 import 'package:atk_system_ga/widgets/search_input_field.dart';
 import 'package:atk_system_ga/widgets/total.dart';
 import 'package:atk_system_ga/widgets/transaction_activity_section.dart';
@@ -51,6 +52,8 @@ class _DetailApprovalSettlementRequestPageState
 
   bool isLoadingDetail = true;
   bool isLoadingItem = true;
+
+  String role = "";
 
   onChangeQtyAndPrice(int index, String qtyValue, String priceValue) {
     if (priceValue.contains(".")) {
@@ -230,6 +233,20 @@ class _DetailApprovalSettlementRequestPageState
   void initState() {
     super.initState();
     initDetailSettlement();
+    apiService.getUserData().then((value) {
+      if (value['Status'].toString() == "200") {
+        role = value["Data"]["Role"];
+      }
+    }).onError((error, stackTrace) {
+      showDialog(
+        context: context,
+        builder: (context) => const AlertDialogBlack(
+          title: "Error getUserData",
+          contentText: "No internet connection",
+          isSuccess: false,
+        ),
+      );
+    });
   }
 
   @override
@@ -320,6 +337,28 @@ class _DetailApprovalSettlementRequestPageState
                 Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
+                    role == "Operation HO" && transaction.status == "Approved"
+                        ? Padding(
+                            padding: const EdgeInsets.only(
+                              right: 20,
+                            ),
+                            child: RegularButton(
+                              text: 'Roll Back',
+                              disabled: false,
+                              padding: ButtonSize().mediumSize(),
+                              onTap: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) => RollBackDialog(
+                                    transaction: transaction,
+                                  ),
+                                ).then((value) {
+                                  initDetailSettlement();
+                                });
+                              },
+                            ),
+                          )
+                        : const SizedBox(),
                     transaction.status != "Approved"
                         ? const SizedBox()
                         : RegularButton(
