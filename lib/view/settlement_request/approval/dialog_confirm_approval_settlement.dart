@@ -144,75 +144,84 @@ class _ApproveSettlementDialogState extends State<ApproveSettlementDialog> {
                       const SizedBox(
                         width: 10,
                       ),
-                      RegularButton(
-                        text: 'Confirm',
-                        disabled: false,
-                        padding: ButtonSize().mediumSize(),
-                        onTap: () {
-                          formKey.currentState!.save();
-                          isLoading = true;
-                          setState(() {});
-                          widget.transaction.activity
-                              .add(TransactionActivity());
-                          widget.transaction.activity.first.comment = comment
-                              .replaceAll("\n", "\\n")
-                              .replaceAll('"', '\\"');
+                      isLoading
+                          ? const CircularProgressIndicator(
+                              color: eerieBlack,
+                            )
+                          : RegularButton(
+                              text: 'Confirm',
+                              disabled: false,
+                              padding: ButtonSize().mediumSize(),
+                              onTap: () {
+                                formKey.currentState!.save();
+                                isLoading = true;
+                                setState(() {});
+                                widget.transaction.activity
+                                    .add(TransactionActivity());
+                                widget.transaction.activity.first.comment =
+                                    comment
+                                        .replaceAll("\n", "\\n")
+                                        .replaceAll('"', '\\"');
 
-                          for (var element in attachment) {
-                            widget.transaction.activity.first.submitAttachment
-                                .add('"${element.file}"');
-                          }
+                                for (var element in attachment) {
+                                  widget.transaction.activity.first
+                                      .submitAttachment
+                                      .add('"${element.file}"');
+                                }
 
-                          print(widget.transaction);
-                          apiService
-                              .approveSettlementRequest(widget.transaction)
-                              .then((value) {
-                            isLoading = false;
-                            setState(() {});
-                            if (value["Status"].toString() == "200") {
-                              showDialog(
-                                context: context,
-                                builder: (context) => AlertDialogBlack(
-                                  title: value['Title'],
-                                  contentText: value['Message'],
-                                  isSuccess: true,
-                                ),
-                              ).then((value) {
-                                Navigator.of(context).pop(1);
-                              });
-                            } else if (value["Status"].toString() == "401") {
-                              showDialog(
-                                context: context,
-                                builder: (context) => AlertDialogBlack(
-                                  title: value['Title'],
-                                  contentText: value['Message'],
-                                  isSuccess: false,
-                                ),
-                              );
-                            } else {
-                              showDialog(
-                                context: context,
-                                builder: (context) => AlertDialogBlack(
-                                  title: value['Title'],
-                                  contentText: value['Message'],
-                                  isSuccess: false,
-                                ),
-                              );
-                            }
-                          }).onError((error, stackTrace) {
-                            isLoading = false;
-                            setState(() {});
-                            showDialog(
-                              context: context,
-                              builder: (context) => const AlertDialogBlack(
-                                title: "Error submitSuppliesRequest",
-                                contentText: "No internet connection",
-                                isSuccess: false,
-                              ),
-                            );
-                          });
-                        },
-                      )
+                                print(widget.transaction);
+                                apiService
+                                    .approveSettlementRequest(
+                                        widget.transaction)
+                                    .then((value) {
+                                  isLoading = false;
+                                  setState(() {});
+                                  if (value["Status"].toString() == "200") {
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) => AlertDialogBlack(
+                                        title: value['Title'],
+                                        contentText: value['Message'],
+                                        isSuccess: true,
+                                      ),
+                                    ).then((value) {
+                                      Navigator.of(context).pop(1);
+                                    });
+                                  } else if (value["Status"].toString() ==
+                                      "401") {
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) => AlertDialogBlack(
+                                        title: value['Title'],
+                                        contentText: value['Message'],
+                                        isSuccess: false,
+                                      ),
+                                    );
+                                  } else {
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) => AlertDialogBlack(
+                                        title: value['Title'],
+                                        contentText: value['Message'],
+                                        isSuccess: false,
+                                      ),
+                                    );
+                                  }
+                                }).onError((error, stackTrace) {
+                                  isLoading = false;
+                                  setState(() {});
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) =>
+                                        const AlertDialogBlack(
+                                      title: "Error submitSuppliesRequest",
+                                      contentText: "No internet connection",
+                                      isSuccess: false,
+                                    ),
+                                  );
+                                });
+                              },
+                            )
                     ],
                   )
                 ],
