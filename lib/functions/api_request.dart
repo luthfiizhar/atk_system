@@ -524,6 +524,40 @@ class ApiService {
     }
   }
 
+  Future rollBackOps(Transaction transaction) async {
+    // print(bookingId);
+    var box = await Hive.openBox('userLogin');
+    var jwt = box.get('jwTtoken') != "" ? box.get('jwtToken') : "";
+
+    // jwt = jwtToken;
+
+    var url = Uri.https(urlConstant.apiUrl,
+        '/GSS_Backend/public/api/user/rollback-transaction');
+    Map<String, String> requestHeader = {
+      'Authorization': 'Bearer $jwt',
+      'Content-Type': 'application/json',
+    };
+
+    var bodySend = """
+    {
+        "FormID": "${transaction.formId}",
+        "Comment" : "${transaction.activity.first.comment}",
+        "Attachments" : ${transaction.activity.first.submitAttachment}
+    }
+    """;
+    // print(bodySend);
+    try {
+      var response =
+          await http.post(url, headers: requestHeader, body: bodySend);
+
+      var data = json.decode(response.body);
+
+      return data;
+    } on Error catch (e) {
+      return e;
+    }
+  }
+
   Future saveItemReq(Transaction transaction, Item item) async {
     // print(bookingId);
     var box = await Hive.openBox('userLogin');
