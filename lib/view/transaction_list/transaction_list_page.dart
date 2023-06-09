@@ -87,7 +87,6 @@ class _TransactionListPageState extends State<TransactionListPage> {
     return apiService.getTransactionList(searchTerm).then((value) {
       print(value);
       isLoading = false;
-      setState(() {});
       if (value['Status'].toString() == "200") {
         List listResult = value['Data']['List'];
         resultRows = value['Data']['TotalRows'];
@@ -106,7 +105,6 @@ class _TransactionListPageState extends State<TransactionListPage> {
             ),
           );
         }
-        setState(() {});
       } else {
         showDialog(
           context: context,
@@ -117,6 +115,7 @@ class _TransactionListPageState extends State<TransactionListPage> {
           ),
         );
       }
+      setState(() {});
     }).onError((error, stackTrace) {
       print("error get transaction");
       print(error);
@@ -134,20 +133,19 @@ class _TransactionListPageState extends State<TransactionListPage> {
   }
 
   onTapHeader(String orderBy) {
-    setState(() {
-      if (searchTerm.orderBy == orderBy) {
-        switch (searchTerm.orderDir) {
-          case "ASC":
-            searchTerm.orderDir = "DESC";
-            break;
-          case "DESC":
-            searchTerm.orderDir = "ASC";
-            break;
-          default:
-        }
+    if (searchTerm.orderBy == orderBy) {
+      switch (searchTerm.orderDir) {
+        case "ASC":
+          searchTerm.orderDir = "DESC";
+          break;
+        case "DESC":
+          searchTerm.orderDir = "ASC";
+          break;
+        default:
       }
-      searchTerm.orderBy = orderBy;
-    });
+    }
+    searchTerm.orderBy = orderBy;
+    // setState(() {});
     updateList().then((value) {});
   }
 
@@ -818,25 +816,23 @@ class _TransactionListPageState extends State<TransactionListPage> {
               InkWell(
                 onTap: currentPaginatedPage != availablePage.last
                     ? () {
-                        setState(() {
-                          currentPaginatedPage = currentPaginatedPage + 1;
-                          if (currentPaginatedPage == showedPage.last &&
-                              currentPaginatedPage != availablePage.last) {
-                            showedPage.removeAt(0);
-                            showedPage.add(currentPaginatedPage + 1);
-                          }
-                          searchTerm.pageNumber =
-                              currentPaginatedPage.toString();
+                        currentPaginatedPage = currentPaginatedPage + 1;
+                        if (currentPaginatedPage == showedPage.last &&
+                            currentPaginatedPage != availablePage.last) {
+                          showedPage.removeAt(0);
+                          showedPage.add(currentPaginatedPage + 1);
+                        }
+                        searchTerm.pageNumber = currentPaginatedPage.toString();
 
-                          // apiReq
-                          //     .getMyBookingList(searchTerm)
-                          //     .then((value) {
-                          //   myBookList = value['Data']['List'];
-                          //   countPagination(
-                          //       value['Data']['TotalRows']);
-                          // });
-                          updateList();
-                        });
+                        // apiReq
+                        //     .getMyBookingList(searchTerm)
+                        //     .then((value) {
+                        //   myBookList = value['Data']['List'];
+                        //   countPagination(
+                        //       value['Data']['TotalRows']);
+                        // });
+                        updateList();
+                        setState(() {});
                       }
                     : null,
                 child: Container(
