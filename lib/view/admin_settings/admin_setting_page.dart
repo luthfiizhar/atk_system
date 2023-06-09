@@ -1209,7 +1209,7 @@ class _AdminSettingPageState extends State<AdminSettingPage> {
             Expanded(
               child: InkWell(
                 onTap: () {
-                  onTapHeader("MonthlyBudget", menu);
+                  onTapHeader("Budget", menu);
                 },
                 child: Row(
                   children: [
@@ -1219,7 +1219,7 @@ class _AdminSettingPageState extends State<AdminSettingPage> {
                         style: headerTableTextStyle,
                       ),
                     ),
-                    iconSort("MonthlyBudget"),
+                    iconSort("Budget"),
                     const SizedBox(
                       width: 20,
                     ),
@@ -1610,7 +1610,7 @@ class _AdminSettingPageState extends State<AdminSettingPage> {
               width: 180,
               child: InkWell(
                 onTap: () {
-                  onTapHeader("RegionID", menu);
+                  onTapHeader("RegionalID", menu);
                 },
                 child: Row(
                   children: [
@@ -1620,7 +1620,7 @@ class _AdminSettingPageState extends State<AdminSettingPage> {
                         style: headerTableTextStyle,
                       ),
                     ),
-                    iconSort("RegionID"),
+                    iconSort("RegionalID"),
                     const SizedBox(
                       width: 20,
                     ),
