@@ -145,6 +145,7 @@ class _AddUserDialogState extends State<AddUserDialog> {
     if (isOverlaySiteOpen) {
       if (siteOverlayEntry!.mounted) {
         siteOverlayEntry!.remove();
+        isOverlaySiteOpen = false;
       }
       siteNode.unfocus();
     }
@@ -741,9 +742,9 @@ class _SiteSearchContainerState extends State<SiteSearchContainer> {
                           child: InkWell(
                             onTap: () {
                               widget.onClick!(
-                                siteList[index]['ID'],
+                                siteList[index]['ID'].toString(),
                                 siteList[index]['Name'],
-                                siteList[index]['CompanyID'],
+                                siteList[index]['CompanyID'].toString(),
                               );
                             },
                             child: Text(
