@@ -155,6 +155,7 @@ class _SuppliesItemListContainerState extends State<SuppliesItemListContainer> {
                       child: BlackInputField(
                         controller: widget._qty,
                         focusNode: widget.qtyNode,
+                        maxLength: 4,
                         inputFormatters: [
                           FilteringTextInputFormatter.digitsOnly,
                           FilteringTextInputFormatter.deny(
