@@ -25,6 +25,7 @@ class BlackInputField extends StatefulWidget {
     this.prefixText = "",
     this.contentPadding =
         const EdgeInsets.only(right: 15, left: 15, top: 18, bottom: 15),
+    this.maxLength,
     Widget? prefix,
   })  : focusNode = focusNode ?? FocusNode(),
         prefix = prefix ?? SizedBox();
@@ -49,6 +50,7 @@ class BlackInputField extends StatefulWidget {
   double fontSize;
   List<TextInputFormatter>? inputFormatters;
   EdgeInsetsGeometry contentPadding;
+  int? maxLength;
 
   @override
   State<BlackInputField> createState() => _BlackInputFieldState();
@@ -98,6 +100,7 @@ class _BlackInputFieldState extends State<BlackInputField> {
         maxLines: widget.maxLines,
         inputFormatters: widget.inputFormatters,
         onTap: widget.onTap,
+        maxLength: widget.maxLength,
         decoration: InputDecoration(
           // prefix: widget.prefix!,
           prefixText: widget.prefixText,
@@ -166,6 +169,7 @@ class _BlackInputFieldState extends State<BlackInputField> {
           suffixIcon: widget.suffixIcon,
           suffixIconColor: eerieBlack,
           prefixIcon: widget.prefixIcon,
+          counterText: "",
         ),
         style: TextStyle(
           fontSize: widget.fontSize,
