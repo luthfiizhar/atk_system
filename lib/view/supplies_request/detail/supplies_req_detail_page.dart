@@ -10,6 +10,7 @@ import 'package:atk_system_ga/view/supplies_request/approval/approval_supplies_i
 import 'package:atk_system_ga/widgets/buttons.dart';
 import 'package:atk_system_ga/widgets/dialogs.dart';
 import 'package:atk_system_ga/widgets/empty_table.dart';
+import 'package:atk_system_ga/widgets/rollback_dialog.dart';
 import 'package:atk_system_ga/widgets/search_input_field.dart';
 import 'package:atk_system_ga/widgets/total.dart';
 import 'package:atk_system_ga/widgets/transaction_activity_list.dart';
@@ -65,6 +66,22 @@ class _SuppliesReqDetailPageState extends State<SuppliesReqDetailPage> {
       // print(value);
       if (value['Status'].toString() == "200") {
         List resultItems = value["Data"]["Items"];
+
+        transaction.formId = value["Data"]["FormID"];
+        transaction.siteName = value["Data"]["SiteName"];
+        transaction.siteArea =
+            double.parse(value["Data"]["SiteArea"].toString());
+        transaction.budget = value["Data"]["Budget"];
+        transaction.orderPeriod = value["Data"]["OrderPeriod"];
+        transaction.month = value["Data"]["Month"];
+        transaction.status = value["Data"]["Status"];
+        totalBudget = value['Data']["Budget"];
+        totalCost = value['Data']['TotalCost'];
+
+        settlementId = value['Data']['SettlementID'];
+        settlementStatus = value['Data']['SettlementStatus'];
+
+        formCategory = value['Data']['FormCategory'];
         for (var element in resultItems) {
           items.add(
             Item(
@@ -427,6 +444,28 @@ class _SuppliesReqDetailPageState extends State<SuppliesReqDetailPage> {
                         ),
                       ),
                     ),
+                    (role == "Operation HO" && transaction.status == "Approved")
+                        ? Padding(
+                            padding: const EdgeInsets.only(
+                              right: 20,
+                            ),
+                            child: RegularButton(
+                              text: 'Roll Back',
+                              disabled: false,
+                              padding: ButtonSize().mediumSize(),
+                              onTap: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) => RollBackDialog(
+                                    transaction: transaction,
+                                  ),
+                                ).then((value) {
+                                  updateTable();
+                                });
+                              },
+                            ),
+                          )
+                        : const SizedBox(),
                     transaction.status != "Approved"
                         ? const SizedBox()
                         : RegularButton(
