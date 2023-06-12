@@ -229,14 +229,12 @@ class _DetailApprovalSettlementRequestPageState
     updateList().then((value) {});
   }
 
-  @override
-  void initState() {
-    super.initState();
-    initDetailSettlement();
+  initCheckRole() {
     apiService.getUserData().then((value) {
       if (value['Status'].toString() == "200") {
         role = value["Data"]["Role"];
       }
+      setState(() {});
     }).onError((error, stackTrace) {
       showDialog(
         context: context,
@@ -247,6 +245,13 @@ class _DetailApprovalSettlementRequestPageState
         ),
       );
     });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    initDetailSettlement();
+    initCheckRole();
   }
 
   @override
