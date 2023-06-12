@@ -444,28 +444,28 @@ class _SuppliesReqDetailPageState extends State<SuppliesReqDetailPage> {
                         ),
                       ),
                     ),
-                    (role == "Operation HO" && transaction.status == "Approved")
-                        ? Padding(
-                            padding: const EdgeInsets.only(
-                              right: 20,
-                            ),
-                            child: RegularButton(
-                              text: 'Roll Back',
-                              disabled: false,
-                              padding: ButtonSize().mediumSize(),
-                              onTap: () {
-                                showDialog(
-                                  context: context,
-                                  builder: (context) => RollBackDialog(
-                                    transaction: transaction,
-                                  ),
-                                ).then((value) {
-                                  updateTable();
-                                });
-                              },
-                            ),
-                          )
-                        : const SizedBox(),
+                    // (role == "Operation HO" && transaction.status == "Approved")
+                    //     ? Padding(
+                    //         padding: const EdgeInsets.only(
+                    //           right: 20,
+                    //         ),
+                    //         child: RegularButton(
+                    //           text: 'Roll Back',
+                    //           disabled: false,
+                    //           padding: ButtonSize().mediumSize(),
+                    //           onTap: () {
+                    //             showDialog(
+                    //               context: context,
+                    //               builder: (context) => RollBackDialog(
+                    //                 transaction: transaction,
+                    //               ),
+                    //             ).then((value) {
+                    //               updateTable();
+                    //             });
+                    //           },
+                    //         ),
+                    //       )
+                    //     : const SizedBox(),
                     transaction.status != "Approved"
                         ? const SizedBox()
                         : RegularButton(
