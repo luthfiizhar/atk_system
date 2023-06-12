@@ -337,7 +337,8 @@ class _DetailApprovalSettlementRequestPageState
                 Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    role == "Operation HO" && transaction.status == "Approved"
+                    (role == "Operation HO" || role == "System Admin") &&
+                            transaction.status == "Approved"
                         ? Padding(
                             padding: const EdgeInsets.only(
                               right: 20,
