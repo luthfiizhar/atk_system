@@ -105,6 +105,9 @@ class _RollBackDialogState extends State<RollBackDialog> {
                               onSaved: (newValue) {
                                 comment = newValue.toString();
                               },
+                              validator: (value) => value == ""
+                                  ? "Please input your invoice numbere here."
+                                  : null,
                             ),
                           ],
                         ),
@@ -142,60 +145,76 @@ class _RollBackDialogState extends State<RollBackDialog> {
                         disabled: false,
                         padding: ButtonSize().mediumSize(),
                         onTap: () {
-                          formKey.currentState!.save();
-                          widget.transaction.activity
-                              .add(TransactionActivity());
-                          widget.transaction.activity.first.comment = comment;
-
-                          for (var element in attachment) {
-                            widget.transaction.activity.first.submitAttachment
-                                .add('"${element.file}"');
-                          }
-
-                          print(widget.transaction);
-                          apiService
-                              .rollBackOps(widget.transaction)
-                              .then((value) {
-                            if (value["Status"].toString() == "200") {
-                              showDialog(
-                                context: context,
-                                builder: (context) => AlertDialogBlack(
-                                  title: value['Title'],
-                                  contentText: value['Message'],
-                                  isSuccess: true,
-                                ),
-                              ).then((value) {
-                                Navigator.of(context).pop(1);
-                              });
-                            } else if (value["Status"].toString() == "401") {
-                              showDialog(
-                                context: context,
-                                builder: (context) => AlertDialogBlack(
-                                  title: value['Title'],
-                                  contentText: value['Message'],
-                                  isSuccess: false,
-                                ),
-                              );
-                            } else {
-                              showDialog(
-                                context: context,
-                                builder: (context) => AlertDialogBlack(
-                                  title: value['Title'],
-                                  contentText: value['Message'],
-                                  isSuccess: false,
-                                ),
-                              );
-                            }
-                          }).onError((error, stackTrace) {
+                          if (attachment.isEmpty) {
                             showDialog(
                               context: context,
                               builder: (context) => const AlertDialogBlack(
-                                title: "Error submitSuppliesRequest",
-                                contentText: "No internet connection.",
+                                title: "Failed",
+                                contentText:
+                                    "Please attach your transaction bills.",
                                 isSuccess: false,
                               ),
                             );
-                          });
+                          } else {
+                            if (formKey.currentState!.validate()) {
+                              formKey.currentState!.save();
+                              widget.transaction.activity
+                                  .add(TransactionActivity());
+                              widget.transaction.activity.first.comment =
+                                  comment;
+
+                              for (var element in attachment) {
+                                widget
+                                    .transaction.activity.first.submitAttachment
+                                    .add('"${element.file}"');
+                              }
+
+                              apiService
+                                  .rollBackOps(widget.transaction)
+                                  .then((value) {
+                                if (value["Status"].toString() == "200") {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) => AlertDialogBlack(
+                                      title: value['Title'],
+                                      contentText: value['Message'],
+                                      isSuccess: true,
+                                    ),
+                                  ).then((value) {
+                                    Navigator.of(context).pop(1);
+                                  });
+                                } else if (value["Status"].toString() ==
+                                    "401") {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) => AlertDialogBlack(
+                                      title: value['Title'],
+                                      contentText: value['Message'],
+                                      isSuccess: false,
+                                    ),
+                                  );
+                                } else {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) => AlertDialogBlack(
+                                      title: value['Title'],
+                                      contentText: value['Message'],
+                                      isSuccess: false,
+                                    ),
+                                  );
+                                }
+                              }).onError((error, stackTrace) {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) => const AlertDialogBlack(
+                                    title: "Error submitSuppliesRequest",
+                                    contentText: "No internet connection.",
+                                    isSuccess: false,
+                                  ),
+                                );
+                              });
+                            }
+                          }
                         },
                       )
                     ],
