@@ -53,6 +53,8 @@ class _DetailApprovalSettlementRequestPageState
   bool isLoadingDetail = true;
   bool isLoadingItem = true;
 
+  bool isRollbackButtonShowed = false;
+
   String role = "";
 
   onChangeQtyAndPrice(int index, String qtyValue, String priceValue) {
@@ -134,6 +136,8 @@ class _DetailApprovalSettlementRequestPageState
       isLoadingItem = false;
       setState(() {});
       if (value['Status'].toString() == "200") {
+        isRollbackButtonShowed =
+            value["Data"]["RollbackButton"] == 1 ? true : false;
         List resultItems = value["Data"]["Items"];
         List resultActivity = value["Data"]["Comments"];
         List attachmentResult = [];
@@ -342,8 +346,7 @@ class _DetailApprovalSettlementRequestPageState
                 Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    (role == "Operation HO" || role == "System Admin") &&
-                            transaction.status == "Approved"
+                    isRollbackButtonShowed
                         ? Padding(
                             padding: const EdgeInsets.only(
                               right: 20,
