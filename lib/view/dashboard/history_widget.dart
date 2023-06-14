@@ -24,7 +24,10 @@ class HistoryWidget extends StatefulWidget {
 }
 
 class _HistoryWidgetState extends State<HistoryWidget> {
-  SearchTerm searchTerm = SearchTerm();
+  SearchTerm searchTerm = SearchTerm(
+    orderBy: "UpdatedBy",
+    orderDir: "DESC",
+  );
   late GlobalModel globalModel;
   HistoryViewModel historyViewModel = HistoryViewModel();
   FocusNode optionsNode = FocusNode();
@@ -312,7 +315,7 @@ class _HistoryWidgetState extends State<HistoryWidget> {
                         style: headerTableTextStyle,
                       ),
                     ),
-                    iconSort("Type"),
+                    iconSort("Monthly"),
                     const SizedBox(
                       width: 20,
                     ),
@@ -356,7 +359,7 @@ class _HistoryWidgetState extends State<HistoryWidget> {
                         style: headerTableTextStyle,
                       ),
                     ),
-                    iconSort("Updated By"),
+                    iconSort("UpdatedBy"),
                     const SizedBox(
                       width: 20,
                     ),
