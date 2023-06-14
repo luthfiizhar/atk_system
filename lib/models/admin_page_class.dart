@@ -1,3 +1,5 @@
+import 'package:atk_system_ga/models/transaction_class.dart';
+
 class AdminMenu {
   String name;
   String value;
@@ -23,8 +25,10 @@ class Site {
     this.areaName = "",
     this.monthlyBudget = 0,
     this.additionalBudget = 0,
+    this.note = "",
     this.isExpanded = false,
-  });
+    List<TransactionActivity>? activity,
+  }) : activity = activity ?? [];
 
   String siteId;
   String oldSiteId;
@@ -34,6 +38,8 @@ class Site {
   String regionName;
   String latitude;
   String longitude;
+  String note;
+  List<TransactionActivity> activity;
   int monthlyBudget;
   int additionalBudget;
   double siteArea;
