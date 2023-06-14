@@ -1305,7 +1305,9 @@ class ApiService {
         "Longitude" : ${site.longitude},
         "MonthlyBudget" : ${site.monthlyBudget},
         "AdditionalBudget" : ${site.additionalBudget},
-        "AreaID" : "${site.areaId}"
+        "AreaID" : "${site.areaId}",
+        "Notes" : "${site.note}",
+        "Attachment" : ${site.activity.first.submitAttachment.first}
     }
     """;
 
@@ -2258,6 +2260,51 @@ class ApiService {
     try {
       var response =
           await http.post(url, headers: requestHeader, body: bodySend);
+
+      var data = json.decode(response.body);
+
+      return data;
+    } on Error catch (e) {
+      return e;
+    }
+  }
+
+  Future dashboardHistoryDetail(
+      SearchTerm searchTerm, GlobalModel globalModel) async {
+    var box = await Hive.openBox('userLogin');
+    var jwt = box.get('jwTtoken') != "" ? box.get('jwtToken') : "";
+
+    // jwt = jwtToken;
+
+    var url = Uri.https(urlConstant.apiUrl,
+        '/GSS_Backend/public/api/dashboard/budget-history-detail');
+    Map<String, String> requestHeader = {
+      'Authorization': 'Bearer $jwt',
+      'Content-Type': 'application/json',
+    };
+
+    var bodySend = """
+    {
+        "CompName": "",
+        "CompID": "${globalModel.businessUnit}",
+        "Role" : "${globalModel.role}",
+        "Site" : "${globalModel.areaId}",
+        "Month" : "${globalModel.month}",
+        "Year" : "${globalModel.year}",
+        "Keywords" : "${searchTerm.keywords}",
+        "PageNumber" : ${searchTerm.pageNumber},
+        "MaxRecord" : ${searchTerm.max},
+        "OrderBy" : "${searchTerm.orderBy}",
+        "OrderDir" : "${searchTerm.orderDir}"
+    }
+    """;
+
+    try {
+      var response = await http.post(
+        url,
+        headers: requestHeader,
+        body: bodySend,
+      );
 
       var data = json.decode(response.body);
 
