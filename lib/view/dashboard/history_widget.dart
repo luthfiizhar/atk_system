@@ -575,7 +575,7 @@ class _HistoryWidgetListContainerState
                         RegularButton(
                           text: "See Attachment",
                           disabled: false,
-                          padding: ButtonSize().smallSize(),
+                          padding: ButtonSize().tableButton(),
                           onTap: () {
                             html.AnchorElement anchorElement = html.document
                                 .createElement('a') as html.AnchorElement;
