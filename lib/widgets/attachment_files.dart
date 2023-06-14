@@ -18,6 +18,7 @@ class AttachmentFiles extends StatefulWidget {
     Transaction? transaction,
     List<TransactionActivity>? activity,
     this.isRequired = false,
+    this.isSingleFile = false,
   })  : transaction = transaction ?? Transaction(),
         files = files ?? [],
         activity = activity ?? [];
@@ -27,6 +28,7 @@ class AttachmentFiles extends StatefulWidget {
   Transaction transaction;
   List<TransactionActivity> activity;
   bool isRequired;
+  bool isSingleFile;
 
   @override
   State<AttachmentFiles> createState() => _AttachmentFilesState();
@@ -65,16 +67,35 @@ class _AttachmentFilesState extends State<AttachmentFiles> {
           }
           String base64 =
               "data:$fileType/$ext;base64,${const Base64Encoder().convert(element.bytes!).toString()}";
-          widget.files.add(Attachment(
-            file: base64,
-            fileName: element.name,
-            type: ext,
-          ));
-          files.add(Attachment(
-            file: base64,
-            fileName: element.name,
-            type: ext,
-          ));
+          if (!widget.isSingleFile) {
+            widget.files.add(Attachment(
+              file: base64,
+              fileName: element.name,
+              type: ext,
+            ));
+            files.add(Attachment(
+              file: base64,
+              fileName: element.name,
+              type: ext,
+            ));
+          } else {
+            if (widget.files.isEmpty) {
+              widget.files.add(Attachment(
+                file: base64,
+                fileName: element.name,
+                type: ext,
+              ));
+              files.add(Attachment(
+                file: base64,
+                fileName: element.name,
+                type: ext,
+              ));
+            } else {
+              widget.files.first.file = base64;
+              widget.files.first.fileName = element.name;
+              widget.files.first.type = ext;
+            }
+          }
           // widget.activity.first.submitAttachment.add(base64);
           // widget.transaction.activity.first.submitAttachment.add(base64);
           // print(widget.files);
