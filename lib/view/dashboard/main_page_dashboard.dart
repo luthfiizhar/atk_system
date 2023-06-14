@@ -4,6 +4,7 @@ import 'package:atk_system_ga/functions/api_request.dart';
 import 'package:atk_system_ga/layout/layout_page.dart';
 import 'package:atk_system_ga/view/dashboard/actual_pricing_items_widget.dart';
 import 'package:atk_system_ga/view/dashboard/dashboard_options_widget.dart';
+import 'package:atk_system_ga/view/dashboard/history_widget.dart';
 import 'package:atk_system_ga/view/dashboard/main_page_header.dart';
 import 'package:atk_system_ga/view/dashboard/recent_transaction.dart';
 import 'package:atk_system_ga/view/dashboard/site_ranking_widget.dart';
@@ -218,6 +219,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                 visible:
                                     model.role != "StoreManager" ? true : false,
                                 child: SiteRankingWidget()),
+                            HistoryWidget(),
                           ],
                         ),
                         const SizedBox(
