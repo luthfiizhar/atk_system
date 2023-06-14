@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 class CostSummaryCard {
   String title;
   int value;
@@ -114,25 +116,29 @@ class TopRequestedItems {
   String qty;
   String rank;
   String totalCost;
+  Color? color;
 
   TopRequestedItems({
     this.name = "",
     this.qty = "",
     this.rank = "1",
     this.totalCost = "0",
+    this.color = Colors.green,
   });
 
   TopRequestedItems.fromJson(Map<String, dynamic> json)
       : name = json["ItemName"],
         qty = json["TotalRequested"].toString(),
         rank = "1",
-        totalCost = "0";
+        totalCost = "0",
+        color = Colors.green;
 
   Map<String, String> toJson() => {
         "ItemName": name,
         "Quantity": qty,
         "Rank": rank,
         "TotalCost": totalCost,
+        "Color": color.toString(),
       };
 
   @override
@@ -230,6 +236,56 @@ class SiteRanking {
         "BudgetAddition": budgetAddition.toString(),
         "RequsetTime": reqTime ?? "",
         "SettlementTime": settlementTime ?? "",
+      };
+
+  @override
+  String toString() {
+    return toJson().toString();
+  }
+}
+
+class HistoryTable {
+  String siteName;
+  int budgetMonthly;
+  int budgetAdditional;
+  String updatedBy;
+  String updatedDateTime;
+  String file;
+  String fileName;
+  String note;
+  bool? isExpanded;
+
+  HistoryTable({
+    this.siteName = "",
+    this.budgetMonthly = 0,
+    this.budgetAdditional = 0,
+    this.updatedBy = "",
+    this.updatedDateTime = "",
+    this.fileName = "",
+    this.file = "",
+    this.note = "",
+    this.isExpanded = false,
+  });
+
+  HistoryTable.fromJson(Map<String, dynamic> json)
+      : siteName = json["SiteName"],
+        budgetMonthly = json["Budget"],
+        budgetAdditional = json["AdditionalBudget"],
+        file = json["FileData"],
+        fileName = json["FileName"],
+        note = json["Notes"],
+        updatedBy = json["Updated_By"],
+        updatedDateTime = json["Updated_At"],
+        isExpanded = false;
+
+  Map<String, String> toJson() => {
+        '"SiteName"': siteName,
+        '"Budget"': budgetMonthly.toString(),
+        '"AdditionalBudget"': budgetAdditional.toString(),
+        '"FileURL"': file,
+        '"Notes"': note,
+        '"Updated_By"': updatedBy,
+        '"Updated_At"': updatedDateTime
       };
 
   @override
