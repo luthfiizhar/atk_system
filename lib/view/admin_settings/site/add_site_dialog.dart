@@ -2,6 +2,7 @@ import 'package:atk_system_ga/constant/colors.dart';
 import 'package:atk_system_ga/constant/text_style.dart';
 import 'package:atk_system_ga/functions/api_request.dart';
 import 'package:atk_system_ga/models/admin_page_class.dart';
+import 'package:atk_system_ga/widgets/budget_change_dialog.dart';
 import 'package:atk_system_ga/widgets/buttons.dart';
 import 'package:atk_system_ga/widgets/dialogs.dart';
 import 'package:atk_system_ga/widgets/dropdown.dart';
@@ -52,6 +53,8 @@ class _AddSiteDialogState extends State<AddSiteDialog> {
   String selectedArea = "0";
 
   List areaList = [];
+
+  bool isLoading = false;
 
   initAreaList() {
     apiService.getAreaListDropdown().then((value) {
@@ -449,104 +452,215 @@ class _AddSiteDialogState extends State<AddSiteDialog> {
                       const SizedBox(
                         width: 10,
                       ),
-                      RegularButton(
-                        text: 'Confirm',
-                        disabled: false,
-                        onTap: () {
-                          if (formKey.currentState!.validate()) {
-                            formKey.currentState!.save();
-                            showDialog(
-                              context: context,
-                              builder: (context) => const ConfirmDialogBlack(
-                                title: 'Confirmation',
-                                contentText: 'Are you sure to add / edit site?',
-                              ),
-                            ).then((value) {
-                              if (value == 1) {
-                                Site saveSite = Site();
-                                saveSite.siteId = siteId;
-                                saveSite.siteName =
-                                    siteName.replaceAll('"', '\\"');
-                                saveSite.siteArea = siteArea;
-                                saveSite.monthlyBudget = monthlyBudget;
-                                saveSite.additionalBudget = additionalBudget;
-                                saveSite.latitude = latitude;
-                                saveSite.longitude = longitude;
-                                saveSite.areaId = selectedArea;
-                                if (widget.isEdit) {
-                                  saveSite.oldSiteId = widget.site.oldSiteId;
-                                  apiService.updateSite(saveSite).then((value) {
-                                    if (value['Status'].toString() == "200") {
-                                      showDialog(
-                                        context: context,
-                                        builder: (context) => AlertDialogBlack(
-                                          title: value['Title'],
-                                          contentText: value['Message'],
-                                        ),
-                                      ).then((value) {
-                                        Navigator.of(context).pop(1);
-                                      });
-                                    } else {
-                                      showDialog(
-                                        context: context,
-                                        builder: (context) => AlertDialogBlack(
-                                          title: value['Title'],
-                                          contentText: value['Message'],
-                                          isSuccess: false,
-                                        ),
-                                      );
-                                    }
-                                  }).onError((error, stackTrace) {
+                      isLoading
+                          ? const CircularProgressIndicator(
+                              color: eerieBlack,
+                            )
+                          : RegularButton(
+                              text: 'Confirm',
+                              disabled: false,
+                              onTap: () {
+                                if (formKey.currentState!.validate()) {
+                                  formKey.currentState!.save();
+                                  isLoading = true;
+                                  setState(() {});
+                                  if (widget.isEdit &&
+                                      (widget.site.monthlyBudget !=
+                                              monthlyBudget ||
+                                          widget.site.additionalBudget !=
+                                              additionalBudget)) {
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) => BudgetChangeDialog(
+                                        site: widget.site,
+                                      ),
+                                    ).then((value) {
+                                      if (value == 1) {
+                                        print(
+                                            "ACTIVITY -> ${widget.site.activity}");
+                                        print("Notes -> ${widget.site.note} ");
+                                        Site saveSite = Site();
+                                        saveSite.siteId = siteId;
+                                        saveSite.siteName =
+                                            siteName.replaceAll('"', '\\"');
+                                        saveSite.siteArea = siteArea;
+                                        saveSite.monthlyBudget = monthlyBudget;
+                                        saveSite.additionalBudget =
+                                            additionalBudget;
+                                        saveSite.latitude = latitude;
+                                        saveSite.longitude = longitude;
+                                        saveSite.areaId = selectedArea;
+                                        saveSite.activity =
+                                            widget.site.activity;
+                                        saveSite.note = widget.site.note;
+                                        if (widget.isEdit) {
+                                          saveSite.oldSiteId =
+                                              widget.site.oldSiteId;
+                                          apiService
+                                              .updateSite(saveSite)
+                                              .then((value) {
+                                            isLoading = false;
+                                            setState(() {});
+                                            if (value['Status'].toString() ==
+                                                "200") {
+                                              showDialog(
+                                                context: context,
+                                                builder: (context) =>
+                                                    AlertDialogBlack(
+                                                  title: value['Title'],
+                                                  contentText: value['Message'],
+                                                ),
+                                              ).then((value) {
+                                                Navigator.of(context).pop(1);
+                                              });
+                                            } else {
+                                              showDialog(
+                                                context: context,
+                                                builder: (context) =>
+                                                    AlertDialogBlack(
+                                                  title: value['Title'],
+                                                  contentText: value['Message'],
+                                                  isSuccess: false,
+                                                ),
+                                              );
+                                            }
+                                          }).onError((error, stackTrace) {
+                                            print(error);
+                                            isLoading = false;
+                                            setState(() {});
+                                            showDialog(
+                                              context: context,
+                                              builder: (context) =>
+                                                  const AlertDialogBlack(
+                                                title: "Error updateSite",
+                                                contentText:
+                                                    "No internet connection",
+                                                isSuccess: false,
+                                              ),
+                                            );
+                                          });
+                                        }
+                                      }
+                                    });
+                                  } else {
                                     showDialog(
                                       context: context,
                                       builder: (context) =>
-                                          const AlertDialogBlack(
-                                        title: "Erro updateSite",
-                                        contentText: "No internet connection",
-                                        isSuccess: false,
+                                          const ConfirmDialogBlack(
+                                        title: 'Confirmation',
+                                        contentText:
+                                            'Are you sure to add / edit site?',
                                       ),
-                                    );
-                                  });
-                                } else {
-                                  apiService.addSite(saveSite).then((value) {
-                                    if (value['Status'].toString() == "200") {
-                                      showDialog(
-                                        context: context,
-                                        builder: (context) => AlertDialogBlack(
-                                          title: value['Title'],
-                                          contentText: value['Message'],
-                                        ),
-                                      ).then((value) {
-                                        Navigator.of(context).pop(1);
-                                      });
-                                    } else {
-                                      showDialog(
-                                        context: context,
-                                        builder: (context) => AlertDialogBlack(
-                                          title: value['Title'],
-                                          contentText: value['Message'],
-                                          isSuccess: false,
-                                        ),
-                                      );
-                                    }
-                                  }).onError((error, stackTrace) {
-                                    showDialog(
-                                      context: context,
-                                      builder: (context) =>
-                                          const AlertDialogBlack(
-                                        title: "Erro addSite",
-                                        contentText: "No internet connection",
-                                        isSuccess: false,
-                                      ),
-                                    );
-                                  });
+                                    ).then((value) {
+                                      if (value == 1) {
+                                        Site saveSite = Site();
+                                        saveSite.siteId = siteId;
+                                        saveSite.siteName =
+                                            siteName.replaceAll('"', '\\"');
+                                        saveSite.siteArea = siteArea;
+                                        saveSite.monthlyBudget = monthlyBudget;
+                                        saveSite.additionalBudget =
+                                            additionalBudget;
+                                        saveSite.latitude = latitude;
+                                        saveSite.longitude = longitude;
+                                        saveSite.areaId = selectedArea;
+
+                                        if (widget.isEdit) {
+                                          saveSite.oldSiteId =
+                                              widget.site.oldSiteId;
+                                          apiService
+                                              .updateSite(saveSite)
+                                              .then((value) {
+                                            isLoading = false;
+                                            setState(() {});
+                                            if (value['Status'].toString() ==
+                                                "200") {
+                                              showDialog(
+                                                context: context,
+                                                builder: (context) =>
+                                                    AlertDialogBlack(
+                                                  title: value['Title'],
+                                                  contentText: value['Message'],
+                                                ),
+                                              ).then((value) {
+                                                Navigator.of(context).pop(1);
+                                              });
+                                            } else {
+                                              showDialog(
+                                                context: context,
+                                                builder: (context) =>
+                                                    AlertDialogBlack(
+                                                  title: value['Title'],
+                                                  contentText: value['Message'],
+                                                  isSuccess: false,
+                                                ),
+                                              );
+                                            }
+                                          }).onError((error, stackTrace) {
+                                            isLoading = false;
+                                            setState(() {});
+                                            showDialog(
+                                              context: context,
+                                              builder: (context) =>
+                                                  const AlertDialogBlack(
+                                                title: "Erro updateSite",
+                                                contentText:
+                                                    "No internet connection",
+                                                isSuccess: false,
+                                              ),
+                                            );
+                                          });
+                                        } else {
+                                          apiService
+                                              .addSite(saveSite)
+                                              .then((value) {
+                                            isLoading = false;
+                                            setState(() {});
+                                            if (value['Status'].toString() ==
+                                                "200") {
+                                              showDialog(
+                                                context: context,
+                                                builder: (context) =>
+                                                    AlertDialogBlack(
+                                                  title: value['Title'],
+                                                  contentText: value['Message'],
+                                                ),
+                                              ).then((value) {
+                                                Navigator.of(context).pop(1);
+                                              });
+                                            } else {
+                                              showDialog(
+                                                context: context,
+                                                builder: (context) =>
+                                                    AlertDialogBlack(
+                                                  title: value['Title'],
+                                                  contentText: value['Message'],
+                                                  isSuccess: false,
+                                                ),
+                                              );
+                                            }
+                                          }).onError((error, stackTrace) {
+                                            isLoading = false;
+                                            setState(() {});
+                                            showDialog(
+                                              context: context,
+                                              builder: (context) =>
+                                                  const AlertDialogBlack(
+                                                title: "Erro addSite",
+                                                contentText:
+                                                    "No internet connection",
+                                                isSuccess: false,
+                                              ),
+                                            );
+                                          });
+                                        }
+                                      }
+                                    });
+                                  }
                                 }
-                              }
-                            });
-                          }
-                        },
-                        padding: ButtonSize().mediumSize(),
-                      )
+                              },
+                              padding: ButtonSize().mediumSize(),
+                            )
                     ],
                   )
                 ],
