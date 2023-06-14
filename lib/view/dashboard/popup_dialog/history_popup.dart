@@ -140,7 +140,7 @@ class _HistoryPopupDialogState extends State<HistoryPopupDialog> {
       }
 
       searchTerm.orderBy = orderBy;
-      // getData().then((value) {});
+      getData().then((value) {});
     });
   }
 
