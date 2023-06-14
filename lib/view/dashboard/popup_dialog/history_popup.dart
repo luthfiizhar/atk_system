@@ -339,7 +339,6 @@ class _HistoryPopupDialogState extends State<HistoryPopupDialog> {
         Row(
           children: [
             Expanded(
-              flex: 2,
               child: InkWell(
                 onTap: () {
                   onTapHeader("SiteName");
@@ -405,7 +404,7 @@ class _HistoryPopupDialogState extends State<HistoryPopupDialog> {
               ),
             ),
             SizedBox(
-              width: 175,
+              width: 220,
               child: InkWell(
                 onTap: () {
                   onTapHeader("Updated_At");
