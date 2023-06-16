@@ -542,6 +542,9 @@ class _AddSiteDialogState extends State<AddSiteDialog> {
                                             );
                                           });
                                         }
+                                      } else {
+                                        isLoading = false;
+                                        setState(() {});
                                       }
                                     });
                                   } else {
@@ -656,7 +659,13 @@ class _AddSiteDialogState extends State<AddSiteDialog> {
                                             );
                                           });
                                         }
+                                      } else {
+                                        isLoading = false;
+                                        setState(() {});
                                       }
+                                    }).then((value) {
+                                      isLoading = false;
+                                      setState(() {});
                                     });
                                   }
                                 }
