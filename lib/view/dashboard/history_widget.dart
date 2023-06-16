@@ -104,11 +104,11 @@ class _HistoryWidgetState extends State<HistoryWidget> {
         case "UpdatedBy":
           if (searchTerm.orderDir == "ASC") {
             model.listHistory.sort(
-              (a, b) => a.updatedBy.compareTo(b.updatedDateTime),
+              (a, b) => a.dateTime.compareTo(b.dateTime),
             );
           } else {
             model.listHistory.sort(
-              (a, b) => b.updatedBy.compareTo(a.updatedDateTime),
+              (a, b) => b.dateTime.compareTo(a.dateTime),
             );
           }
           break;

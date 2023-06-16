@@ -254,6 +254,7 @@ class HistoryTable {
   String fileName;
   String note;
   bool? isExpanded;
+  String dateTime;
 
   HistoryTable({
     this.siteName = "",
@@ -264,6 +265,7 @@ class HistoryTable {
     this.fileName = "",
     this.file = "",
     this.note = "",
+    this.dateTime = "",
     this.isExpanded = false,
   });
 
@@ -276,6 +278,7 @@ class HistoryTable {
         note = json["Notes"],
         updatedBy = json["Updated_By"],
         updatedDateTime = json["Updated_At"],
+        dateTime = json["Updated_Raw"] ?? "",
         isExpanded = false;
 
   Map<String, String> toJson() => {
