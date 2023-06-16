@@ -475,8 +475,6 @@ class _AddSiteDialogState extends State<AddSiteDialog> {
                                         site: widget.site,
                                       ),
                                     ).then((value) {
-                                      isLoading = false;
-                                      setState(() {});
                                       if (value == 1) {
                                         print(
                                             "ACTIVITY -> ${widget.site.activity}");
