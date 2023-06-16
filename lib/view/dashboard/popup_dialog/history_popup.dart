@@ -204,7 +204,7 @@ class _HistoryPopupDialogState extends State<HistoryPopupDialog> {
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           Text(
-                            "Recent Transaction",
+                            "History",
                             style: cardTitle,
                           ),
                           Padding(

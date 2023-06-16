@@ -104,11 +104,11 @@ class _HistoryWidgetState extends State<HistoryWidget> {
         case "UpdatedBy":
           if (searchTerm.orderDir == "ASC") {
             model.listHistory.sort(
-              (a, b) => a.updatedBy.compareTo(b.updatedBy),
+              (a, b) => a.updatedBy.compareTo(b.updatedDateTime),
             );
           } else {
             model.listHistory.sort(
-              (a, b) => b.updatedBy.compareTo(a.updatedBy),
+              (a, b) => b.updatedBy.compareTo(a.updatedDateTime),
             );
           }
           break;
@@ -186,7 +186,7 @@ class _HistoryWidgetState extends State<HistoryWidget> {
                         icon: "assets/icons/history.png",
                       ),
                       Text(
-                        "Site Ranking",
+                        "History",
                         style: cardTitle,
                       ),
                     ],
@@ -355,7 +355,7 @@ class _HistoryWidgetState extends State<HistoryWidget> {
                   children: [
                     Expanded(
                       child: Text(
-                        'Updated By',
+                        'Updated',
                         style: headerTableTextStyle,
                       ),
                     ),
@@ -507,7 +507,7 @@ class _HistoryWidgetListContainerState
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      widget.history.updatedBy,
+                      widget.history.updatedDateTime,
                       style: helveticaText.copyWith(
                         fontSize: 16,
                         fontWeight: FontWeight.w400,
@@ -518,7 +518,7 @@ class _HistoryWidgetListContainerState
                       height: 7,
                     ),
                     Text(
-                      widget.history.updatedDateTime,
+                      widget.history.updatedBy,
                       style: helveticaText.copyWith(
                         fontSize: 16,
                         fontWeight: FontWeight.w300,
@@ -578,18 +578,20 @@ class _HistoryWidgetListContainerState
                           fontSize: 14,
                           padding: ButtonSize().tableButton(),
                           onTap: () {
-                            html.AnchorElement anchorElement = html.document
-                                .createElement('a') as html.AnchorElement;
+                            if (widget.history.file != "-") {
+                              html.AnchorElement anchorElement = html.document
+                                  .createElement('a') as html.AnchorElement;
 
-                            anchorElement.href = widget.history.file;
-                            anchorElement.download =
-                                widget.history.file.split("/").last;
-                            anchorElement.style.display = "none";
-                            anchorElement.target = '_blank';
-                            anchorElement.setAttribute(
-                                "download", "${widget.history.fileName}");
-                            html.document.body!.children.add(anchorElement);
-                            anchorElement.click();
+                              anchorElement.href = widget.history.file;
+                              anchorElement.download =
+                                  widget.history.file.split("/").last;
+                              anchorElement.style.display = "none";
+                              anchorElement.target = '_blank';
+                              anchorElement.setAttribute(
+                                  "download", "${widget.history.fileName}");
+                              html.document.body!.children.add(anchorElement);
+                              anchorElement.click();
+                            }
                           },
                         )
                       ],
