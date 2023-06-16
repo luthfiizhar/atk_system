@@ -67,7 +67,7 @@ class _BudgetChangeDialogState extends State<BudgetChangeDialog> {
                     height: 15,
                   ),
                   Text(
-                    'Do you want to roll back this request?',
+                    'Do you want to change budget for this site?',
                     style: helveticaText.copyWith(
                       fontSize: 20,
                       fontWeight: FontWeight.w300,
@@ -201,7 +201,7 @@ class _BudgetChangeDialogState extends State<BudgetChangeDialog> {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Text(
-          'Roll Back Confirmation',
+          'Budget Change Confirmation',
           style: dialogTitleText,
         ),
         // Text(
