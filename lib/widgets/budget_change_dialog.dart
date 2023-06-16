@@ -106,7 +106,7 @@ class _BudgetChangeDialogState extends State<BudgetChangeDialog> {
                                 comment = newValue.toString();
                               },
                               validator: (value) => value == ""
-                                  ? "Please input your invoice numbere here."
+                                  ? "Comment cannot be empty."
                                   : null,
                             ),
                           ],
@@ -152,7 +152,7 @@ class _BudgetChangeDialogState extends State<BudgetChangeDialog> {
                               builder: (context) => const AlertDialogBlack(
                                 title: "Failed",
                                 contentText:
-                                    "Please attach your transaction bills.",
+                                    "Please attach budget change memo.",
                                 isSuccess: false,
                               ),
                             );
