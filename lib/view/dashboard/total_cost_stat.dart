@@ -50,21 +50,26 @@ class _TotalCostStatisticState extends State<TotalCostStatistic> {
         decoration: cardDecoration,
         padding: cardPadding,
         child: Consumer<TotalCostStatModel>(builder: (context, model, child) {
-          return model.costSummaryList.isEmpty
+          return model.isLoading
               ? const Center(
                   child: CircularProgressIndicator(color: eerieBlack),
                 )
               : Column(
-                  children: model.costSummaryList
-                      .asMap()
-                      .map(
-                        (index, value) => MapEntry(
-                          index,
-                          statisticContainer(value, index),
-                        ),
-                      )
-                      .values
-                      .toList(),
+                  // children: model.costSummaryList
+                  //     .asMap()
+                  //     .map(
+                  //       (index, value) => MapEntry(
+                  //         index,
+                  //         statisticContainer(value, index),
+                  //       ),
+                  //     )
+                  //     .values
+                  //     .toList(),
+                  children: [
+                    statisticContainer(model.totalReq!, 0),
+                    statisticContainer(model.totalSettle!, 1),
+                    statisticContainer(model.totalBudget!, 2),
+                  ],
                 );
         }),
       ),

@@ -13,6 +13,9 @@ class TotalCostStatModel extends ChangeNotifier {
 
   bool _isLoading = false;
   List<CostSummaryCard>? _costSummaryList = [];
+  CostSummaryCard? _totalReq = CostSummaryCard();
+  CostSummaryCard? _totalSettle = CostSummaryCard();
+  CostSummaryCard? _totalBudget = CostSummaryCard();
 
   StreamSubscription<DatabaseEvent>? _totalReqListener;
   StreamSubscription<DatabaseEvent>? _totalSettleListener;
@@ -22,6 +25,10 @@ class TotalCostStatModel extends ChangeNotifier {
 
   bool get isLoading => _isLoading;
 
+  CostSummaryCard? get totalReq => _totalReq;
+  CostSummaryCard? get totalSettle => _totalSettle;
+  CostSummaryCard? get totalBudget => _totalBudget;
+
   void setCostSummaryList(List<CostSummaryCard> value) {
     _costSummaryList = value;
     notifyListeners();
@@ -29,6 +36,21 @@ class TotalCostStatModel extends ChangeNotifier {
 
   void addCostSummaryList(CostSummaryCard value) {
     _costSummaryList!.add(value);
+    notifyListeners();
+  }
+
+  void setTotalRequest(CostSummaryCard value) {
+    _totalReq = value;
+    notifyListeners();
+  }
+
+  void setTotalSettle(CostSummaryCard value) {
+    _totalSettle = value;
+    notifyListeners();
+  }
+
+  void setTotalBudget(CostSummaryCard value) {
+    _totalBudget = value;
     notifyListeners();
   }
 
@@ -60,14 +82,16 @@ class TotalCostStatModel extends ChangeNotifier {
         requestValue
           ..title = "Total Cost Requested"
           ..from = "from last month";
-        addCostSummaryList(requestValue);
+        // addCostSummaryList(requestValue);
+        setTotalRequest(requestValue);
       } else {
         requestValue
           ..value = 0
           ..percentage = 0
           ..title = "Total Cost Requested"
           ..from = "from last month";
-        addCostSummaryList(requestValue);
+        // addCostSummaryList(requestValue);
+        setTotalRequest(requestValue);
       }
     });
 
@@ -90,26 +114,17 @@ class TotalCostStatModel extends ChangeNotifier {
         settlementValue
           ..title = "Cost Settled"
           ..from = "from last month";
-        addCostSummaryList(settlementValue);
+        // addCostSummaryList(settlementValue);
+        setTotalSettle(settlementValue);
       } else {
         settlementValue
           ..value = 0
           ..percentage = 0
           ..title = "Total Cost Settled"
           ..from = "from last month";
-        addCostSummaryList(settlementValue);
+        // addCostSummaryList(settlementValue);
+        setTotalSettle(settlementValue);
       }
-    });
-
-    _totalSettleListener!.onError((value) {
-      setIsLoading(false);
-      CostSummaryCard requestValue = CostSummaryCard();
-      requestValue
-        ..value = 0
-        ..percentage = 0
-        ..title = "Total Cost Settled"
-        ..from = "from last month";
-      addCostSummaryList(requestValue);
     });
 
     _totalBudgetListener = databaseRef
@@ -129,8 +144,9 @@ class TotalCostStatModel extends ChangeNotifier {
         budgetValue
           ..title = "Budget"
           ..from = "from last month";
-        addCostSummaryList(budgetValue);
+        // addCostSummaryList(budgetValue);
         // _costSummaryList!.add(budgetValue);
+        setTotalBudget(budgetValue);
         setIsLoading(false);
       } else {
         setIsLoading(false);
@@ -139,7 +155,8 @@ class TotalCostStatModel extends ChangeNotifier {
           ..percentage = 0
           ..title = "Budget"
           ..from = "from last month";
-        addCostSummaryList(budgetValue);
+        // addCostSummaryList(budgetValue);
+        setTotalBudget(budgetValue);
       }
     });
   }
