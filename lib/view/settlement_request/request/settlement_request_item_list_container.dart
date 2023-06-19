@@ -109,11 +109,11 @@ class _SettlementRequestItemListContainerState
     });
     widget._actualPrice.addListener(() {
       if (mounted) {
-        if (widget._qty.text == "") {
+        if (widget._actualPrice.text == "") {
           widget._actualPrice.text = "0";
         }
-        widget._qty.selection = TextSelection.fromPosition(
-            TextPosition(offset: widget._qty.text.length));
+        widget._actualPrice.selection = TextSelection.fromPosition(
+            TextPosition(offset: widget._actualPrice.text.length));
         // setState(() {});
       }
     });
