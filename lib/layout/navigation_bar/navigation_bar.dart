@@ -22,6 +22,7 @@ class NavigationBarWeb extends StatefulWidget {
 class _NavigationBarWebState extends State<NavigationBarWeb> {
   int index = 0;
   ApiService apiService = ApiService();
+  List menuList = [];
 
   String role = "";
   bool isSysAdmin = false;
@@ -45,18 +46,20 @@ class _NavigationBarWebState extends State<NavigationBarWeb> {
     // TODO: implement initState
     super.initState();
     index = widget.index;
-    // apiService.getUserData().then((value) {
-    //   if (value['Status'].toString() == "200") {
-    //     isSysAdmin = value['Data']['SystemAdmin'];
-    //     setState(() {});
-    //   } else {}
-    // }).onError((error, stackTrace) {
-    //   print(error);
-    // });
+    apiService.getUserData().then((value) {
+      if (value['Status'].toString() == "200") {
+        // isSysAdmin = value['Data']['SystemAdmin'];
+        menuList = value["Data"]["MenuList"];
+        setState(() {});
+      } else {}
+    }).onError((error, stackTrace) {
+      print(error);
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    print(GoRouter.of(context).location);
     return Container(
       height: 70,
       padding: const EdgeInsets.only(
@@ -112,41 +115,60 @@ class _NavigationBarWebState extends State<NavigationBarWeb> {
             children: [
               Padding(
                 padding: const EdgeInsets.only(right: 50),
-                child: NavigationItem(
-                  title: 'Home',
-                  routeName: 'home',
-                  selected: index == 0,
-                  onHighlight: onHighlight,
+                child: Wrap(
+                  spacing: 50,
+                  children: menuList
+                      .asMap()
+                      .entries
+                      .map(
+                        (e) => NavigationItem(
+                          title: e.value["Title"],
+                          routeName: e.value["RouteName"],
+                          selected: e.value["RouteName"] ==
+                              GoRouter.of(context).location.replaceAll("/", ""),
+                          onHighlight: onHighlight,
+                        ),
+                      )
+                      .toList(),
                 ),
               ),
-              Visibility(
-                visible: dashboardAccess,
-                child: Padding(
-                  padding: const EdgeInsets.only(
-                    right: 50,
-                  ),
-                  child: NavigationItem(
-                    title: 'Dashboard',
-                    routeName: 'dashboard',
-                    selected: index == 2,
-                    onHighlight: onHighlight,
-                  ),
-                ),
-              ),
-              Visibility(
-                visible: settingAccess,
-                child: Padding(
-                  padding: const EdgeInsets.only(
-                    right: 50,
-                  ),
-                  child: NavigationItem(
-                    title: 'Setting',
-                    routeName: 'admin_setting',
-                    selected: index == 1,
-                    onHighlight: onHighlight,
-                  ),
-                ),
-              ),
+              // Padding(
+              //   padding: const EdgeInsets.only(right: 50),
+              //   child: NavigationItem(
+              //     title: 'Home',
+              //     routeName: 'home',
+              //     selected: index == 0,
+              //     onHighlight: onHighlight,
+              //   ),
+              // ),
+              // Visibility(
+              //   visible: dashboardAccess,
+              //   child: Padding(
+              //     padding: const EdgeInsets.only(
+              //       right: 50,
+              //     ),
+              //     child: NavigationItem(
+              //       title: 'Dashboard',
+              //       routeName: 'dashboard',
+              //       selected: index == 2,
+              //       onHighlight: onHighlight,
+              //     ),
+              //   ),
+              // ),
+              // Visibility(
+              //   visible: settingAccess,
+              //   child: Padding(
+              //     padding: const EdgeInsets.only(
+              //       right: 50,
+              //     ),
+              //     child: NavigationItem(
+              //       title: 'Setting',
+              //       routeName: 'admin_setting',
+              //       selected: index == 1,
+              //       onHighlight: onHighlight,
+              //     ),
+              //   ),
+              // ),
               // NavigationItem(
               //   title: 'Logout',
               //   selected: false,
@@ -161,6 +183,7 @@ class _NavigationBarWebState extends State<NavigationBarWeb> {
                   isSystemAdmin = false;
                   settingAccess = false;
                   dashboardAccess = false;
+                  isViewerOnly = false;
                   context.go('/login');
                   setState(() {});
                 },
