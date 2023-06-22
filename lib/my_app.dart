@@ -43,6 +43,14 @@ class MyApp extends StatelessWidget {
             child: const HomePage(),
           );
         },
+        redirect: (context, state) {
+          final homePage = state.subloc == '/home';
+          if (isViewerOnly) {
+            return homePage ? '/dashboard' : null;
+          }
+
+          return null;
+        },
       ),
       GoRoute(
         name: 'supplies_request',
