@@ -11,6 +11,7 @@ bool isTokenValid = false;
 bool isSystemAdmin = false;
 bool settingAccess = false;
 bool dashboardAccess = false;
+bool isViewerOnly = false;
 bool isOps = false;
 
 loginCheck() async {
