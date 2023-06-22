@@ -53,6 +53,11 @@ class _HomePageState extends State<HomePage> {
         if (value["Data"]["Role"] == "System Admin") {
           isSystemAdmin = true;
         }
+        if (value["Data"]["Role"] == "Viewer") {
+          print("viewer");
+          isViewerOnly = true;
+          context.goNamed("dashboard");
+        }
         setState(() {});
       } else {}
     }).onError((error, stackTrace) {
@@ -75,7 +80,7 @@ class _HomePageState extends State<HomePage> {
               orderPeriod: element['OrderPeriod'],
               formType: element['FormType'],
               formCategory: element['FormCategory'],
-              siteName: element['SiteName'],
+              siteName: element['SiteName'] ?? "",
               status: element['Status'],
               link: element['Link'],
             ),
@@ -83,6 +88,16 @@ class _HomePageState extends State<HomePage> {
         }
         setState(() {});
       }
+    }).onError((error, stackTrace) {
+      print(error);
+      showDialog(
+        context: context,
+        builder: (context) => const AlertDialogBlack(
+          title: "Error toDoList",
+          contentText: "No internet connection",
+          isSuccess: false,
+        ),
+      );
     });
   }
 

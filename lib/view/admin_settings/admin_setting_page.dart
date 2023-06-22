@@ -482,7 +482,7 @@ class _AdminSettingPageState extends State<AdminSettingPage> {
   @override
   Widget build(BuildContext context) {
     return LayoutPageWeb(
-      index: 1,
+      index: 2,
       child: ConstrainedBox(
         constraints: pageContstraint,
         child: Align(

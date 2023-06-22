@@ -169,7 +169,7 @@ class _DashboardPageState extends State<DashboardPage> {
       value: globalModel,
       child: Consumer<GlobalModel>(builder: (context, model, child) {
         return LayoutPageWeb(
-          index: 2,
+          index: 1,
           child: ConstrainedBox(
             constraints: pageContstraint,
             child: Align(
