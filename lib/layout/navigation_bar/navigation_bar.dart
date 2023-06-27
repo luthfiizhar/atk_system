@@ -59,7 +59,6 @@ class _NavigationBarWebState extends State<NavigationBarWeb> {
 
   @override
   Widget build(BuildContext context) {
-    print(GoRouter.of(context).location);
     return Container(
       height: 70,
       padding: const EdgeInsets.only(
