@@ -193,7 +193,10 @@ class _TopReqItemsWidgetState extends State<TopReqItemsWidget> {
                             ),
                             series: [
                               PieSeries<TopRequestedItems, String>(
-                                dataSource: model.topReqItems,
+                                dataSource: model.topReqItems
+                                    .where(
+                                        (element) => int.parse(element.qty) > 0)
+                                    .toList(),
                                 // pointColorMapper: (data, _) => data.color,
                                 xValueMapper: (data, _) => data.name,
                                 yValueMapper: (data, _) =>
