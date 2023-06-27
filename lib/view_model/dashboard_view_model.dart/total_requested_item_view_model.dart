@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -32,6 +33,16 @@ class TopReqItemsViewModel extends ChangeNotifier {
   Future getTopReqItems(GlobalModel globalModel) async {
     setIsLoading(true);
     // _topReqItems.clear();
+    List colorPallet = <Color>[
+      Colors.amber,
+      Colors.brown,
+      Colors.green,
+      Colors.redAccent,
+      Colors.blueAccent,
+      Colors.teal
+    ];
+    final _random = Random();
+    int indexColor = 0;
     _topReqStream = databaseRef
         .child(
             '${globalModel.businessUnit}/${globalModel.role}/TopRequestedItem/${globalModel.areaId}/${globalModel.year}/${globalModel.month}/List')
@@ -42,6 +53,10 @@ class TopReqItemsViewModel extends ChangeNotifier {
         dynamic result = List<dynamic>.from(jsonString as dynamic);
         List<TopRequestedItems> list =
             (result as List).map((e) => TopRequestedItems.fromJson(e)).toList();
+        // for (var element in list) {
+        //   indexColor = _random.nextInt(colorPallet.length);
+        //   element.color = colorPallet[indexColor];
+        // }
         // print(list);
         setTopReqItems(list);
       } else {
