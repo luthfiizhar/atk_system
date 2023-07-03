@@ -176,45 +176,55 @@ class _TransactionListContainerState extends State<TransactionListContainer> {
                                                   "Waiting OPS Approval" &&
                                               role != "Operation HO"
                                           ? const SizedBox()
-                                          : RegularButton(
-                                              fontSize: 14,
-                                              text: 'Approve',
-                                              disabled: false,
-                                              padding:
-                                                  ButtonSize().tableButton(),
-                                              onTap: () {
-                                                if (widget.transaction.status ==
-                                                        "Waiting SM Approval" &&
-                                                    role == "Store Manager") {
-                                                  context.goNamed(
-                                                    'approval_request',
-                                                    params: {
-                                                      "formId": widget
-                                                          .transaction.formId,
-                                                    },
-                                                  );
-                                                } else if (widget.transaction
-                                                            .status ==
-                                                        "Waiting OPS Approval" &&
-                                                    role == "Operation HO") {
-                                                  context.goNamed(
-                                                    'approval_request',
-                                                    params: {
-                                                      "formId": widget
-                                                          .transaction.formId,
-                                                    },
-                                                  );
-                                                } else {
-                                                  context.goNamed(
-                                                    'request_order_detail',
-                                                    params: {
-                                                      "formId": widget
-                                                          .transaction.formId,
-                                                    },
-                                                  );
-                                                }
-                                              },
-                                            )
+                                          : widget.transaction.status ==
+                                                  "Expired"
+                                              ? const SizedBox()
+                                              : RegularButton(
+                                                  fontSize: 14,
+                                                  text: 'Approve',
+                                                  disabled: false,
+                                                  padding: ButtonSize()
+                                                      .tableButton(),
+                                                  onTap: () {
+                                                    if (widget.transaction
+                                                                .status ==
+                                                            "Waiting SM Approval" &&
+                                                        role ==
+                                                            "Store Manager") {
+                                                      context.goNamed(
+                                                        'approval_request',
+                                                        params: {
+                                                          "formId": widget
+                                                              .transaction
+                                                              .formId,
+                                                        },
+                                                      );
+                                                    } else if (widget
+                                                                .transaction
+                                                                .status ==
+                                                            "Waiting OPS Approval" &&
+                                                        role ==
+                                                            "Operation HO") {
+                                                      context.goNamed(
+                                                        'approval_request',
+                                                        params: {
+                                                          "formId": widget
+                                                              .transaction
+                                                              .formId,
+                                                        },
+                                                      );
+                                                    } else {
+                                                      context.goNamed(
+                                                        'request_order_detail',
+                                                        params: {
+                                                          "formId": widget
+                                                              .transaction
+                                                              .formId,
+                                                        },
+                                                      );
+                                                    }
+                                                  },
+                                                )
                                   : const SizedBox(),
                               // widget.transaction.status == "Draft" ||
                               //         widget.transaction.status == "Approved"
