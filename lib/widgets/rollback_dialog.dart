@@ -161,7 +161,9 @@ class _RollBackDialogState extends State<RollBackDialog> {
                               widget.transaction.activity
                                   .add(TransactionActivity());
                               widget.transaction.activity.first.comment =
-                                  comment;
+                                  comment
+                                      .replaceAll('"', '\\"')
+                                      .replaceAll('\n', '\\n');
 
                               for (var element in attachment) {
                                 widget
