@@ -168,7 +168,9 @@ class _BudgetChangeDialogState extends State<BudgetChangeDialog> {
                                 ),
                               ).then((value) {
                                 if (value == 1) {
-                                  widget.site.note = comment;
+                                  widget.site.note = comment
+                                      .replaceAll('"', '\\"')
+                                      .replaceAll('\n', '\\n');
                                   widget.site.activity
                                       .add(TransactionActivity());
                                   widget.site.activity.first.comment = comment;
