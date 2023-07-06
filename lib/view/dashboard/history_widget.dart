@@ -1,4 +1,5 @@
 import 'package:atk_system_ga/constant/constraints.dart';
+import 'package:atk_system_ga/functions/api_request.dart';
 import 'package:atk_system_ga/models/main_page_model.dart';
 import 'package:atk_system_ga/models/search_term.dart';
 import 'package:atk_system_ga/view/dashboard/popup_dialog/export_dialog.dart';
@@ -8,6 +9,7 @@ import 'package:atk_system_ga/view/dashboard/widget_icon.dart';
 import 'package:atk_system_ga/view_model/dashboard_view_model.dart/history_view_model.dart';
 import 'package:atk_system_ga/view_model/global_model.dart';
 import 'package:atk_system_ga/widgets/buttons.dart';
+import 'package:atk_system_ga/widgets/dialogs.dart';
 import 'package:atk_system_ga/widgets/dropdown.dart';
 import 'package:atk_system_ga/widgets/empty_table.dart';
 import 'package:flutter/material.dart';
@@ -578,20 +580,58 @@ class _HistoryWidgetListContainerState
                           fontSize: 14,
                           padding: ButtonSize().tableButton(),
                           onTap: () {
-                            if (widget.history.file != "-") {
-                              html.AnchorElement anchorElement = html.document
-                                  .createElement('a') as html.AnchorElement;
+                            ApiService apiService = ApiService();
+                            apiService
+                                .getHistoryBudgetDetailAttachment(
+                                    widget.history.id)
+                                .then((value) {
+                              if (value["Status"].toString() == "200") {
+                                html.AnchorElement anchorElement = html.document
+                                    .createElement('a') as html.AnchorElement;
 
-                              anchorElement.href = widget.history.file;
-                              anchorElement.download =
-                                  widget.history.file.split("/").last;
-                              anchorElement.style.display = "none";
-                              anchorElement.target = '_blank';
-                              anchorElement.setAttribute(
-                                  "download", "${widget.history.fileName}");
-                              html.document.body!.children.add(anchorElement);
-                              anchorElement.click();
-                            }
+                                anchorElement.href = value["Data"]["FileData"];
+                                anchorElement.download =
+                                    value["Data"]["FileData"].split("/").last;
+                                anchorElement.style.display = "none";
+                                anchorElement.target = '_blank';
+                                anchorElement.setAttribute(
+                                    "download", value["Data"]["FileName"]);
+                                html.document.body!.children.add(anchorElement);
+                                anchorElement.click();
+                              } else {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) => AlertDialogBlack(
+                                    title: value["Title"],
+                                    contentText: value["Message"],
+                                    isSuccess: false,
+                                  ),
+                                );
+                              }
+                            }).onError((error, stackTrace) {
+                              showDialog(
+                                context: context,
+                                builder: (context) => AlertDialogBlack(
+                                  title: "Error download",
+                                  contentText: error.toString(),
+                                  isSuccess: false,
+                                ),
+                              );
+                            });
+                            // if (widget.history.file != "-") {
+                            //   html.AnchorElement anchorElement = html.document
+                            //       .createElement('a') as html.AnchorElement;
+
+                            //   anchorElement.href = widget.history.file;
+                            //   anchorElement.download =
+                            //       widget.history.file.split("/").last;
+                            //   anchorElement.style.display = "none";
+                            //   anchorElement.target = '_blank';
+                            //   anchorElement.setAttribute(
+                            //       "download", "${widget.history.fileName}");
+                            //   html.document.body!.children.add(anchorElement);
+                            //   anchorElement.click();
+                            // }
                           },
                         )
                       ],

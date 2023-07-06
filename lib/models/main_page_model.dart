@@ -245,6 +245,7 @@ class SiteRanking {
 }
 
 class HistoryTable {
+  String id;
   String siteName;
   int budgetMonthly;
   int budgetAdditional;
@@ -257,6 +258,7 @@ class HistoryTable {
   String dateTime;
 
   HistoryTable({
+    this.id = "",
     this.siteName = "",
     this.budgetMonthly = 0,
     this.budgetAdditional = 0,
@@ -270,7 +272,8 @@ class HistoryTable {
   });
 
   HistoryTable.fromJson(Map<String, dynamic> json)
-      : siteName = json["SiteName"],
+      : id = json["RowNumber"].toString(),
+        siteName = json["SiteName"],
         budgetMonthly = json["Budget"],
         budgetAdditional = json["AdditionalBudget"],
         file = json["FileData"],
