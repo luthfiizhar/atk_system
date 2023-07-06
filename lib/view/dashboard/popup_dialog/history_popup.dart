@@ -89,6 +89,7 @@ class _HistoryPopupDialogState extends State<HistoryPopupDialog> {
         for (var element in listResult) {
           listHistory.add(
             HistoryTable(
+              id: element["RowNumber"].toString(),
               siteName: element["SiteName"],
               budgetMonthly: element["Budget"],
               budgetAdditional: element["AdditionalBudget"],
