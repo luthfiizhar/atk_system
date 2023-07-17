@@ -1281,7 +1281,7 @@ class ApiService {
     }
   }
 
-  Future updateSite(Site site) async {
+  Future updateSite(Site site, bool isBudgetChange) async {
     // print(bookingId);
     var box = await Hive.openBox('userLogin');
     var jwt = box.get('jwTtoken') != "" ? box.get('jwtToken') : "";
@@ -1306,10 +1306,28 @@ class ApiService {
         "MonthlyBudget" : ${site.monthlyBudget},
         "AdditionalBudget" : ${site.additionalBudget},
         "AreaID" : "${site.areaId}",
-        "Notes" : "${site.note}",
-        "Attachment" : ${site.activity.first.submitAttachment.first}
+        "Notes" : "",
+        "Attachment" : ""
     }
     """;
+
+    if (isBudgetChange) {
+      bodySend = """
+        {
+            "OldSiteId" : "${site.oldSiteId}",
+            "SiteId" : "${site.siteId}",
+            "SiteName" : "${site.siteName}",
+            "SiteArea" : ${site.siteArea},
+            "Latitude" : ${site.latitude},
+            "Longitude" : ${site.longitude},
+            "MonthlyBudget" : ${site.monthlyBudget},
+            "AdditionalBudget" : ${site.additionalBudget},
+            "AreaID" : "${site.areaId}",
+            "Notes" : "${site.note}",
+            "Attachment" : ${site.activity.first.submitAttachment.first}
+        }
+      """;
+    }
 
     try {
       var response =

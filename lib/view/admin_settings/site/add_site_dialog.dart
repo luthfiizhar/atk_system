@@ -476,9 +476,6 @@ class _AddSiteDialogState extends State<AddSiteDialog> {
                                       ),
                                     ).then((value) {
                                       if (value == 1) {
-                                        print(
-                                            "ACTIVITY -> ${widget.site.activity}");
-                                        print("Notes -> ${widget.site.note} ");
                                         Site saveSite = Site();
                                         saveSite.siteId = siteId;
                                         saveSite.siteName =
@@ -494,10 +491,11 @@ class _AddSiteDialogState extends State<AddSiteDialog> {
                                             widget.site.activity;
                                         saveSite.note = widget.site.note;
                                         if (widget.isEdit) {
+                                          print("edit");
                                           saveSite.oldSiteId =
                                               widget.site.oldSiteId;
                                           apiService
-                                              .updateSite(saveSite)
+                                              .updateSite(saveSite, true)
                                               .then((value) {
                                             isLoading = false;
                                             setState(() {});
@@ -572,7 +570,7 @@ class _AddSiteDialogState extends State<AddSiteDialog> {
                                           saveSite.oldSiteId =
                                               widget.site.oldSiteId;
                                           apiService
-                                              .updateSite(saveSite)
+                                              .updateSite(saveSite, false)
                                               .then((value) {
                                             isLoading = false;
                                             setState(() {});
@@ -661,9 +659,6 @@ class _AddSiteDialogState extends State<AddSiteDialog> {
                                         isLoading = false;
                                         setState(() {});
                                       }
-                                    }).then((value) {
-                                      isLoading = false;
-                                      setState(() {});
                                     });
                                   }
                                 }
