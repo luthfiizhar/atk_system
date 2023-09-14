@@ -31,14 +31,10 @@ class _ApprovalSuppliesItemListContainerState
           children: [
             SizedBox(
               width: 420,
-              child: Row(
-                children: [
-                  Text(
-                    widget.item.itemName,
-                    style: bodyTableNormalText,
-                    textAlign: TextAlign.left,
-                  ),
-                ],
+              child: Text(
+                widget.item.itemName,
+                style: bodyTableNormalText,
+                textAlign: TextAlign.left,
               ),
             ),
             SizedBox(
