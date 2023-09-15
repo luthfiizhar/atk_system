@@ -357,9 +357,47 @@ class PictureDetail extends StatelessWidget {
   Widget build(BuildContext context) {
     // WidgetsBinding.instance.
     return Dialog(
-      child: urlImage == ""
-          ? Image.memory(image!)
-          : Image.network(urlImage!, fit: BoxFit.cover),
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+      child: Container(
+        constraints: const BoxConstraints(
+          maxWidth: 1100,
+        ),
+        child: Stack(
+          children: [
+            InteractiveViewer(
+              child: urlImage == ""
+                  ? Image.memory(
+                      image!,
+                      fit: BoxFit.fill,
+                    )
+                  : Container(
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                          image: Image.network(
+                            urlImage!,
+                            fit: BoxFit.contain,
+                          ).image,
+                        ),
+                      ),
+                    ),
+            ),
+            Positioned(
+              top: 0,
+              right: 0,
+              child: InkWell(
+                onTap: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Icon(
+                  Icons.close,
+                  color: white,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
