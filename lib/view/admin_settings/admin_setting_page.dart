@@ -639,7 +639,7 @@ class _AdminSettingPageState extends State<AdminSettingPage> {
                 'Add Site',
                 style: helveticaText.copyWith(
                   fontSize: 16,
-                  height: 1.3,
+                  height: 18 / 16,
                   fontWeight: FontWeight.w700,
                 ),
               )
@@ -684,7 +684,7 @@ class _AdminSettingPageState extends State<AdminSettingPage> {
                 'Add User',
                 style: helveticaText.copyWith(
                   fontSize: 16,
-                  height: 1.3,
+                  height: 18 / 16,
                   fontWeight: FontWeight.w700,
                 ),
               )
@@ -730,7 +730,7 @@ class _AdminSettingPageState extends State<AdminSettingPage> {
                 'Add Item',
                 style: helveticaText.copyWith(
                   fontSize: 16,
-                  height: 1.3,
+                  height: 18 / 16,
                   fontWeight: FontWeight.w700,
                 ),
               )
@@ -775,7 +775,7 @@ class _AdminSettingPageState extends State<AdminSettingPage> {
                 'Add BU',
                 style: helveticaText.copyWith(
                   fontSize: 16,
-                  height: 1.3,
+                  height: 18 / 16,
                   fontWeight: FontWeight.w700,
                 ),
               )
@@ -820,7 +820,7 @@ class _AdminSettingPageState extends State<AdminSettingPage> {
                 'Add Region',
                 style: helveticaText.copyWith(
                   fontSize: 16,
-                  height: 1.3,
+                  height: 18 / 16,
                   fontWeight: FontWeight.w700,
                 ),
               )
@@ -865,7 +865,7 @@ class _AdminSettingPageState extends State<AdminSettingPage> {
                 'Add Area',
                 style: helveticaText.copyWith(
                   fontSize: 16,
-                  height: 1.3,
+                  height: 18 / 16,
                   fontWeight: FontWeight.w700,
                 ),
               )

@@ -195,6 +195,7 @@ class _FilterSearchBarTransactionListState
                                     'Export Data',
                                     style: helveticaText.copyWith(
                                       fontSize: 14,
+                                      height: 16 / 14,
                                       fontWeight: FontWeight.w700,
                                     ),
                                   )
