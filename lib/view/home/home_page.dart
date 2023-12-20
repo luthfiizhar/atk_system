@@ -5,6 +5,7 @@ import 'package:atk_system_ga/constant/text_style.dart';
 import 'package:atk_system_ga/functions/api_request.dart';
 import 'package:atk_system_ga/layout/layout_page.dart';
 import 'package:atk_system_ga/main.dart';
+import 'package:atk_system_ga/view/home/pick_site_dialog.dart';
 import 'package:atk_system_ga/widgets/buttons.dart';
 import 'package:atk_system_ga/widgets/dialogs.dart';
 import 'package:atk_system_ga/widgets/menu_buttons.dart';
@@ -349,7 +350,11 @@ class _HomePageState extends State<HomePage> {
           text: 'Order Supplies',
           onTap: () {
             // context.goNamed('supplies_request');
-            createOrderMonthly().then((value) {});
+            // createOrderMonthly().then((value) {});
+            showDialog(
+              context: context,
+              builder: (context) => const PickSiteDialog(),
+            );
           },
         ),
         MenuButton(
@@ -371,7 +376,13 @@ class _HomePageState extends State<HomePage> {
           description:
               'Ask for additional supplies that you\'ve missed in monthly order',
           onTap: () {
-            createOrderAdditional().then((value) {});
+            // createOrderAdditional().then((value) {});
+            showDialog(
+              context: context,
+              builder: (context) => const PickSiteDialog(
+                formCategory: "Additional",
+              ),
+            );
           },
         ),
         MenuButton(
