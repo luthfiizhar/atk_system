@@ -155,6 +155,173 @@ class BlackDropdown extends StatelessWidget {
   }
 }
 
+// class SearchDropDown extends StatelessWidget {
+//   SearchDropDown({
+//     super.key,
+//     List<DropdownMenuItem<String>>? items,
+//     this.value,
+//     this.onChanged,
+//     this.hintText = "Choose",
+//     this.suffixIcon,
+//     this.width = 300,
+//     this.validator,
+//     this.enabled = true,
+//     FocusNode? focusNode,
+//   })  : items = items ?? [],
+//         focusNode = focusNode ?? FocusNode();
+
+//   TextEditingController searchController = TextEditingController();
+//   List<DropdownMenuItem<String>> items;
+//   List<double>? customHeights;
+//   dynamic value;
+//   final FormFieldValidator? validator;
+//   ValueChanged? onChanged;
+//   String hintText;
+//   Widget? suffixIcon;
+//   double width;
+//   bool enabled;
+//   FocusNode focusNode;
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return DropdownButtonFormField2(
+//       validator: validator,
+//       // isExpanded: true,
+//       iconStyleData: IconStyleData(
+//         icon: suffixIcon!,
+//       ),
+//       buttonStyleData: ButtonStyleData(
+//         width: width,
+//         height: 39,
+//         overlayColor: MaterialStateProperty.resolveWith<Color>(
+//           (states) {
+//             return Colors.transparent;
+//           },
+//         ),
+//       ),
+//       style: const TextStyle(
+//         fontSize: 16,
+//         fontWeight: FontWeight.w300,
+//         fontFamily: 'Helvetica',
+//       ),
+//       items: items,
+//       value: value,
+//       onChanged: onChanged,
+//       decoration: InputDecoration(
+//         border: OutlineInputBorder(
+//           borderRadius: BorderRadius.circular(5),
+//           borderSide: const BorderSide(
+//             color: davysGray,
+//             width: 1,
+//           ),
+//         ),
+//         enabledBorder: OutlineInputBorder(
+//           borderRadius: BorderRadius.circular(5),
+//           borderSide: const BorderSide(
+//             color: davysGray,
+//             width: 1,
+//           ),
+//         ),
+//         focusedBorder: OutlineInputBorder(
+//           borderRadius: BorderRadius.circular(5),
+//           borderSide: const BorderSide(
+//             color: davysGray,
+//             width: 2,
+//           ),
+//         ),
+//         disabledBorder: OutlineInputBorder(
+//           borderRadius: BorderRadius.circular(5),
+//           borderSide: const BorderSide(
+//             color: grayx11,
+//             width: 1,
+//           ),
+//         ),
+//         fillColor: Colors.transparent,
+//         filled: true,
+//         isDense: true,
+//         // isCollapsed: true,
+//         focusColor: white,
+//         hintText: hintText,
+//         hintStyle: const TextStyle(
+//           fontSize: 16,
+//           fontWeight: FontWeight.w300,
+//           color: lightGray,
+//         ),
+//         contentPadding: const EdgeInsets.only(
+//           right: 15,
+//           left: 15,
+//           top: 0,
+//           bottom: 12,
+//         ),
+//         // suffixIcon: suffixIcon,
+//         suffixIconColor: eerieBlack,
+//         enabled: enabled,
+//       ),
+//       dropdownStyleData: DropdownStyleData(
+//         // width: width,
+//         maxHeight: 300,
+//         offset: const Offset(0, -5),
+//         decoration: BoxDecoration(
+//           borderRadius: BorderRadius.circular(10),
+//           border: Border.all(
+//             color: sonicSilver,
+//             width: 1,
+//           ),
+//           color: white,
+//         ),
+//       ),
+//       menuItemStyleData: MenuItemStyleData(
+//         customHeights: customHeights,
+//         padding: const EdgeInsets.only(
+//           left: 20,
+//           right: 20,
+//         ),
+//       ),
+//       dropdownSearchData: DropdownSearchData(
+//         searchController: searchController,
+//         searchInnerWidgetHeight: 50,
+//         searchInnerWidget: Container(
+//           height: 50,
+//           padding: const EdgeInsets.only(
+//             left: 20,
+//             right: 20,
+//           ),
+//           child: TextFormField(
+//             maxLines: 1,
+//             controller: searchController,
+//             decoration: InputDecoration(
+//               prefixIcon: const Icon(
+//                 Icons.search,
+//               ),
+//               isDense: true,
+//               contentPadding: const EdgeInsets.symmetric(
+//                 vertical: 15,
+//                 horizontal: 0,
+//               ),
+//               hintText: 'Search here ...',
+//               hintStyle: helveticaText.copyWith(fontSize: 12),
+//               border: const UnderlineInputBorder(
+//                 borderSide: BorderSide(
+//                   color: davysGray,
+//                 ),
+//               ),
+//             ),
+//           ),
+//         ),
+//         searchMatchFn: (item, searchValue) {
+//           return (item.value.toString().toLowerCase().contains(searchValue));
+//         },
+//       ),
+//       //This to clear the search value when you close the menu
+//       onMenuStateChange: (isOpen) {
+//         if (!isOpen) {
+//           searchController.clear();
+//         }
+//       },
+//     );
+//   }
+// }
+
 class SearchDropDown extends StatelessWidget {
   SearchDropDown({
     super.key,
@@ -162,25 +329,36 @@ class SearchDropDown extends StatelessWidget {
     this.value,
     this.onChanged,
     this.hintText = "Choose",
-    this.suffixIcon,
+    Widget? suffixIcon,
     this.width = 300,
     this.validator,
     this.enabled = true,
+    List? itemList,
     FocusNode? focusNode,
+    this.searchFunction,
   })  : items = items ?? [],
-        focusNode = focusNode ?? FocusNode();
+        itemList = itemList ?? [],
+        focusNode = focusNode ?? FocusNode(),
+        suffixIcon = suffixIcon ??
+            const Icon(
+              Icons.keyboard_arrow_down_rounded,
+              weight: 400,
+              color: davysGray,
+            );
 
   TextEditingController searchController = TextEditingController();
   List<DropdownMenuItem<String>> items;
+  List itemList;
   List<double>? customHeights;
   dynamic value;
   final FormFieldValidator? validator;
   ValueChanged? onChanged;
   String hintText;
-  Widget? suffixIcon;
+  Widget suffixIcon;
   double width;
   bool enabled;
   FocusNode focusNode;
+  bool Function(DropdownMenuItem<dynamic>, String)? searchFunction;
 
   @override
   Widget build(BuildContext context) {
@@ -188,11 +366,11 @@ class SearchDropDown extends StatelessWidget {
       validator: validator,
       // isExpanded: true,
       iconStyleData: IconStyleData(
-        icon: suffixIcon!,
+        icon: suffixIcon,
       ),
+      hint: Text(hintText),
       buttonStyleData: ButtonStyleData(
         width: width,
-        height: 39,
         overlayColor: MaterialStateProperty.resolveWith<Color>(
           (states) {
             return Colors.transparent;
@@ -203,64 +381,55 @@ class SearchDropDown extends StatelessWidget {
         fontSize: 16,
         fontWeight: FontWeight.w300,
         fontFamily: 'Helvetica',
+        color: eerieBlack,
       ),
       items: items,
       value: value,
       onChanged: onChanged,
       decoration: InputDecoration(
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(5),
-          borderSide: const BorderSide(
-            color: davysGray,
-            width: 1,
-          ),
-        ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(5),
+          borderRadius: BorderRadius.circular(7.5),
           borderSide: const BorderSide(
-            color: davysGray,
-            width: 1,
+            color: grayx11,
+            width: 1.1,
+            style: BorderStyle.solid,
           ),
         ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(5),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(7.5),
           borderSide: const BorderSide(
-            color: davysGray,
-            width: 2,
+            color: grayx11,
+            width: 1.1,
+            style: BorderStyle.solid,
           ),
         ),
         disabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(5),
+          borderRadius: BorderRadius.circular(7.5),
           borderSide: const BorderSide(
             color: grayx11,
-            width: 1,
+            width: 1.1,
+            style: BorderStyle.solid,
           ),
         ),
-        fillColor: Colors.transparent,
-        filled: true,
-        isDense: true,
-        // isCollapsed: true,
-        focusColor: white,
-        hintText: hintText,
-        hintStyle: const TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.w300,
-          color: lightGray,
-        ),
         contentPadding: const EdgeInsets.only(
-          right: 15,
-          left: 15,
-          top: 0,
+          left: 16,
+          right: 16,
+          top: 14,
           bottom: 12,
         ),
-        // suffixIcon: suffixIcon,
-        suffixIconColor: eerieBlack,
-        enabled: enabled,
+        isDense: true,
+        isCollapsed: true,
+        // hintText: hintText,
+        // hintStyle: helveticaText.copyWith(
+        //   fontSize: 14,
+        //   fontWeight: FontWeight.w300,
+        //   color: sonicSilver,
+        // ),
       ),
       dropdownStyleData: DropdownStyleData(
         // width: width,
-        maxHeight: 300,
-        offset: const Offset(0, -5),
+        // maxHeight: 300,
+        // offset: const Offset(0, -5),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
           border: Border.all(
@@ -283,6 +452,7 @@ class SearchDropDown extends StatelessWidget {
         searchInnerWidget: Container(
           height: 50,
           padding: const EdgeInsets.only(
+            top: 20,
             left: 20,
             right: 20,
           ),
@@ -298,7 +468,7 @@ class SearchDropDown extends StatelessWidget {
                 vertical: 15,
                 horizontal: 0,
               ),
-              hintText: 'Search here ...',
+              hintText: 'Ketik disini ...',
               hintStyle: helveticaText.copyWith(fontSize: 12),
               border: const UnderlineInputBorder(
                 borderSide: BorderSide(
@@ -308,9 +478,7 @@ class SearchDropDown extends StatelessWidget {
             ),
           ),
         ),
-        searchMatchFn: (item, searchValue) {
-          return (item.value.toString().toLowerCase().contains(searchValue));
-        },
+        searchMatchFn: searchFunction,
       ),
       //This to clear the search value when you close the menu
       onMenuStateChange: (isOpen) {
