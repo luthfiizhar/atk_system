@@ -19,10 +19,10 @@ class ApiService {
   // String urlA = url.apiUrlGlobal;
 
   Future login(String username, String password) async {
-    // var url =
-    //     Uri.https(urlConstant.apiUrl, '/GSS_Backend/public/api/user/login');
     var url = Uri.https(
-        urlConstant.apiUrl, '/GSS_Backend/public/api/user/login-hcplus');
+        urlConstant.apiUrl, '/${urlConstant.app}/public/api/user/login-hcplus');
+    // var url = Uri.https(
+    //     urlConstant.apiUrl, '/${urlConstant.app}/public/api/user/login-elite');
     Map<String, String> requestHeader = {
       'Content-Type': 'application/json',
     };
@@ -57,7 +57,7 @@ class ApiService {
     var jwt = box.get('jwTtoken') != "" ? box.get('jwtToken') : "";
 
     var url = Uri.https(
-        urlConstant.apiUrl, '/GSS_Backend/public/api/user/check-token');
+        urlConstant.apiUrl, '/${urlConstant.app}/public/api/user/check-token');
     Map<String, String> requestHeader = {
       'Authorization': 'Bearer $jwt',
       'Content-Type': 'application/json',
@@ -85,8 +85,8 @@ class ApiService {
 
     // jwt = jwtToken;
 
-    var url =
-        Uri.https(urlConstant.apiUrl, '/GSS_Backend/public/api/date-server');
+    var url = Uri.https(
+        urlConstant.apiUrl, '/${urlConstant.app}/public/api/date-server');
     Map<String, String> requestHeader = {
       'Authorization': 'Bearer $jwt',
       'Content-Type': 'application/json',
@@ -106,8 +106,8 @@ class ApiService {
     var box = await Hive.openBox('userLogin');
     var jwt = box.get('jwTtoken') != "" ? box.get('jwtToken') : "";
 
-    var url =
-        Uri.https(urlConstant.apiUrl, '/GSS_Backend/public/api/user/detail');
+    var url = Uri.https(
+        urlConstant.apiUrl, '/${urlConstant.app}/public/api/user/detail');
     Map<String, String> requestHeader = {
       'Authorization': 'Bearer $jwt',
       'Content-Type': 'application/json',
@@ -131,8 +131,8 @@ class ApiService {
 
     // jwt = jwtToken;
 
-    var url =
-        Uri.https(urlConstant.apiUrl, '/GSS_Backend/public/api/form/list');
+    var url = Uri.https(
+        urlConstant.apiUrl, '/${urlConstant.app}/public/api/form/list');
     Map<String, String> requestHeader = {
       'Authorization': 'Bearer $jwt',
       'Content-Type': 'application/json',
@@ -168,8 +168,8 @@ class ApiService {
 
     // jwt = jwtToken;
 
-    var url = Uri.https(
-        urlConstant.apiUrl, '/GSS_Backend/public/api/form/supply/transaction');
+    var url = Uri.https(urlConstant.apiUrl,
+        '/${urlConstant.app}/public/api/form/supply/transaction');
     Map<String, String> requestHeader = {
       'Authorization': 'Bearer $jwt',
       'Content-Type': 'application/json',
@@ -193,6 +193,39 @@ class ApiService {
     }
   }
 
+  Future createTransactionElite(String formCategory, String site) async {
+    // print(bookingId);
+    var box = await Hive.openBox('userLogin');
+    var jwt = box.get('jwTtoken') != "" ? box.get('jwtToken') : "";
+
+    // jwt = jwtToken;
+
+    var url = Uri.https(urlConstant.apiUrl,
+        '/${urlConstant.app}/public/api/v2/form/supply/transaction');
+    Map<String, String> requestHeader = {
+      'Authorization': 'Bearer $jwt',
+      'Content-Type': 'application/json',
+    };
+
+    var bodySend = """
+      {
+        "FormCategory" : "$formCategory",
+        "Site" : "$site"
+      }
+  """;
+    // print(bodySend);
+    try {
+      var response =
+          await http.post(url, headers: requestHeader, body: bodySend);
+
+      var data = json.decode(response.body);
+
+      return data;
+    } on Error catch (e) {
+      return e;
+    }
+  }
+
   Future cancelTransaction(String formId) async {
     // print(bookingId);
     var box = await Hive.openBox('userLogin');
@@ -200,8 +233,8 @@ class ApiService {
 
     // jwt = jwtToken;
 
-    var url = Uri.https(
-        urlConstant.apiUrl, '/GSS_Backend/public/api/form/supply/cancel');
+    var url = Uri.https(urlConstant.apiUrl,
+        '/${urlConstant.app}/public/api/form/supply/cancel');
     Map<String, String> requestHeader = {
       'Authorization': 'Bearer $jwt',
       'Content-Type': 'application/json',
@@ -232,8 +265,8 @@ class ApiService {
 
     // jwt = jwtToken;
 
-    var url = Uri.https(
-        urlConstant.apiUrl, '/GSS_Backend/public/api/form/generate-settlement');
+    var url = Uri.https(urlConstant.apiUrl,
+        '/${urlConstant.app}/public/api/form/generate-settlement');
     Map<String, String> requestHeader = {
       'Authorization': 'Bearer $jwt',
       'Content-Type': 'application/json',
@@ -266,7 +299,7 @@ class ApiService {
 
     var url = Uri.https(
       urlConstant.apiUrl,
-      '/GSS_Backend/public/api/form/supply/$formId',
+      '/${urlConstant.app}/public/api/form/supply/$formId',
       {
         "item_sort": searchTerm.orderBy,
         "item_dir": searchTerm.orderDir,
@@ -298,7 +331,7 @@ class ApiService {
 
     var url = Uri.https(
       urlConstant.apiUrl,
-      '/GSS_Backend/public/api/form/supply/filled/$formId',
+      '/${urlConstant.app}/public/api/form/supply/filled/$formId',
       {
         "item_sort": searchTerm.orderBy,
         "item_dir": searchTerm.orderDir,
@@ -328,8 +361,8 @@ class ApiService {
 
     // jwt = jwtToken;
 
-    var url = Uri.https(
-        urlConstant.apiUrl, '/GSS_Backend/public/api/form/supply/submit');
+    var url = Uri.https(urlConstant.apiUrl,
+        '/${urlConstant.app}/public/api/form/supply/submit');
     Map<String, String> requestHeader = {
       'Authorization': 'Bearer $jwt',
       'Content-Type': 'application/json',
@@ -364,8 +397,8 @@ class ApiService {
 
     // jwt = jwtToken;
 
-    var url = Uri.https(
-        urlConstant.apiUrl, '/GSS_Backend/public/api/form/supply/confirm');
+    var url = Uri.https(urlConstant.apiUrl,
+        '/${urlConstant.app}/public/api/form/supply/confirm');
     Map<String, String> requestHeader = {
       'Authorization': 'Bearer $jwt',
       'Content-Type': 'application/json',
@@ -398,8 +431,8 @@ class ApiService {
 
     // jwt = jwtToken;
 
-    var url = Uri.https(
-        urlConstant.apiUrl, '/GSS_Backend/public/api/form/settlement/$formId', {
+    var url = Uri.https(urlConstant.apiUrl,
+        '/${urlConstant.app}/public/api/form/settlement/$formId', {
       "item_sort": searchTerm.orderBy,
       "item_dir": searchTerm.orderDir,
       "search": searchTerm.keywords
@@ -427,8 +460,8 @@ class ApiService {
 
     // jwt = jwtToken;
 
-    var url = Uri.https(
-        urlConstant.apiUrl, '/GSS_Backend/public/api/form/settlement/submit');
+    var url = Uri.https(urlConstant.apiUrl,
+        '/${urlConstant.app}/public/api/form/settlement/submit');
     Map<String, String> requestHeader = {
       'Authorization': 'Bearer $jwt',
       'Content-Type': 'application/json',
@@ -463,8 +496,8 @@ class ApiService {
 
     // jwt = jwtToken;
 
-    var url = Uri.https(
-        urlConstant.apiUrl, '/GSS_Backend/public/api/form/supply/confirm');
+    var url = Uri.https(urlConstant.apiUrl,
+        '/${urlConstant.app}/public/api/form/supply/confirm');
     Map<String, String> requestHeader = {
       'Authorization': 'Bearer $jwt',
       'Content-Type': 'application/json',
@@ -497,8 +530,8 @@ class ApiService {
 
     // jwt = jwtToken;
 
-    var url = Uri.https(
-        urlConstant.apiUrl, '/GSS_Backend/public/api/form/supply/sendback');
+    var url = Uri.https(urlConstant.apiUrl,
+        '/${urlConstant.app}/public/api/form/supply/sendback');
     Map<String, String> requestHeader = {
       'Authorization': 'Bearer $jwt',
       'Content-Type': 'application/json',
@@ -532,7 +565,7 @@ class ApiService {
     // jwt = jwtToken;
 
     var url = Uri.https(urlConstant.apiUrl,
-        '/GSS_Backend/public/api/user/rollback-transaction');
+        '/${urlConstant.app}/public/api/user/rollback-transaction');
     Map<String, String> requestHeader = {
       'Authorization': 'Bearer $jwt',
       'Content-Type': 'application/json',
@@ -565,8 +598,8 @@ class ApiService {
 
     // jwt = jwtToken;
 
-    var url =
-        Uri.https(urlConstant.apiUrl, '/GSS_Backend/public/api/form/item-save');
+    var url = Uri.https(
+        urlConstant.apiUrl, '/${urlConstant.app}/public/api/form/item-save');
     Map<String, String> requestHeader = {
       'Authorization': 'Bearer $jwt',
       'Content-Type': 'application/json',
@@ -602,7 +635,7 @@ class ApiService {
     // jwt = jwtToken;
 
     var url = Uri.https(urlConstant.apiUrl,
-        '/GSS_Backend/public/api/form/settlement/item-save');
+        '/${urlConstant.app}/public/api/form/settlement/item-save');
     Map<String, String> requestHeader = {
       'Authorization': 'Bearer $jwt',
       'Content-Type': 'application/json',
@@ -639,7 +672,7 @@ class ApiService {
     // jwt = jwtToken;
 
     var url = Uri.https(
-        urlConstant.apiUrl, '/GSS_Backend/public/api/form/type-count');
+        urlConstant.apiUrl, '/${urlConstant.app}/public/api/form/type-count');
     Map<String, String> requestHeader = {
       'Authorization': 'Bearer $jwt',
       'Content-Type': 'application/json',
@@ -663,8 +696,8 @@ class ApiService {
 
     // jwt = jwtToken;
 
-    var url = Uri.https(
-        urlConstant.apiUrl, '/GSS_Backend/public/api/supply/print-pdf/$formId');
+    var url = Uri.https(urlConstant.apiUrl,
+        '/${urlConstant.app}/public/api/supply/print-pdf/$formId');
     Map<String, String> requestHeader = {
       'Authorization': 'Bearer $jwt',
       'Content-Type': 'application/json',
@@ -689,7 +722,7 @@ class ApiService {
     // jwt = jwtToken;
 
     var url = Uri.https(urlConstant.apiUrl,
-        '/GSS_Backend/public/api/settlement/print-pdf/$formId');
+        '/${urlConstant.app}/public/api/settlement/print-pdf/$formId');
     Map<String, String> requestHeader = {
       'Authorization': 'Bearer $jwt',
       'Content-Type': 'application/json',
@@ -713,8 +746,8 @@ class ApiService {
 
     // jwt = jwtToken;
 
-    var url =
-        Uri.https(urlConstant.apiUrl, '/GSS_Backend/public/api/user/to-do');
+    var url = Uri.https(
+        urlConstant.apiUrl, '/${urlConstant.app}/public/api/user/to-do');
     Map<String, String> requestHeader = {
       'Authorization': 'Bearer $jwt',
       'Content-Type': 'application/json',
@@ -739,7 +772,7 @@ class ApiService {
     // jwt = jwtToken;
 
     var url = Uri.https(
-        urlConstant.apiUrl, '/GSS_Backend/public/api/admin/site-list');
+        urlConstant.apiUrl, '/${urlConstant.app}/public/api/admin/site-list');
     Map<String, String> requestHeader = {
       'Authorization': 'Bearer $jwt',
       'Content-Type': 'application/json',
@@ -775,7 +808,7 @@ class ApiService {
     // jwt = jwtToken;
 
     var url = Uri.https(
-        urlConstant.apiUrl, '/GSS_Backend/public/api/admin/item-list');
+        urlConstant.apiUrl, '/${urlConstant.app}/public/api/admin/item-list');
     Map<String, String> requestHeader = {
       'Authorization': 'Bearer $jwt',
       'Content-Type': 'application/json',
@@ -811,7 +844,7 @@ class ApiService {
     // jwt = jwtToken;
 
     var url = Uri.https(
-        urlConstant.apiUrl, '/GSS_Backend/public/api/admin/user-list');
+        urlConstant.apiUrl, '/${urlConstant.app}/public/api/admin/user-list');
     Map<String, String> requestHeader = {
       'Authorization': 'Bearer $jwt',
       'Content-Type': 'application/json',
@@ -846,8 +879,8 @@ class ApiService {
 
     // jwt = jwtToken;
 
-    var url = Uri.https(
-        urlConstant.apiUrl, '/GSS_Backend/public/api/admin/business-list');
+    var url = Uri.https(urlConstant.apiUrl,
+        '/${urlConstant.app}/public/api/admin/business-list');
     Map<String, String> requestHeader = {
       'Authorization': 'Bearer $jwt',
       'Content-Type': 'application/json',
@@ -881,7 +914,7 @@ class ApiService {
     // jwt = jwtToken;
 
     var url = Uri.https(
-        urlConstant.apiUrl, '/GSS_Backend/public/api/admin/region-list');
+        urlConstant.apiUrl, '/${urlConstant.app}/public/api/admin/region-list');
     Map<String, String> requestHeader = {
       'Authorization': 'Bearer $jwt',
       'Content-Type': 'application/json',
@@ -917,7 +950,7 @@ class ApiService {
     // jwt = jwtToken;
 
     var url = Uri.https(
-        urlConstant.apiUrl, '/GSS_Backend/public/api/admin/area-list');
+        urlConstant.apiUrl, '/${urlConstant.app}/public/api/admin/area-list');
     Map<String, String> requestHeader = {
       'Authorization': 'Bearer $jwt',
       'Content-Type': 'application/json',
@@ -952,8 +985,8 @@ class ApiService {
 
     // jwt = jwtToken;
 
-    var url = Uri.https(
-        urlConstant.apiUrl, '/GSS_Backend/public/api/admin/add-business');
+    var url = Uri.https(urlConstant.apiUrl,
+        '/${urlConstant.app}/public/api/admin/add-business');
     Map<String, String> requestHeader = {
       'Authorization': 'Bearer $jwt',
       'Content-Type': 'application/json',
@@ -985,8 +1018,8 @@ class ApiService {
 
     // jwt = jwtToken;
 
-    var url = Uri.https(
-        urlConstant.apiUrl, '/GSS_Backend/public/api/admin/edit-business');
+    var url = Uri.https(urlConstant.apiUrl,
+        '/${urlConstant.app}/public/api/admin/edit-business');
     Map<String, String> requestHeader = {
       'Authorization': 'Bearer $jwt',
       'Content-Type': 'application/json',
@@ -1019,8 +1052,8 @@ class ApiService {
 
     // jwt = jwtToken;
 
-    var url = Uri.https(
-        urlConstant.apiUrl, '/GSS_Backend/public/api/admin/delete-business');
+    var url = Uri.https(urlConstant.apiUrl,
+        '/${urlConstant.app}/public/api/admin/delete-business');
     Map<String, String> requestHeader = {
       'Authorization': 'Bearer $jwt',
       'Content-Type': 'application/json',
@@ -1052,7 +1085,7 @@ class ApiService {
     // jwt = jwtToken;
 
     var url = Uri.https(
-        urlConstant.apiUrl, '/GSS_Backend/public/api/admin/add-region');
+        urlConstant.apiUrl, '/${urlConstant.app}/public/api/admin/add-region');
     Map<String, String> requestHeader = {
       'Authorization': 'Bearer $jwt',
       'Content-Type': 'application/json',
@@ -1085,7 +1118,7 @@ class ApiService {
     // jwt = jwtToken;
 
     var url = Uri.https(
-        urlConstant.apiUrl, '/GSS_Backend/public/api/admin/edit-region');
+        urlConstant.apiUrl, '/${urlConstant.app}/public/api/admin/edit-region');
     Map<String, String> requestHeader = {
       'Authorization': 'Bearer $jwt',
       'Content-Type': 'application/json',
@@ -1118,8 +1151,8 @@ class ApiService {
 
     // jwt = jwtToken;
 
-    var url = Uri.https(
-        urlConstant.apiUrl, '/GSS_Backend/public/api/admin/delete-region');
+    var url = Uri.https(urlConstant.apiUrl,
+        '/${urlConstant.app}/public/api/admin/delete-region');
     Map<String, String> requestHeader = {
       'Authorization': 'Bearer $jwt',
       'Content-Type': 'application/json',
@@ -1150,8 +1183,8 @@ class ApiService {
 
     // jwt = jwtToken;
 
-    var url =
-        Uri.https(urlConstant.apiUrl, '/GSS_Backend/public/api/admin/add-area');
+    var url = Uri.https(
+        urlConstant.apiUrl, '/${urlConstant.app}/public/api/admin/add-area');
     Map<String, String> requestHeader = {
       'Authorization': 'Bearer $jwt',
       'Content-Type': 'application/json',
@@ -1184,7 +1217,7 @@ class ApiService {
     // jwt = jwtToken;
 
     var url = Uri.https(
-        urlConstant.apiUrl, '/GSS_Backend/public/api/admin/edit-area');
+        urlConstant.apiUrl, '/${urlConstant.app}/public/api/admin/edit-area');
     Map<String, String> requestHeader = {
       'Authorization': 'Bearer $jwt',
       'Content-Type': 'application/json',
@@ -1218,7 +1251,7 @@ class ApiService {
     // jwt = jwtToken;
 
     var url = Uri.https(
-        urlConstant.apiUrl, '/GSS_Backend/public/api/admin/delete-area');
+        urlConstant.apiUrl, '/${urlConstant.app}/public/api/admin/delete-area');
     Map<String, String> requestHeader = {
       'Authorization': 'Bearer $jwt',
       'Content-Type': 'application/json',
@@ -1249,8 +1282,8 @@ class ApiService {
 
     // jwt = jwtToken;
 
-    var url =
-        Uri.https(urlConstant.apiUrl, '/GSS_Backend/public/api/admin/site-add');
+    var url = Uri.https(
+        urlConstant.apiUrl, '/${urlConstant.app}/public/api/admin/site-add');
     Map<String, String> requestHeader = {
       'Authorization': 'Bearer $jwt',
       'Content-Type': 'application/json',
@@ -1289,7 +1322,7 @@ class ApiService {
     // jwt = jwtToken;
 
     var url = Uri.https(
-        urlConstant.apiUrl, '/GSS_Backend/public/api/admin/site-edit');
+        urlConstant.apiUrl, '/${urlConstant.app}/public/api/admin/site-edit');
     Map<String, String> requestHeader = {
       'Authorization': 'Bearer $jwt',
       'Content-Type': 'application/json',
@@ -1349,7 +1382,7 @@ class ApiService {
     // jwt = jwtToken;
 
     var url = Uri.https(urlConstant.apiUrl,
-        '/GSS_Backend/public/api/admin/site-delete/$siteId');
+        '/${urlConstant.app}/public/api/admin/site-delete/$siteId');
     Map<String, String> requestHeader = {
       'Authorization': 'Bearer $jwt',
       'Content-Type': 'application/json',
@@ -1373,8 +1406,8 @@ class ApiService {
 
     // jwt = jwtToken;
 
-    var url = Uri.https(
-        urlConstant.apiUrl, '/GSS_Backend/public/api/admin/site-dropdown');
+    var url = Uri.https(urlConstant.apiUrl,
+        '/${urlConstant.app}/public/api/admin/site-dropdown');
     Map<String, String> requestHeader = {
       'Authorization': 'Bearer $jwt',
       'Content-Type': 'application/json',
@@ -1405,8 +1438,8 @@ class ApiService {
 
     // jwt = jwtToken;
 
-    var url = Uri.https(
-        urlConstant.apiUrl, '/GSS_Backend/public/api/admin/area-dropdown');
+    var url = Uri.https(urlConstant.apiUrl,
+        '/${urlConstant.app}/public/api/admin/area-dropdown');
     Map<String, String> requestHeader = {
       'Authorization': 'Bearer $jwt',
       'Content-Type': 'application/json',
@@ -1435,7 +1468,7 @@ class ApiService {
     // jwt = jwtToken;
 
     var url = Uri.https(
-        urlConstant.apiUrl, '/GSS_Backend/public/api/admin/role-list');
+        urlConstant.apiUrl, '/${urlConstant.app}/public/api/admin/role-list');
     Map<String, String> requestHeader = {
       'Authorization': 'Bearer $jwt',
       'Content-Type': 'application/json',
@@ -1459,8 +1492,8 @@ class ApiService {
 
     // jwt = jwtToken;
 
-    var url = Uri.https(
-        urlConstant.apiUrl, '/GSS_Backend/public/api/admin/user-site-list');
+    var url = Uri.https(urlConstant.apiUrl,
+        '/${urlConstant.app}/public/api/admin/user-site-list');
     Map<String, String> requestHeader = {
       'Authorization': 'Bearer $jwt',
       'Content-Type': 'application/json',
@@ -1495,8 +1528,8 @@ class ApiService {
 
     // jwt = jwtToken;
 
-    var url = Uri.https(
-        urlConstant.apiUrl, '/GSS_Backend/public/api/admin/business-dropdown');
+    var url = Uri.https(urlConstant.apiUrl,
+        '/${urlConstant.app}/public/api/admin/business-dropdown');
     Map<String, String> requestHeader = {
       'Authorization': 'Bearer $jwt',
       'Content-Type': 'application/json',
@@ -1524,8 +1557,8 @@ class ApiService {
 
     // jwt = jwtToken;
 
-    var url = Uri.https(
-        urlConstant.apiUrl, '/GSS_Backend/public/api/admin/region-dropdown');
+    var url = Uri.https(urlConstant.apiUrl,
+        '/${urlConstant.app}/public/api/admin/region-dropdown');
     Map<String, String> requestHeader = {
       'Authorization': 'Bearer $jwt',
       'Content-Type': 'application/json',
@@ -1553,8 +1586,8 @@ class ApiService {
 
     // jwt = jwtToken;
 
-    var url =
-        Uri.https(urlConstant.apiUrl, '/GSS_Backend/public/api/admin/user-add');
+    var url = Uri.https(
+        urlConstant.apiUrl, '/${urlConstant.app}/public/api/admin/user-add');
     Map<String, String> requestHeader = {
       'Authorization': 'Bearer $jwt',
       'Content-Type': 'application/json',
@@ -1590,7 +1623,7 @@ class ApiService {
     // jwt = jwtToken;
 
     var url = Uri.https(
-        urlConstant.apiUrl, '/GSS_Backend/public/api/admin/user-update');
+        urlConstant.apiUrl, '/${urlConstant.app}/public/api/admin/user-update');
     Map<String, String> requestHeader = {
       'Authorization': 'Bearer $jwt',
       'Content-Type': 'application/json',
@@ -1627,7 +1660,7 @@ class ApiService {
     // jwt = jwtToken;
 
     var url = Uri.https(urlConstant.apiUrl,
-        '/GSS_Backend/public/api/admin/user-delete/$empNip');
+        '/${urlConstant.app}/public/api/admin/user-delete/$empNip');
     Map<String, String> requestHeader = {
       'Authorization': 'Bearer $jwt',
       'Content-Type': 'application/json',
@@ -1651,8 +1684,8 @@ class ApiService {
 
     // jwt = jwtToken;
 
-    var url =
-        Uri.https(urlConstant.apiUrl, '/GSS_Backend/public/api/admin/add-item');
+    var url = Uri.https(
+        urlConstant.apiUrl, '/${urlConstant.app}/public/api/admin/add-item');
     Map<String, String> requestHeader = {
       'Authorization': 'Bearer $jwt',
       'Content-Type': 'application/json',
@@ -1687,7 +1720,7 @@ class ApiService {
     // jwt = jwtToken;
 
     var url = Uri.https(
-        urlConstant.apiUrl, '/GSS_Backend/public/api/admin/edit-item');
+        urlConstant.apiUrl, '/${urlConstant.app}/public/api/admin/edit-item');
     Map<String, String> requestHeader = {
       'Authorization': 'Bearer $jwt',
       'Content-Type': 'application/json',
@@ -1723,7 +1756,7 @@ class ApiService {
     // jwt = jwtToken;
 
     var url = Uri.https(urlConstant.apiUrl,
-        '/GSS_Backend/public/api/admin/delete-item/$itemId');
+        '/${urlConstant.app}/public/api/admin/delete-item/$itemId');
     Map<String, String> requestHeader = {
       'Authorization': 'Bearer $jwt',
       'Content-Type': 'application/json',
@@ -1748,7 +1781,7 @@ class ApiService {
     // jwt = jwtToken;
 
     var url = Uri.https(
-        urlConstant.apiUrl, '/GSS_Backend/public/api/admin/unit-list');
+        urlConstant.apiUrl, '/${urlConstant.app}/public/api/admin/unit-list');
     Map<String, String> requestHeader = {
       'Authorization': 'Bearer $jwt',
       'Content-Type': 'application/json',
@@ -1772,8 +1805,8 @@ class ApiService {
 
     // jwt = jwtToken;
 
-    var url =
-        Uri.https(urlConstant.apiUrl, '/GSS_Backend/public/api/export-excel');
+    var url = Uri.https(
+        urlConstant.apiUrl, '/${urlConstant.app}/public/api/export-excel');
     Map<String, String> requestHeader = {
       'Authorization': 'Bearer $jwt',
       'Content-Type': 'application/json',
@@ -1809,7 +1842,7 @@ class ApiService {
     // jwt = jwtToken;
 
     var url = Uri.https(urlConstant.apiUrl,
-        '/GSS_Backend/public/api/form/settlement/item-list');
+        '/${urlConstant.app}/public/api/form/settlement/item-list');
     Map<String, String> requestHeader = {
       'Authorization': 'Bearer $jwt',
       'Content-Type': 'application/json',
@@ -1846,8 +1879,8 @@ class ApiService {
 
     // jwt = jwtToken;
 
-    var url = Uri.https(
-        urlConstant.apiUrl, '/GSS_Backend/public/api/form/settlement/add-item');
+    var url = Uri.https(urlConstant.apiUrl,
+        '/${urlConstant.app}/public/api/form/settlement/add-item');
     Map<String, String> requestHeader = {
       'Authorization': 'Bearer $jwt',
       'Content-Type': 'application/json',
@@ -1884,7 +1917,7 @@ class ApiService {
     // jwt = jwtToken;
 
     var url = Uri.https(urlConstant.apiUrl,
-        '/GSS_Backend/public/api/form/settlement/delete-item');
+        '/${urlConstant.app}/public/api/form/settlement/delete-item');
     Map<String, String> requestHeader = {
       'Authorization': 'Bearer $jwt',
       'Content-Type': 'application/json',
@@ -1922,7 +1955,7 @@ class ApiService {
     // jwt = jwtToken;
 
     var url = Uri.https(urlConstant.apiUrl,
-        '/GSS_Backend/public/api/dashboard/recent-transaction-detail');
+        '/${urlConstant.app}/public/api/dashboard/recent-transaction-detail');
     Map<String, String> requestHeader = {
       'Authorization': 'Bearer $jwt',
       'Content-Type': 'application/json',
@@ -1967,7 +2000,7 @@ class ApiService {
     // jwt = jwtToken;
 
     var url = Uri.https(urlConstant.apiUrl,
-        '/GSS_Backend/public/api/dashboard/item-pricing-detail');
+        '/${urlConstant.app}/public/api/dashboard/item-pricing-detail');
     Map<String, String> requestHeader = {
       'Authorization': 'Bearer $jwt',
       'Content-Type': 'application/json',
@@ -2012,7 +2045,7 @@ class ApiService {
     // jwt = jwtToken;
 
     var url = Uri.https(urlConstant.apiUrl,
-        '/GSS_Backend/public/api/dashboard/requested-item-detail');
+        '/${urlConstant.app}/public/api/dashboard/requested-item-detail');
     Map<String, String> requestHeader = {
       'Authorization': 'Bearer $jwt',
       'Content-Type': 'application/json',
@@ -2063,20 +2096,20 @@ class ApiService {
 
     if (dataType == "Highest Cost" || dataType == "Lowest Cost") {
       url = Uri.https(urlConstant.apiUrl,
-          '/GSS_Backend/public/api/dashboard/ranking-cost-detail');
+          '/${urlConstant.app}/public/api/dashboard/ranking-cost-detail');
     }
     if (dataType == "Highest Budget" || dataType == "Lowest Budget") {
       url = Uri.https(urlConstant.apiUrl,
-          '/GSS_Backend/public/api/dashboard/budget-detail');
+          '/${urlConstant.app}/public/api/dashboard/budget-detail');
     }
     if (dataType == "Slowest Leadtime" || dataType == "Fastest Leadtime") {
       url = Uri.https(urlConstant.apiUrl,
-          '/GSS_Backend/public/api/dashboard/ranking-leadtime-detail');
+          '/${urlConstant.app}/public/api/dashboard/ranking-leadtime-detail');
     }
 
     if (dataType == "Cost vs Budget") {
       url = Uri.https(urlConstant.apiUrl,
-          '/GSS_Backend/public/api/dashboard/budget-cost-site-detail');
+          '/${urlConstant.app}/public/api/dashboard/budget-cost-site-detail');
     }
     Map<String, String> requestHeader = {
       'Authorization': 'Bearer $jwt',
@@ -2127,7 +2160,7 @@ class ApiService {
     // jwt = jwtToken;
 
     var url = Uri.https(
-        urlConstant.apiUrl, '/GSS_Backend/public/api/dashboard/export');
+        urlConstant.apiUrl, '/${urlConstant.app}/public/api/dashboard/export');
     Map<String, String> requestHeader = {
       'Authorization': 'Bearer $jwt',
       'Content-Type': 'application/json',
@@ -2168,7 +2201,7 @@ class ApiService {
     // jwt = jwtToken;
 
     var url = Uri.https(urlConstant.apiUrl,
-        '/GSS_Backend/public/api/dashboard/user-location-list');
+        '/${urlConstant.app}/public/api/dashboard/user-location-list');
     Map<String, String> requestHeader = {
       'Authorization': 'Bearer $jwt',
       'Content-Type': 'application/json',
@@ -2204,8 +2237,8 @@ class ApiService {
 
     // jwt = jwtToken;
 
-    var url = Uri.https(
-        urlConstant.apiUrl, '/GSS_Backend/public/api/dashboard/business-list');
+    var url = Uri.https(urlConstant.apiUrl,
+        '/${urlConstant.app}/public/api/dashboard/business-list');
     Map<String, String> requestHeader = {
       'Authorization': 'Bearer $jwt',
       'Content-Type': 'application/json',
@@ -2231,8 +2264,8 @@ class ApiService {
 
     // jwt = jwtToken;
 
-    var url = Uri.https(
-        urlConstant.apiUrl, '/GSS_Backend/public/api/dashboard/month-list');
+    var url = Uri.https(urlConstant.apiUrl,
+        '/${urlConstant.app}/public/api/dashboard/month-list');
     Map<String, String> requestHeader = {
       'Authorization': 'Bearer $jwt',
       'Content-Type': 'application/json',
@@ -2262,8 +2295,8 @@ class ApiService {
 
     // jwt = jwtToken;
 
-    var url = Uri.https(
-        urlConstant.apiUrl, '/GSS_Backend/public/api/dashboard/year-list');
+    var url = Uri.https(urlConstant.apiUrl,
+        '/${urlConstant.app}/public/api/dashboard/year-list');
     Map<String, String> requestHeader = {
       'Authorization': 'Bearer $jwt',
       'Content-Type': 'application/json',
@@ -2295,7 +2328,7 @@ class ApiService {
     // jwt = jwtToken;
 
     var url = Uri.https(urlConstant.apiUrl,
-        '/GSS_Backend/public/api/dashboard/budget-history-detail');
+        '/${urlConstant.app}/public/api/dashboard/budget-history-detail');
     Map<String, String> requestHeader = {
       'Authorization': 'Bearer $jwt',
       'Content-Type': 'application/json',
@@ -2339,7 +2372,34 @@ class ApiService {
     // jwt = jwtToken;
 
     var url = Uri.https(urlConstant.apiUrl,
-        '/GSS_Backend/public/api/dashboard/budget-attachment/$historyId');
+        '/${urlConstant.app}/public/api/dashboard/budget-attachment/$historyId');
+    Map<String, String> requestHeader = {
+      'Authorization': 'Bearer $jwt',
+      'Content-Type': 'application/json',
+    };
+
+    try {
+      var response = await http.get(
+        url,
+        headers: requestHeader,
+      );
+
+      var data = json.decode(response.body);
+
+      return data;
+    } on Error catch (e) {
+      return e;
+    }
+  }
+
+  Future getEliteSite() async {
+    var box = await Hive.openBox('userLogin');
+    var jwt = box.get('jwTtoken') != "" ? box.get('jwtToken') : "";
+
+    // jwt = jwtToken;
+
+    var url = Uri.https(
+        urlConstant.apiUrl, '/${urlConstant.app}/public/api/location/list');
     Map<String, String> requestHeader = {
       'Authorization': 'Bearer $jwt',
       'Content-Type': 'application/json',
