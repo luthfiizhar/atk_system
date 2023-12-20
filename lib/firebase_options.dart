@@ -21,11 +21,20 @@ class DefaultFirebaseOptions {
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
-        return android;
+        throw UnsupportedError(
+          'DefaultFirebaseOptions have not been configured for android - '
+          'you can reconfigure this by running the FlutterFire CLI again.',
+        );
       case TargetPlatform.iOS:
-        return ios;
+        throw UnsupportedError(
+          'DefaultFirebaseOptions have not been configured for ios - '
+          'you can reconfigure this by running the FlutterFire CLI again.',
+        );
       case TargetPlatform.macOS:
-        return macos;
+        throw UnsupportedError(
+          'DefaultFirebaseOptions have not been configured for macos - '
+          'you can reconfigure this by running the FlutterFire CLI again.',
+        );
       case TargetPlatform.windows:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for windows - '
@@ -44,44 +53,12 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyBqLrJzDSYGnFf6IhXHxFsn7x2reYLXQAk',
-    appId: '1:215977533351:web:e360ef9aae86a75cef2082',
-    messagingSenderId: '215977533351',
-    projectId: 'gss-project-prod',
-    authDomain: 'gss-project-prod.firebaseapp.com',
-    databaseURL: 'https://gss-project-prod-default-rtdb.firebaseio.com',
-    storageBucket: 'gss-project-prod.appspot.com',
-    measurementId: 'G-VV0LJCSTSX',
-  );
-
-  static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyAFXid8iVxuZ4HBaa92ruzj_P7Xm1YXVtw',
-    appId: '1:215977533351:android:c03468c9c747262eef2082',
-    messagingSenderId: '215977533351',
-    projectId: 'gss-project-prod',
-    databaseURL: 'https://gss-project-prod-default-rtdb.firebaseio.com',
-    storageBucket: 'gss-project-prod.appspot.com',
-  );
-
-  static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyAL4Q-amL-xGB9wDZS6u8qGzGueM1bGMbc',
-    appId: '1:215977533351:ios:da58d58df223b7cbef2082',
-    messagingSenderId: '215977533351',
-    projectId: 'gss-project-prod',
-    databaseURL: 'https://gss-project-prod-default-rtdb.firebaseio.com',
-    storageBucket: 'gss-project-prod.appspot.com',
-    iosClientId: '215977533351-67t53n6olqhl0dp37kcshnfbnb4q5f87.apps.googleusercontent.com',
-    iosBundleId: 'com.example.atkSystemGa',
-  );
-
-  static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyAL4Q-amL-xGB9wDZS6u8qGzGueM1bGMbc',
-    appId: '1:215977533351:ios:da58d58df223b7cbef2082',
-    messagingSenderId: '215977533351',
-    projectId: 'gss-project-prod',
-    databaseURL: 'https://gss-project-prod-default-rtdb.firebaseio.com',
-    storageBucket: 'gss-project-prod.appspot.com',
-    iosClientId: '215977533351-67t53n6olqhl0dp37kcshnfbnb4q5f87.apps.googleusercontent.com',
-    iosBundleId: 'com.example.atkSystemGa',
+    apiKey: 'AIzaSyBsyQgbc_7tA1aqNBm272TivCzvmv1DPfU',
+    appId: '1:662723259724:web:3ae1bc734588947ba173e9',
+    messagingSenderId: '662723259724',
+    projectId: 'plucky-alliance-382306',
+    authDomain: 'plucky-alliance-382306.firebaseapp.com',
+    databaseURL: 'https://plucky-alliance-382306-default-rtdb.asia-southeast1.firebasedatabase.app',
+    storageBucket: 'plucky-alliance-382306.appspot.com',
   );
 }
