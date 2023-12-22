@@ -392,17 +392,52 @@ class _SuppliesReqDetailPageState extends State<SuppliesReqDetailPage> {
                           padding: ButtonSize().mediumSize(),
                           onTap: () {
                             if (settlementId != "-") {
-                              if (settlementStatus != "Draft" &&
-                                  role != "Store Admin") {
+                              // if (settlementStatus != "Draft" &&
+                              //     role != "Store Admin") {
+                              //   context.goNamed(
+                              //     'settlement_detail',
+                              //     params: {
+                              //       "formId": settlementId,
+                              //     },
+                              //   );
+                              // } else {
+                              //   context.goNamed(
+                              //     'settlement_request',
+                              //     params: {
+                              //       "formId": settlementId,
+                              //     },
+                              //   );
+                              // }
+                              if (settlementStatus == "Draft" &&
+                                  role == "Store Admin") {
                                 context.goNamed(
-                                  'settlement_detail',
+                                  'settlement_request',
                                   params: {
                                     "formId": settlementId,
                                   },
                                 );
-                              } else {
+                              }
+                              if (settlementStatus == "Waiting SM Approval" &&
+                                  role == "Store Manager") {
                                 context.goNamed(
-                                  'settlement_request',
+                                  'approval_settlement',
+                                  params: {
+                                    "formId": settlementId,
+                                  },
+                                );
+                              }
+                              if (settlementStatus == "Waiting OPS Approval" &&
+                                  role == "Operation HO") {
+                                context.goNamed(
+                                  'approval_settlement',
+                                  params: {
+                                    "formId": settlementId,
+                                  },
+                                );
+                              }
+                              if (settlementStatus != "Draft") {
+                                context.goNamed(
+                                  'settlement_detail',
                                   params: {
                                     "formId": settlementId,
                                   },
