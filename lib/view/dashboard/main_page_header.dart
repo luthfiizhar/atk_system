@@ -97,7 +97,7 @@ class _DashboardHeaderState extends State<DashboardHeader> {
         monthName = "Q4";
         break;
       case "ALL":
-        monthName = "ALL";
+        monthName = "All";
         break;
       default:
     }
