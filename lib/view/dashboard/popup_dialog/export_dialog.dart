@@ -42,14 +42,9 @@ class _ExportDashboardPopupState extends State<ExportDashboardPopup> {
     {"value": 16, "name": "Q4"}
   ];
 
-  int selectedYear = 1;
-  String selectedYearName = "2023";
-  List yearOption = [
-    {"value": 1, "name": "2023"},
-    {"value": 2, "name": "2022"},
-    {"value": 3, "name": "2021"},
-    {"value": 4, "name": "2020"},
-  ];
+  int selectedYear = 0;
+  String selectedYearName = "";
+  List yearOption = [];
 
   download(String string, String fileName) {
     html.AnchorElement anchorElement =
@@ -68,6 +63,24 @@ class _ExportDashboardPopupState extends State<ExportDashboardPopup> {
   void initState() {
     super.initState();
     globalModel = Provider.of<GlobalModel>(context, listen: false);
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      int yearNow = DateTime.now().year;
+      for (var i = 0; i < 4; i++) {
+        var year = yearNow - i;
+        yearOption.add({"value": i, "name": "$year"});
+      }
+
+      selectedYear = 0;
+      for (var element in yearOption) {
+        if (selectedYear == element["value"]) {
+          selectedYearName = element["name"];
+        }
+      }
+      print("Years $yearOption");
+      print("initYear index $selectedYear");
+      print("initYear name $selectedYearName");
+      setState(() {});
+    });
   }
 
   @override
