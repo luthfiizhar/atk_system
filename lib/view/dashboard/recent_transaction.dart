@@ -428,10 +428,14 @@ class _RecentTransactionWidgetState extends State<RecentTransactionWidget> {
 }
 
 class RecentTransactionItems extends StatelessWidget {
-  RecentTransactionItems({super.key, RecentTransactionTable? recents})
-      : recents = recents ?? RecentTransactionTable();
+  RecentTransactionItems({
+    super.key,
+    RecentTransactionTable? recents,
+    this.showSite = false,
+  }) : recents = recents ?? RecentTransactionTable();
 
   RecentTransactionTable recents;
+  bool showSite;
 
   TextStyle normal = helveticaText.copyWith(
     fontSize: 16,
@@ -468,6 +472,15 @@ class RecentTransactionItems extends StatelessWidget {
       },
       child: Row(
         children: [
+          showSite
+              ? SizedBox(
+                  width: 150,
+                  child: Text(
+                    recents.siteId,
+                    style: normal,
+                  ),
+                )
+              : const SizedBox(),
           Expanded(
             flex: 2,
             child: Text(

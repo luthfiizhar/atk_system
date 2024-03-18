@@ -72,6 +72,7 @@ class _RecentTransactionPopUpState extends State<RecentTransactionPopUp> {
         for (var element in listResult) {
           recTransList.add(
             RecentTransactionTable(
+              siteId: element["SiteID"] ?? "",
               formId: element["FormID"],
               siteName: element["SiteName"],
               type: element["Type"],
@@ -134,11 +135,16 @@ class _RecentTransactionPopUpState extends State<RecentTransactionPopUp> {
   @override
   Widget build(BuildContext context) {
     return Dialog(
+      backgroundColor: white,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10),
       ),
       child: SingleChildScrollView(
         child: Container(
+          decoration: BoxDecoration(
+            color: white,
+            borderRadius: BorderRadius.circular(10),
+          ),
           constraints: const BoxConstraints(
             minWidth: 1100,
             maxWidth: 1200,
@@ -239,6 +245,7 @@ class _RecentTransactionPopUpState extends State<RecentTransactionPopUp> {
                                       const EdgeInsets.symmetric(vertical: 15),
                                   child: RecentTransactionItems(
                                     recents: recTransList[index],
+                                    showSite: true,
                                   ),
                                 ),
                               ],
@@ -297,6 +304,28 @@ class _RecentTransactionPopUpState extends State<RecentTransactionPopUp> {
       children: [
         Row(
           children: [
+            SizedBox(
+              width: 150,
+              child: InkWell(
+                onTap: () {
+                  onTapHeader("SiteID");
+                },
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        'Site ID',
+                        style: headerTableTextStyle,
+                      ),
+                    ),
+                    iconSort("SiteID"),
+                    const SizedBox(
+                      width: 20,
+                    ),
+                  ],
+                ),
+              ),
+            ),
             Expanded(
               flex: 2,
               child: InkWell(
@@ -479,6 +508,9 @@ class _RecentTransactionPopUpState extends State<RecentTransactionPopUp> {
                       currentPaginatedPage = 1;
                       searchTerm.pageNumber = "1";
                       searchTerm.max = value!.toString();
+                      getData().then((value) {
+                        countPagination(resultRows);
+                      });
                       // apiReq
                       //     .getMyBookingList(searchTerm)
                       //     .then((value) {

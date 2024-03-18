@@ -123,17 +123,17 @@ class _SiteRankingPopupState extends State<SiteRankingPopup> {
 
         for (var element in itemResult) {
           temp.add(SiteRanking(
-            siteName: element["SiteName"],
-            rank: element["Order"].toString(),
-            cost: element["TotalCost"] ?? 0,
-            budgetAddition: element["AdditionalBudget"] ?? 0,
-            budgetMonthly: element["MonthlyBudget"] ?? 0,
-            percentageCompare: element["Percentage"] ?? 0.0,
-            reqTime: element["RequestTime"] ?? "",
-            settlementTime: element["SettlementTime"] ?? "",
-            budgetCompare: element["Budget"] ?? 0,
-            costCompare: element["Cost"] ?? 0,
-          ));
+              siteName: element["SiteName"],
+              rank: element["Order"].toString(),
+              cost: element["TotalCost"] ?? 0,
+              budgetAddition: element["AdditionalBudget"] ?? 0,
+              budgetMonthly: element["MonthlyBudget"] ?? 0,
+              percentageCompare: element["Percentage"] ?? 0.0,
+              reqTime: element["RequestTime"] ?? "",
+              settlementTime: element["SettlementTime"] ?? "",
+              budgetCompare: element["Budget"] ?? 0,
+              costCompare: element["Cost"] ?? 0,
+              siteId: element["SiteID"] ?? ""));
         }
         itemList = temp;
 
@@ -203,6 +203,10 @@ class _SiteRankingPopupState extends State<SiteRankingPopup> {
       ),
       child: SingleChildScrollView(
         child: Container(
+          decoration: BoxDecoration(
+            color: white,
+            borderRadius: BorderRadius.circular(10),
+          ),
           constraints: const BoxConstraints(
             minWidth: 1100,
             maxWidth: 1200,
@@ -405,6 +409,28 @@ class _SiteRankingPopupState extends State<SiteRankingPopup> {
                 ),
               ),
             ),
+            SizedBox(
+              width: 150,
+              child: InkWell(
+                onTap: () {
+                  onTapHeader("SiteID");
+                },
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        'Site ID',
+                        style: headerTableTextStyle,
+                      ),
+                    ),
+                    iconSort("SiteID"),
+                    const SizedBox(
+                      width: 20,
+                    ),
+                  ],
+                ),
+              ),
+            ),
             Expanded(
               flex: 2,
               child: InkWell(
@@ -484,6 +510,28 @@ class _SiteRankingPopupState extends State<SiteRankingPopup> {
                       ),
                     ),
                     iconSort("Order"),
+                    const SizedBox(
+                      width: 20,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            SizedBox(
+              width: 150,
+              child: InkWell(
+                onTap: () {
+                  onTapHeader("SiteID");
+                },
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        'Site ID',
+                        style: headerTableTextStyle,
+                      ),
+                    ),
+                    iconSort("SiteID"),
                     const SizedBox(
                       width: 20,
                     ),
@@ -598,6 +646,28 @@ class _SiteRankingPopupState extends State<SiteRankingPopup> {
                 ),
               ),
             ),
+            SizedBox(
+              width: 150,
+              child: InkWell(
+                onTap: () {
+                  onTapHeader("SiteID");
+                },
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        'Site ID',
+                        style: headerTableTextStyle,
+                      ),
+                    ),
+                    iconSort("SiteID"),
+                    const SizedBox(
+                      width: 20,
+                    ),
+                  ],
+                ),
+              ),
+            ),
             Expanded(
               flex: 2,
               child: InkWell(
@@ -683,6 +753,28 @@ class _SiteRankingPopupState extends State<SiteRankingPopup> {
       children: [
         Row(
           children: [
+            SizedBox(
+              width: 150,
+              child: InkWell(
+                onTap: () {
+                  onTapHeader("SiteID");
+                },
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        'Site ID',
+                        style: headerTableTextStyle,
+                      ),
+                    ),
+                    iconSort("SiteID"),
+                    const SizedBox(
+                      width: 20,
+                    ),
+                  ],
+                ),
+              ),
+            ),
             Expanded(
               flex: 2,
               child: InkWell(
@@ -1147,6 +1239,13 @@ class SiteRankDetailListContainer extends StatelessWidget {
             ),
           ),
         ),
+        SizedBox(
+          width: 150,
+          child: Text(
+            item.siteId ?? "",
+            style: normal,
+          ),
+        ),
         Expanded(
           flex: 2,
           child: Text(
@@ -1182,6 +1281,13 @@ class SiteRankDetailListContainer extends StatelessWidget {
           width: 75,
           child: Text(
             item.rank,
+            style: normal,
+          ),
+        ),
+        SizedBox(
+          width: 150,
+          child: Text(
+            item.siteId ?? "",
             style: normal,
           ),
         ),
@@ -1222,6 +1328,13 @@ class SiteRankDetailListContainer extends StatelessWidget {
             ],
           ),
         ),
+        SizedBox(
+          width: 150,
+          child: Text(
+            item.siteId ?? "",
+            style: normal,
+          ),
+        ),
         Expanded(
           flex: 2,
           child: Text(
@@ -1248,6 +1361,13 @@ class SiteRankDetailListContainer extends StatelessWidget {
   Widget comparisonContainer() {
     return Row(
       children: [
+        SizedBox(
+          width: 150,
+          child: Text(
+            item.siteId ?? "",
+            style: normal,
+          ),
+        ),
         Expanded(
           flex: 2,
           child: Text(
