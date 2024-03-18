@@ -548,6 +548,9 @@ class _HistoryPopupDialogState extends State<HistoryPopupDialog> {
                       currentPaginatedPage = 1;
                       searchTerm.pageNumber = "1";
                       searchTerm.max = value!.toString();
+                      getData().then((value) {
+                        countPagination(resultRows);
+                      });
                       // apiReq
                       //     .getMyBookingList(searchTerm)
                       //     .then((value) {
