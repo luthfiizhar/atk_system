@@ -440,12 +440,14 @@ class HistoryWidgetListContainer extends StatefulWidget {
     this.index = 0,
     this.expand,
     this.close,
+    this.showSiteId = false,
   }) : history = history ?? HistoryTable();
 
   HistoryTable history;
   Function? expand;
   Function? close;
   int index;
+  bool showSiteId;
 
   @override
   State<HistoryWidgetListContainer> createState() =>
@@ -471,6 +473,19 @@ class _HistoryWidgetListContainerState
           Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
+              widget.showSiteId
+                  ? SizedBox(
+                      width: 150,
+                      child: Text(
+                        widget.history.siteId,
+                        style: helveticaText.copyWith(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w400,
+                          color: davysGray,
+                        ),
+                      ),
+                    )
+                  : const SizedBox(),
               Expanded(
                 child: Text(
                   widget.history.siteName,

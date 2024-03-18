@@ -39,7 +39,8 @@ class _ExportDashboardPopupState extends State<ExportDashboardPopup> {
     {"value": 13, "name": "Q1"},
     {"value": 14, "name": "Q2"},
     {"value": 15, "name": "Q3"},
-    {"value": 16, "name": "Q4"}
+    {"value": 16, "name": "Q4"},
+    {"value": 17, "name": "All"}
   ];
 
   int selectedYear = 0;
@@ -90,6 +91,10 @@ class _ExportDashboardPopupState extends State<ExportDashboardPopup> {
         borderRadius: BorderRadius.circular(10),
       ),
       child: Container(
+        decoration: BoxDecoration(
+          color: white,
+          borderRadius: BorderRadius.circular(10),
+        ),
         constraints: const BoxConstraints(
           minWidth: 475,
           maxWidth: 475,

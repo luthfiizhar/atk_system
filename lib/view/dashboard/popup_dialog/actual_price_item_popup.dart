@@ -132,6 +132,10 @@ class _ActualPriceItemPopupState extends State<ActualPriceItemPopup> {
       ),
       child: SingleChildScrollView(
         child: Container(
+          decoration: BoxDecoration(
+            color: white,
+            borderRadius: BorderRadius.circular(10),
+          ),
           constraints: const BoxConstraints(
             minWidth: 1100,
             maxWidth: 1200,

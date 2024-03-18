@@ -29,6 +29,7 @@ class ShowMoreIcon extends StatelessWidget {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
               ),
+              color: white,
               position: RelativeRect.fromLTRB(
                   offset.dx, offset.dy + 30, offset.dx, 0),
               items: [

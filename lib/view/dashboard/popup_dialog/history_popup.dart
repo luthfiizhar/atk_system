@@ -98,6 +98,7 @@ class _HistoryPopupDialogState extends State<HistoryPopupDialog> {
               updatedBy: element["Updated_By"],
               updatedDateTime: element["Updated_At"],
               note: element["Notes"],
+              siteId: element["SiteID"],
             ),
           );
         }
@@ -178,6 +179,10 @@ class _HistoryPopupDialogState extends State<HistoryPopupDialog> {
       ),
       child: SingleChildScrollView(
         child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            color: white,
+          ),
           constraints: const BoxConstraints(
             minWidth: 1100,
             maxWidth: 1200,
@@ -281,6 +286,7 @@ class _HistoryPopupDialogState extends State<HistoryPopupDialog> {
                                     expand: onClickList,
                                     close: closeDetail,
                                     index: index,
+                                    showSiteId: true,
                                   ),
                                 ),
                               ],
@@ -339,6 +345,28 @@ class _HistoryPopupDialogState extends State<HistoryPopupDialog> {
       children: [
         Row(
           children: [
+            SizedBox(
+              width: 150,
+              child: InkWell(
+                onTap: () {
+                  onTapHeader("SiteID");
+                },
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        'Site ID',
+                        style: headerTableTextStyle,
+                      ),
+                    ),
+                    iconSort("SiteID"),
+                    const SizedBox(
+                      width: 20,
+                    ),
+                  ],
+                ),
+              ),
+            ),
             Expanded(
               child: InkWell(
                 onTap: () {

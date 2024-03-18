@@ -76,6 +76,7 @@ class RecentTransactionTable {
   String time;
   String formId;
   String approveDate;
+  String siteId;
 
   RecentTransactionTable({
     this.siteName = "",
@@ -85,6 +86,7 @@ class RecentTransactionTable {
     this.time = "",
     this.formId = "",
     this.approveDate = "",
+    this.siteId = "",
   });
 
   RecentTransactionTable.fromJson(Map<String, dynamic> json)
@@ -94,7 +96,8 @@ class RecentTransactionTable {
         date = json["Date"] ?? "",
         time = json["Time"] ?? "",
         formId = json["FormID"] ?? "",
-        approveDate = json["ApproveDate"] ?? "";
+        approveDate = json["ApproveDate"] ?? "",
+        siteId = json["SiteID"] ?? "";
 
   Map<String, String> toJson() => {
         "SiteName": siteName,
@@ -102,7 +105,8 @@ class RecentTransactionTable {
         "Cost": cost.toString(),
         "Date": date,
         "Time": time,
-        "FormID": formId
+        "FormID": formId,
+        "SiteID": siteId
       };
 
   @override
@@ -198,6 +202,7 @@ class SiteRanking {
   String? settlementTime;
   String? reqSubmission;
   String? settlementSubmission;
+  String? siteId;
 
   SiteRanking({
     this.rank = "0",
@@ -212,6 +217,7 @@ class SiteRanking {
     this.percentageCompare = 50.0,
     this.costCompare = 0,
     this.budgetCompare = 0,
+    this.siteId = "",
   });
 
   SiteRanking.fromJson(Map<String, dynamic> json)
@@ -256,6 +262,7 @@ class HistoryTable {
   String note;
   bool? isExpanded;
   String dateTime;
+  String siteId;
 
   HistoryTable({
     this.id = "",
@@ -269,6 +276,7 @@ class HistoryTable {
     this.note = "",
     this.dateTime = "",
     this.isExpanded = false,
+    this.siteId = "",
   });
 
   HistoryTable.fromJson(Map<String, dynamic> json)
@@ -282,6 +290,7 @@ class HistoryTable {
         updatedBy = json["Updated_By"],
         updatedDateTime = json["Updated_At"],
         dateTime = json["Updated_Raw"] ?? "",
+        siteId = json["SiteID"] ?? "",
         isExpanded = false;
 
   Map<String, String> toJson() => {
@@ -291,7 +300,8 @@ class HistoryTable {
         '"FileURL"': file,
         '"Notes"': note,
         '"Updated_By"': updatedBy,
-        '"Updated_At"': updatedDateTime
+        '"Updated_At"': updatedDateTime,
+        '"SiteID"': siteId
       };
 
   @override
